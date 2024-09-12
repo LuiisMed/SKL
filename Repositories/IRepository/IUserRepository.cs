@@ -12,5 +12,9 @@ public interface IUserRepository
     
     Task<IEnumerable<Login>> GetSKLCredentials();
 
+    Task<(bool, string)> InsertSKLUsuariosAsync(Usuario usuario);
+    Task<(bool, string)> UpdateSKLUsuariosAsync(Usuario usuario);
+    Task<(bool, string)> DeleteSKLUsuariosAsync(int usuarioId);
+
 }
 

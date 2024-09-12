@@ -30,6 +30,58 @@ public class UserRepository : IUserRepository
     => await _context.ExecuteStoredProcedureQueryAsync<Login>(_storedProcedure,
     new { Option = "GET_CREDENTIALS" });
 
+    public async Task<(bool, string)> InsertSKLUsuariosAsync(Usuario usuario)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_USUARIOS",
+                Param1 = usuario.Name,
+                Param2 = usuario.UserName,
+                Param3 = usuario.UserPassword,
+                Param4 = usuario.IdRole,
+                Param5 = usuario.IdPosition,
+                Param6 = usuario.IdShift,
+                Param7 = usuario.IdDepartment,
+                Param8 = usuario.EmpNo,
+                Param9 = usuario.UserImage
+
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLUsuariosAsync(Usuario usuario)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_USUARIOS",
+                Param1 = usuario.IdUser,
+                Param2 = usuario.Name,
+                Param3 = usuario.UserName,
+                Param4 = usuario.UserPassword,
+                Param5 = usuario.IdRole,
+                Param6 = usuario.IdPosition,
+                Param7 = usuario.IdShift,
+                Param8 = usuario.IdDepartment,
+                Param9 = usuario.EmpNo,
+                Param10 = usuario.UserImage
+            });
+    }
+
+    public async Task<(bool, string)> DeleteSKLUsuariosAsync(int usuarioId)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "DEL_USUARIOS",
+                Param1 = usuarioId
+            });
+    }
+
+
 
 
     //public async Task<IEnumerable<SPCData>> GetSPCDataAsync(string customer, string line, string shift, string from, string to, int operationId)

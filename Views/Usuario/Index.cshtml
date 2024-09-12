@@ -1,0 +1,147 @@
+﻿
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4">Usuarios</h4>
+
+        <hr class="my-5" />
+
+        <div id="myGrid" style="height: 600px" class="ag-theme-quartz"></div>
+
+    </div>
+    <!-- / Content -->
+
+    <div class="content-backdrop fade"></div>
+</div>
+
+
+<script>
+
+    $("#ModalWindow").draggable({
+        handle: ".modal-header"
+    });
+
+    var maxRowHeight = 25;
+    var currentRowHeight ;
+
+    let gridApi;
+
+    const gridOptions = {
+        columnDefs: [
+            { field: "idUser", headerName: "ID", minWidth: 70, maxWidth: 150, hide:true},
+            { field: "name", headerName: "Nombre", minWidtha: 150 },
+            { field: "userName", headerName: "Usuario", minWidth: 70, maxWidth: 150, },
+            { field: "userPassword", headerName: "Contraseña", minWidth: 130 },
+            { field: "idRole", minWidth: 70, maxWidth: 150, hide: true },
+            { field: "roleName", headerName: "Permisos",minWidth: 120 },
+            { field: "idPosition", minWidth: 120, hide: true },
+            { field: "positionName", headerName: "Posicion", minWidth: 80 },
+            { field: "idShift", minWidth: 80, hide: true },
+            { field: "shiftName", headerName: "Turno", minWidth: 80 },
+            { field: "idDepartment", minWidth: 80, hide: true },
+            { field: "departmentName", headerName: "Departamento", minWidth: 80 },
+            { field: "empNo", headerName: "Numero de Empleado", minWidth: 80 },
+            {}
+        ],
+
+        rowData: null,
+        autoSizeStrategy: {
+            type: "fitGridWidth",
+        },
+        onGridReady: (params) => {
+            maxRowHeight = params.api.getSizesForCurrentTheme().rowHeight;
+            currentRowHeight = maxRowHeight;
+        },
+        onFirstDataRendered: onFirstDataRendered,
+        onGridSizeChanged: onGridSizeChanged,
+        getRowHeight: (params) => {
+            return currentRowHeight;
+        },
+        defaultColDef: {
+            filter: "agTextColumnFilter",
+            floatingFilter: true,
+        },
+        rowSelection: "multiple",
+        suppressRowClickSelection: true,
+        pagination: true,
+        paginationPageSize: 10,
+        paginationPageSizeSelector: [10, 25, 50],
+    };
+
+    function onFirstDataRendered(params) {
+        updateRowHeight(params);
+    }
+
+    function onGridSizeChanged(params) {
+        updateRowHeight(params);
+    }
+
+    const updateRowHeight = (params) => {
+        // get the height of the grid body - this excludes the height of the headers
+        const bodyViewport = document.querySelector(".ag-body-viewport");
+        if (!bodyViewport) {
+            return;
+        }
+
+        var gridHeight = bodyViewport.clientHeight;
+        // get the rendered rows
+        var renderedRowCount = params.api.getDisplayedRowCount();
+
+        // if the rendered rows * min height is greater than available height, just just set the height
+        // to the min and let the scrollbar do its thing
+        if (renderedRowCount * minRowHeight >= gridHeight) {
+            if (currentRowHeight !== minRowHeight) {
+                currentRowHeight = minRowHeight;
+                params.api.resetRowHeights();
+            }
+        } else {
+            // set the height of the row to the grid height / number of rows available
+            currentRowHeight = Math.floor(gridHeight / renderedRowCount);
+            params.api.resetRowHeights();
+        }
+    };
+
+    // setup the grid after the page has finished loading
+    document.addEventListener("DOMContentLoaded", function () {
+        var gridDiv = document.querySelector("#myGrid");
+        gridApi = agGrid.createGrid(gridDiv, gridOptions);
+
+        fetch('@Url.Action("UsuariosJSON", "Usuario")')
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Datos recibidos:", data); // Imprime los datos en la consola
+                gridApi.setGridOption("rowData", data);
+            })
+            .catch((error) => {
+                console.error("Ocurrió un error durante la solicitud:", error);
+            });
+    });
+
+
+    // New Category
+    $("#btnNew").click(() => showWindowPopUp("@Url.Action("NewCategoryPopUp", "Category")"));
+
+    // modify category
+    let updateCategory = (id) => showWindowPopUp("@Url.Action("UpdateCategoryPopUp", "Category")" + "?id=" + id);
+    // delete category
+    let deleteCategory = (id) => showWindowPopUp("@Url.Action("DeleteCategoryPopUp", "Category")" + "?id=" + id);
+
+    let connection = new signalR.HubConnectionBuilder().withUrl(systemHubUrl()).build();
+    connection.start();
+    connection.on("RefreshUserGrid", function () {
+        //
+        console.log("RefreshUserGrid");
+        waitTime(function () {
+            $grid = $(".myGrid").pqGrid('refresh');
+            $grid = $("#myGrid").pqGrid('refreshDataAndView');
+        });
+    });
+
+</script>

@@ -35,6 +35,7 @@
 
     <!-- Helpers -->
     <script src="~/assets/vendor/js/helpers.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
@@ -49,7 +50,7 @@
         <div class="layout-container">
             <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
                 <div class="app-brand demo">
-                    <a href="index.html" class="app-brand-link">
+                    <a  class="app-brand-link" asp-controller="Home" asp-action="Index">
                         <span class="app-brand-logo demo"><img type="image/x-icon" src="~/assets/img/favicon/favicon-32x32.png" width="25px"></span>
                         <span class="app-brand-text demo menu-text fw-bolder ms-2">Skip Level</span>
                     </a>
@@ -72,7 +73,7 @@
 
                     <!-- Usuarios -->
                     <li class="menu-item">
-                        <a asp-controller="Home" asp-action="Privacy" class="menu-link">
+                        <a asp-controller="Usuario" asp-action="Index" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-user-plus"></i>
                             <div data-i18n="Layouts">Usuarios </div>
                         </a>
@@ -154,7 +155,7 @@
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                     <div class="avatar">
-                                        <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                                        <img id="miImagen" src="" class="w-px-40 h-auto rounded-circle" />
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -163,7 +164,7 @@
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
                                                     <div class="avatar">
-                                                        <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                                                        <img id="miImagen" src="" class="w-px-40 h-auto rounded-circle" />
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1">
@@ -243,11 +244,31 @@
     <!-- Vendors JS -->
     <script src="~/assets/vendor/libs/apex-charts/apexcharts.js"></script>
 
+
+
+
     <!-- Main JS -->
     <script src="~/assets/js/main.js"></script>
 
     <!-- Page JS -->
     <script src="~/assets/js/dashboards-analytics.js"></script>
+
+    <script>
+        document.getElementById('miImagen').onerror = function () {
+            this.src = '../assets/img/avatars/Unknkow.png';
+            this.alt = 'Imagen alternativa cargada porque la original no se encontró';
+        };
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var img = document.getElementById('miImagen');
+
+            // Verificar si el src está vacío o incorrecto
+            if (!img.src || img.src.includes('../assets/img/avatars/') || img.src === window.location.href) {
+                img.src = '../assets/img/avatars/Unknkow.png';
+            }
+        });
+    </script>
+
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>

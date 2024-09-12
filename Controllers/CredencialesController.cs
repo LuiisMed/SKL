@@ -42,7 +42,7 @@ public class CredencialesController : Controller
 
         if(usuario_encontrado == null)
         {
-            ViewData["Mensaje"] = "No se encontraron coincidencias";
+            ViewData["Mensaje"] = "El nombre de usuario o contraseña son incorrectos";
             return View();
         }
 

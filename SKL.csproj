@@ -7,11 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Usuario\Examples.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <_ContentIncludedByDefault Remove="efpt.config.json" />
+    <_ContentIncludedByDefault Remove="Views\Usuario\Examples.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="efpt.config.json.user" />
+    <None Include="Views\Usuario\Examples.cshtml" />
     <None Include="wwwroot\lib\apexcharts\apexcharts.js" />
     <None Include="wwwroot\lib\bootstrap-datepicker\.editorconfig" />
     <None Include="wwwroot\lib\bootstrap-datepicker\.github\ISSUE_TEMPLATE.md" />
@@ -395,7 +401,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Data\" />
     <Folder Include="Models\" />
     <Folder Include="wwwroot\css\" />
@@ -409,6 +414,10 @@
     <Folder Include="wwwroot\lib\jquery-validation\dist\" />
     <Folder Include="wwwroot\lib\jquery\" />
     <Folder Include="wwwroot\lib\jquery\dist\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Usuario\Examples.cshtml" />
   </ItemGroup>
 
 </Project>
