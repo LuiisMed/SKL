@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
 using SKL.Models;
+using SKL.Services;
 using SKL.Services.IServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SKL.Controllers
 {
@@ -21,57 +24,75 @@ namespace SKL.Controllers
             return View();
         }
 
-        public IActionResult NewCategoryPopUp() => PartialView("CategoryPopUp", new Usuario() { Name = "" });
-
-        public async Task<IActionResult> UpdateCategoryPopUp(int id)
+        public async Task<IActionResult> NewUsuarioPopUp()
         {
-            var model = await _service.GetSKLUsuarios(id);
-            return PartialView("CategoryPopUp", model);
+            ViewData["Title"] = $"New Usuario";
+            ViewBag.Action = "Insert";
+
+            // Obtener la lista de departamentos del servicio
+            var departments = await _service.GetSKLDepartmentsAsync();
+
+            // Crear un modelo que incluya tanto el usuario como la lista de departamentos
+            var viewModel = new NewUsuarioViewModel
+            {
+                Usuario = new Usuario(),
+                Departments = departments
+            };
+
+            return PartialView("_NewUsuarioPopUp", viewModel);
         }
 
-        public async Task<IActionResult> DeleteCategoryPopUp(int id)
-        {
-            var model = await _service.GetSKLUsuarios(id);
-            return PartialView(model);
-        }
-
-        public async Task<IActionResult> SaveSKLUsuarios(Usuario model)
+        public async Task<IActionResult> Insert(Usuario data)
         {
             var (error, message) = (false, "");
             if (ModelState.IsValid)
             {
+                // Inserta el usuario con su departamento asignado por ID
                 _service.DataChangeEventHandler += RefreshUserGrid;
-                (error, message) = await _service.SaveSKLUsuariosAsync(model);
+                (error, message) = await _service.InsertSKLUsuariosAsync(data);
             }
-            //
-            var jsonResult = Json(
-                 new
-                 {
-                     Status = error ? "error" : "success",
-                     Message = error ? message : "Category saved successfully.",
-                     Icon = error ? "error" : "success"
-                 });
+
+            var jsonResult = Json(new
+            {
+                Status = error ? "error" : "success",
+                Message = error ? message : "Usuario creado exitosamente.",
+                Icon = error ? "error" : "success"
+            });
+
             return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 ? jsonResult
                 : RedirectToAction("Error");
         }
 
-        public async Task<IActionResult> DeleteSKLUsuarios(Usuario model)
-        {
-            _service.DataChangeEventHandler += RefreshUserGrid;
-            var (error, message) = await _service.DeleteSKLUsuariosAsync(model.IdUser);
-            //
-            var jsonResult = Json(
-                 new
-                 {
-                     Status = error ? "error" : "success",
-                     Message = error ? message : "Category deleted successfully.",
-                     Icon = error ? "error" : "success"
-                 });
-            return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                ? jsonResult
-                : RedirectToAction("Error");
-        }
+
+        //public async Task<IActionResult> UpdateuUsuarioPopUp(int idusr)
+        //{
+        //    var model = await _service.GetSKLUsuarioAsync(idusr);
+        //    return PartialView("UsuariosPopUp", model);
+        //}
+
+        //public async Task<IActionResult> DeleteUsuarioPopUp(int idusr)
+        //{
+        //    var model = await _service.GetSKLUsuarioAsync(idusr);
+        //    return PartialView(model);
+        //}
+
+        //public async Task<IActionResult> DeleteSKLUsuarios(Usuario model)
+        //{
+        //    _service.DataChangeEventHandler += RefreshUserGrid;
+        //    var (error, message) = await _service.DeleteSKLUsuariosAsync(model.IdUser);
+        //    //
+        //    var jsonResult = Json(
+        //         new
+        //         {
+        //             Status = error ? "error" : "success",
+        //             Message = error ? message : "Category deleted successfully.",
+        //             Icon = error ? "error" : "success"
+        //         });
+        //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        //        ? jsonResult
+        //        : RedirectToAction("Error");
+        //}
 
 
 

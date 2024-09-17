@@ -253,6 +253,9 @@
     <None Include="wwwroot\lib\bootstrap-datepicker\tests\suites\timezone.js" />
     <None Include="wwwroot\lib\bootstrap-datepicker\tests\suites\touch_navigation\all.js" />
     <None Include="wwwroot\lib\bootstrap-datepicker\yarn.lock" />
+    <None Include="wwwroot\lib\FileSaver\dist\FileSaver.js" />
+    <None Include="wwwroot\lib\FileSaver\dist\FileSaver.min.js" />
+    <None Include="wwwroot\lib\FileSaver\dist\FileSaver.min.js.map" />
     <None Include="wwwroot\lib\FusionChart\fusioncharts.jqueryplugin.min.js" />
     <None Include="wwwroot\lib\FusionChart\fusioncharts.js" />
     <None Include="wwwroot\lib\FusionChart\fusioncharts.theme.fusion.js" />
@@ -387,7 +390,7 @@
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.3.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
     <PackageReference Include="RepoDb" Version="1.13.1" />
     <PackageReference Include="RepoDb.SqlServer" Version="1.13.1" />
     <PackageReference Include="RepoDb.SqlServer.BulkOperations" Version="1.13.1" />

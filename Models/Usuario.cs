@@ -35,7 +35,7 @@ public partial class Usuario
     [Map("usr_img")]
     public string UserImage { get; set; }
 
-    
+
 
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 

@@ -7,14 +7,12 @@ public interface IUserRepository
     event EventHandler? DataChangeEventHandler;
 
     Task<IEnumerable<Department>> GetSKLDepartmentsAsync();
-
     Task<IEnumerable<Usuario>> GetSKLUsuarios();
-    
+    Task<Usuario> GetSKLUsuarioAsync(int idusr);
     Task<IEnumerable<Login>> GetSKLCredentials();
-
     Task<(bool, string)> InsertSKLUsuariosAsync(Usuario usuario);
     Task<(bool, string)> UpdateSKLUsuariosAsync(Usuario usuario);
-    Task<(bool, string)> DeleteSKLUsuariosAsync(int usuarioId);
+    Task<(bool, string)> DeleteSKLUsuariosAsync(int idusr);
 
 }
 

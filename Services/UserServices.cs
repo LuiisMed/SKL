@@ -1,6 +1,7 @@
 ﻿using SKL.Models;
 using SKL.Repositories.IRepository;
 using SKL.Services.IServices;
+using System.Xml.Linq;
 
 namespace SKL.Services;
 
@@ -22,6 +23,9 @@ public class UserServices : IUserServices
     public async Task<IEnumerable<Usuario>> GetSKLUsuarios()
             => await _repository.GetSKLUsuarios();
 
+    public async Task<Usuario> GetSKLUsuarioAsync(int idusr)
+    => await _repository.GetSKLUsuarioAsync(idusr);
+
     public async Task<IEnumerable<Login>> GetSKLCredentials()
     => await _repository.GetSKLCredentials();
 
@@ -34,10 +38,17 @@ public class UserServices : IUserServices
         return await method.Invoke(usuario);
     }
 
-    public async Task<(bool, string)> DeleteSKLUsuariosAsync(int usuarioId)
+
+    public async Task<(bool, string)> InsertSKLUsuariosAsync(Usuario data)
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;
-        return await _repository.DeleteSKLUsuariosAsync(usuarioId);
+        return await _repository.InsertSKLUsuariosAsync(data);
+    }
+
+    public async Task<(bool, string)> DeleteSKLUsuariosAsync(int idusr)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.DeleteSKLUsuariosAsync(idusr);
     }
 
 }

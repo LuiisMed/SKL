@@ -1,0 +1,72 @@
+﻿@model NewUsuarioViewModel
+@{
+
+}
+
+
+<div class="modal-header">
+    <h5 class="modal-title" id="">@ViewData["Title"]</h5>
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"></button>
+</div>
+<form id="form1" asp-controller="Usuario" asp-action="@ViewBag.Action" role="form" method="post">
+    <input type="hidden" asp-for="@Model.Usuario.IdUser" />
+    <div class="modal-body">
+        <div class="row">
+            <div class="col mb-3">
+                <label asp-for="@Model.Usuario.Name" class="form-label" style="padding-top:5px;"></label>
+                <input asp-for="@Model.Usuario.Name" class="form-control" />
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col mb-0">
+                <label for="emailBasic" class="form-label">Email</label>
+                <input type="text" id="emailBasic" class="form-control" placeholder="xxxx@xxx.xx" />
+            </div>
+            <div class="col mb-0">
+                <label class="form-label" for="department">Departamento:</label>
+                <select id="department" class="form-control" name="department">
+                    @foreach (var department in Model.Departments)
+                    {
+                        <option value="@department.Id">@department.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button  type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            Close
+        </button>
+        <button type="submit" id="submit" class="btn btn-primary">Save changes</button>
+    </div>
+</form>
+
+
+<script>
+    $(function () {
+        var formProvider = $('#form1');
+        formProvider.submit(function (e) {
+            console.log(e);
+            e.preventDefault();
+            formProvider.validate();
+            console.log(formProvider.valid());
+            if (formProvider.valid()) {
+                var form = $(this);
+                $.post(form.attr('action'), form.serialize(), function (res) {
+                    if (res.status === 'success') {
+                        // Show message
+                        swal("Usuario", res.message, "success");
+                        //swal.success(res.message);
+                        // Hide window
+                        $('#ModalWindow').modal("hide");
+                    } else if (res.status === 'error') {
+                        swal("Usuario", res.message, "error");
+                    }
+                });
+            }
+        });
+    });
+</script>
