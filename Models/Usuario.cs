@@ -33,7 +33,7 @@ public partial class Usuario
     [Map("emp_no")]
     public int EmpNo { get; set; }
     [Map("usr_img")]
-    public string UserImage { get; set; }
+    public string ImagePath { get; set; }
 
 
 

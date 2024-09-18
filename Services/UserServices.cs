@@ -42,6 +42,12 @@ public class UserServices : IUserServices
         return await _repository.InsertSKLUsuariosAsync(data);
     }
 
+    public async Task<(bool, string)> UpdateSKLUsuariosAsync(Usuario data)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.UpdateSKLUsuariosAsync(data);
+    }
+    
     public async Task<(bool, string)> DeleteSKLUsuariosAsync(int idusr)
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;

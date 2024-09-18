@@ -11,6 +11,8 @@
     <title>@ViewData["Title"] - SKL</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
+
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="~/assets/img/favicon/favicon.ico" />
 
@@ -236,8 +238,8 @@
     <!--SCRIPTS PO-->
     <script src="~/lib/jquery-ui-1.13.2.custom/jquery-ui.min.js"></script>
 @*     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
- *@    <script src="~/lib/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+*@    
+    <script src="~/lib/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 
     <script src="~/assets/vendor/js/menu.js"></script>
 
@@ -270,9 +272,14 @@
     </script>
 
 
+    
+
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="~/assets/js/ui-toasts.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

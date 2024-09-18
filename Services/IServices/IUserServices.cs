@@ -12,6 +12,6 @@ public interface IUserServices
     Task<IEnumerable<Login>> GetSKLCredentials();
     Task<(bool, string)> SaveSKLUsuariosAsync(Usuario usuario);
     Task<(bool, string)> InsertSKLUsuariosAsync(Usuario data);
-
+    Task<(bool, string)> UpdateSKLUsuariosAsync(Usuario data);
     Task<(bool, string)> DeleteSKLUsuariosAsync(int idusr);
 }

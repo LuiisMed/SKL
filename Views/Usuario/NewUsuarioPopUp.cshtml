@@ -1,0 +1,257 @@
+﻿@* @model NewUsuarioViewModel
+ *@
+
+@model SKL.Models.Usuario
+
+@{
+
+}
+
+
+<div class="modal-header">
+    <h5 class="modal-title" id="">@ViewData["Title"]</h5>
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"></button>
+</div>
+<form id="form1" asp-controller="Usuario" asp-action="Insert" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="IdUser" />
+    <div class="modal-body">
+        <div class="row"> 
+            <div class="col mb-3">
+                <label asp-for="Name" class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" type="text" />
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col mb-0">
+                <label asp-for="UserName" class="form-label">UserName</label>
+                <input asp-for="UserName" class="form-control" type="text" />
+            </div>
+            <div class="col mb-0">
+                <label asp-for="UserPassword" class="form-label">Password</label>
+                <input asp-for="UserPassword" class="form-control" type="text" />
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col mb-0">
+                <label asp-for="IdRole" class="form-label">Roles</label>
+                <select asp-for="IdRole" class="form-control">
+                    @foreach (var role in ViewBag.UserTypes)
+                    {
+                        <option value="@role.Id">@role.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col mb-0">
+                <label asp-for="IdDepartment" class="form-label">Departamento</label>
+                <select asp-for="IdDepartment" class="form-control">
+                    @foreach (var dep in ViewBag.Departamentos)
+                    {
+                        <option value="@dep.Id">@dep.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col mb-0">
+                <label asp-for="IdShift" class="form-label">Turno</label>
+                <select asp-for="IdShift" class="form-control">
+                    @foreach (var shi in ViewBag.Shifts)
+                    {
+                        <option value="@shi.Id">@shi.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col mb-0">
+                <label asp-for="IdPosition" class="form-label">Posicion</label>
+                <select asp-for="IdPosition" class="form-control">
+                    @foreach (var pos in ViewBag.Positions)
+                    {
+                        <option value="@pos.Id">@pos.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label asp-for="EmpNo" class="form-label">Numero de Empleado</label>
+                <input asp-for="EmpNo" class="form-control" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label asp-for="ImagePath" class="form-label">Multiple files input example</label>
+                <input asp-for="ImagePath" name="imageFile" class="form-control" type="file" />
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button  type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            Close
+        </button>
+        <button type="submit" id="submit" class="btn btn-primary">Save changes</button>
+    </div>
+</form>
+
+
+<script>
+    $(function () {
+        var formProvider = $('#form1');
+        formProvider.submit(function (e) {
+            e.preventDefault();
+            formProvider.validate();
+            if (formProvider.valid()) {
+                var formData = new FormData(this);
+                $.ajax({
+                    url: formProvider.attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        if (res.status === 'success') {
+                            // Show success toast
+                            showToast('bg-success text-white', 'bx-check-circle', 'Success', res.message);
+                            // Hide modal window
+                            $('#ModalWindow').modal("hide");
+                        } else if (res.status === 'error') {
+                            // Show error toast
+                            showToast('bg-danger text-white', 'bx-x-circle', 'Error', res.message);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Function to display toast by adding and removing "show" class
+        function showToast(type, icon, header, message) {
+            var toastElement = `
+                <div class="bs-toast toast toast-placement-ex m-2 bg-success top-0 start-0 fade show ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <i class="bx ${icon} me-2"></i>
+                        <strong class="me-auto">${header}</strong>
+                        <small class="text-white">Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>`;
+
+            var toastContainer = $('#toastContainer');
+            if (!toastContainer.length) {
+                toastContainer = $('<div id="toastContainer" style="position: fixed; top: 0; left: 0; z-index: 9999;"></div>');
+                $('body').append(toastContainer);
+            }
+
+            var toast = $(toastElement);
+            toastContainer.append(toast);
+
+            // Show toast (by adding "show" class)
+            setTimeout(function () {
+                toast.addClass('show');
+            }, 100); // Slight delay to allow CSS transition
+
+            // Hide the toast after 3 seconds (by removing "show" class)
+            setTimeout(function () {
+                toast.removeClass('show');
+                setTimeout(function () {
+                    toast.remove(); // Remove from DOM after transition ends
+                }, 500); // Wait for the hide transition to complete
+            }, 3000);
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--Script sin Imagen--!> 
+@* <script>
+    $(function () {
+        var formProvider = $('#form1');
+        formProvider.submit(function (e) {
+            e.preventDefault();
+            formProvider.validate();
+            if (formProvider.valid()) {
+                var form = $(this);
+                $.post(form.attr('action'), form.serialize(), function (res) {
+                    if (res.status === 'success') {
+                        // Show success toast
+                        showToast('bg-success text-white', 'bx-check-circle', 'Success', res.message);
+                        // Hide modal window
+                        $('#ModalWindow').modal("hide");
+                    } else if (res.status === 'error') {
+                        // Show error toast
+                        showToast('bg-danger text-white', 'bx-x-circle', 'Error', res.message);
+                    }
+                });
+            }
+        });
+
+        // Function to display toast by adding and removing "show" class
+        function showToast(type, icon, header, message) {
+            var toastElement = `
+                            <div class="bs-toast toast toast-placement-ex m-2 bg-success top-0 start-0 fade show ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="toast-header">
+                                <i class="bx ${icon} me-2"></i>
+                                <strong class="me-auto">${header}</strong>
+                                <small class="text-white">Just now</small>
+                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="toast-body">
+                                ${message}
+                            </div>
+                        </div>`;
+
+            var toastContainer = $('#toastContainer');
+            if (!toastContainer.length) {
+                toastContainer = $('<div id="toastContainer" style="position: fixed; top: 0; left: 0; z-index: 9999;"></div>');
+                $('body').append(toastContainer);
+            }
+
+            var toast = $(toastElement);
+            toastContainer.append(toast);
+
+            // Show toast (by adding "show" class)
+            setTimeout(function () {
+                toast.addClass('show');
+            }, 100); // Slight delay to allow CSS transition
+
+            // Hide the toast after 3 seconds (by removing "show" class)
+            setTimeout(function () {
+                toast.removeClass('show');
+                setTimeout(function () {
+                    toast.remove(); // Remove from DOM after transition ends
+                }, 500); // Wait for the hide transition to complete
+            }, 3000);
+        }
+    });
+</script> *@
+
+
+

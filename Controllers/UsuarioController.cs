@@ -27,24 +27,6 @@ namespace SKL.Controllers
             return View();
         }
 
-        //public async Task<IActionResult> NewUsuarioPopUp()
-        //{
-        //    ViewData["Title"] = $"New Usuario";
-        //    ViewBag.Action = "Insert";
-
-        //    // Obtener la lista de departamentos del servicio
-        //    var departments = await _service.GetSKLDepartmentsAsync();
-
-        //    // Crear un modelo que incluya tanto el usuario como la lista de departamentos
-        //    var viewModel = new NewUsuarioViewModel
-        //    {
-        //        Usuario = new Usuario(),
-        //        Departments = departments
-        //    };
-
-        //    return PartialView("_NewUsuarioPopUp", viewModel);
-        //}
-
         [HttpPost]
         public async Task<IActionResult> NewUsuarioPopUp()
         {
@@ -61,16 +43,31 @@ namespace SKL.Controllers
 
             ViewData["Title"] = "Nuevo Usuario";
             ViewBag.Action = "Insert";
-            return PartialView("_NewUsuarioPopUp", new Usuario());
+            return PartialView("NewUsuarioPopUp", new Usuario());
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> Insert(Usuario data)
+        public async Task<IActionResult> Insert(Usuario data, IFormFile imageFile)
         {
             var (error, message) = (false, "");
             if (ModelState.IsValid)
             {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    // Guardar la imagen en el servidor
+                    var fileName = Path.GetFileName(imageFile.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    // Guardar la ruta de la imagen en el modelo
+                    data.ImagePath = $"/img/{fileName}";
+                }
+
                 _service.DataChangeEventHandler += RefreshUserGrid;
                 (error, message) = await _service.InsertSKLUsuariosAsync(data);
             }
@@ -87,35 +84,206 @@ namespace SKL.Controllers
                 : RedirectToAction("Error");
         }
 
-
-        //public async Task<IActionResult> UpdateuUsuarioPopUp(int idusr)
+        //public async Task<IActionResult> Insert(Usuario data)
         //{
-        //    var model = await _service.GetSKLUsuarioAsync(idusr);
-        //    return PartialView("UsuariosPopUp", model);
-        //}
+        //    var (error, message) = (false, "");
+        //    if (ModelState.IsValid)
+        //    {
+        //        _service.DataChangeEventHandler += RefreshUserGrid;
+        //        (error, message) = await _service.InsertSKLUsuariosAsync(data);
+        //    }
 
-        //public async Task<IActionResult> DeleteUsuarioPopUp(int idusr)
-        //{
-        //    var model = await _service.GetSKLUsuarioAsync(idusr);
-        //    return PartialView(model);
-        //}
+        //    var jsonResult = Json(new
+        //    {
+        //        Status = error ? "error" : "success",
+        //        Message = error ? message : "Usuario creado exitosamente.",
+        //        Icon = error ? "error" : "success"
+        //    });
 
-        //public async Task<IActionResult> DeleteSKLUsuarios(Usuario model)
-        //{
-        //    _service.DataChangeEventHandler += RefreshUserGrid;
-        //    var (error, message) = await _service.DeleteSKLUsuariosAsync(model.IdUser);
-        //    //
-        //    var jsonResult = Json(
-        //         new
-        //         {
-        //             Status = error ? "error" : "success",
-        //             Message = error ? message : "Category deleted successfully.",
-        //             Icon = error ? "error" : "success"
-        //         });
         //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
         //        ? jsonResult
         //        : RedirectToAction("Error");
         //}
+
+        //public async Task<IActionResult> Insert(Usuario data, IFormFile imageFile)
+        //{
+        //    var (error, message) = (false, "");
+        //    if (ModelState.IsValid)
+        //    {
+        //        if (imageFile != null && imageFile.Length > 0)
+        //        {
+        //            // Guardar la imagen en el servidor
+        //            var fileName = Path.GetFileName(imageFile.FileName);
+        //            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", fileName);
+
+        //            using (var stream = new FileStream(filePath, FileMode.Create))
+        //            {
+        //                await imageFile.CopyToAsync(stream);
+        //            }
+
+        //            // Guardar la ruta de la imagen en el modelo
+        //            data.ImagePath = $"/img/{fileName}";
+        //        }
+
+        //        _service.DataChangeEventHandler += RefreshUserGrid;
+        //        (error, message) = await _service.InsertSKLUsuariosAsync(data);
+        //    }
+
+        //    var jsonResult = Json(new
+        //    {
+        //        Status = error ? "error" : "success",
+        //        Message = error ? message : "Usuario creado exitosamente.",
+        //        Icon = error ? "error" : "success"
+        //    });
+
+        //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        //        ? jsonResult
+        //        : RedirectToAction("Error");
+        //}
+
+
+        public async Task<IActionResult> UpdateUsuarioPopUp(int idusr)
+        {
+            var departamentos = await _Sklservice.GetSKLDepartmentsAsync();
+            var usertypes = await _Sklservice.GetSKLUserTypeAsync();
+            var shifts = await _Sklservice.GetSKLShiftsAsync();
+            var positions = await _Sklservice.GetSKLPositionAsync();
+            var model = await _service.GetSKLUsuarioAsync(idusr);
+
+
+
+            ViewBag.Departamentos = departamentos;
+            ViewBag.UserTypes = usertypes;
+            ViewBag.Shifts = shifts;
+            ViewBag.Positions = positions;
+
+            ViewData["Title"] = "Nuevo Usuario";
+            ViewBag.Action = "Insert";
+            return PartialView("UpdateUsuarioPopUp", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(Usuario data, IFormFile imageFile)
+        {
+            var (error, message) = (false, "");
+            if (ModelState.IsValid)
+            {
+                var existingUser = await _service.GetSKLUsuarioAsync(data.Id);
+                if (existingUser == null)
+                {
+                    return NotFound();
+                }
+
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    // Guardar la nueva imagen en el servidor
+                    var fileName = Path.GetFileName(imageFile.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    // Actualizar la ruta de la imagen en el modelo
+                    data.ImagePath = $"/images/{fileName}";
+                }
+                else
+                {
+                    // Mantener la imagen existente
+                    data.ImagePath = existingUser.ImagePath;
+                }
+
+                // Actualizar otros campos del usuario
+                existingUser.Name = data.Name;
+                existingUser.Email = data.Email;
+                // Otros campos que necesites actualizar
+
+                _service.DataChangeEventHandler += RefreshUserGrid;
+                (error, message) = await _service.UpdateSKLUsuariosAsync(existingUser);
+            }
+
+            var jsonResult = Json(new
+            {
+                Status = error ? "error" : "success",
+                Message = error ? message : "Usuario actualizado exitosamente.",
+                Icon = error ? "error" : "success"
+            });
+
+            return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                ? jsonResult
+                : RedirectToAction("Error");
+        }
+
+
+        public async Task<IActionResult> Update(Usuario data)
+        {
+            var (error, message) = (false, "");
+            if (ModelState.IsValid)
+            {
+                _service.DataChangeEventHandler += RefreshUserGrid;
+                (error, message) = await _service.UpdateSKLUsuariosAsync(data);
+            }
+
+            var jsonResult = Json(new
+            {
+                Status = error ? "error" : "success",
+                Message = error ? message : "Usuario creado exitosamente.",
+                Icon = error ? "error" : "success"
+            });
+
+            return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                ? jsonResult
+                : RedirectToAction("Error");
+        }
+
+
+
+
+        //public async Task<IActionResult> Update(Usuario data)
+        //{
+        //    var (error, message) = (false, "");
+        //    if (ModelState.IsValid)
+        //    {
+        //        _service.DataChangeEventHandler += RefreshUserGrid;
+        //        (error, message) = await _service.UpdateSKLUsuariosAsync(data);
+        //    }
+
+        //    var jsonResult = Json(new
+        //    {
+        //        Status = error ? "error" : "success",
+        //        Message = error ? message : "Usuario creado exitosamente.",
+        //        Icon = error ? "error" : "success"
+        //    });
+
+        //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        //        ? jsonResult
+        //        : RedirectToAction("Error");
+        //}
+
+
+        public async Task<IActionResult> DeleteUsuarioPopUp(int idusr)
+        {
+            var model = await _service.GetSKLUsuarioAsync(idusr);
+            return PartialView(model);
+        }
+
+        public async Task<IActionResult> DeleteSKLUsuarios(Usuario model)
+        {
+            _service.DataChangeEventHandler += RefreshUserGrid;
+            var (error, message) = await _service.DeleteSKLUsuariosAsync(model.IdUser);
+            //
+            var jsonResult = Json(
+                 new
+                 {
+                     Status = error ? "error" : "success",
+                     Message = error ? message : "User deleted successfully.",
+                     Icon = error ? "error" : "success"
+                 });
+            return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                ? jsonResult
+                : RedirectToAction("Error");
+        }
 
 
 
@@ -125,8 +293,6 @@ namespace SKL.Controllers
 
         private async void RefreshUserGrid(object? sender, EventArgs e)
             => await _context.Clients.All.SendAsync("RefreshUserGrid");
-
-
 
     }
 }
