@@ -17,9 +17,6 @@ public class UserServices : IUserServices
     
     }
 
-    public async Task<IEnumerable<Department>> GetSKLDepartmentsAsync()
-    => await _repository.GetSKLDepartmentsAsync();
-
     public async Task<IEnumerable<Usuario>> GetSKLUsuarios()
             => await _repository.GetSKLUsuarios();
 

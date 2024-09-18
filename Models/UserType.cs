@@ -7,9 +7,10 @@ namespace SKL.Models;
 
 public partial class UserType
 {
-    public int IdUsrType { get; set; }
-
-    public string UsrTypeName { get; set; }
+    [Map("id_usr_type")]
+    public int Id { get; set; }
+    [Map("usr_type_name")]
+    public string Name { get; set; }
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

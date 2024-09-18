@@ -7,12 +7,13 @@ namespace SKL.Models;
 
 public partial class Shift
 {
-    public int IdShift { get; set; }
-
-    public string ShiftName { get; set; }
-
+    [Map("id_shift")]
+    public int Id { get; set; }
+    [Map("shift_name")]
+    public string Name { get; set; }
+    [Map("start")]
     public string Start { get; set; }
-
+    [Map("end")]
     public string End { get; set; }
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();

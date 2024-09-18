@@ -7,9 +7,10 @@ namespace SKL.Models;
 
 public partial class Position
 {
-    public int IdPosition { get; set; }
-
-    public string PositionName { get; set; }
+    [Map("id_position")]
+    public int Id { get; set; }
+    [Map("position_name")]
+    public string Name { get; set; }
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

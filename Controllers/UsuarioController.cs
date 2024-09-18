@@ -11,11 +11,14 @@ namespace SKL.Controllers
     {
         private readonly IHubContext<SystemHub> _context;
         private readonly IUserServices _service;
+        private readonly ISKLServices _Sklservice;
 
-        public UsuarioController(IHubContext<SystemHub> context, IUserServices service)
+
+        public UsuarioController(IHubContext<SystemHub> context, IUserServices service, ISKLServices sklservice)
         {
             _context = context;
             _service = service;
+            _Sklservice = sklservice;
         }
 
 
@@ -45,8 +48,16 @@ namespace SKL.Controllers
         [HttpPost]
         public async Task<IActionResult> NewUsuarioPopUp()
         {
-            var departamentos = await _service.GetSKLDepartmentsAsync(); // Método que devuelve una lista con {Id, Nombre}
+            var departamentos = await _Sklservice.GetSKLDepartmentsAsync();
+            var usertypes = await _Sklservice.GetSKLUserTypeAsync();
+            var shifts = await _Sklservice.GetSKLShiftsAsync();
+            var positions = await _Sklservice.GetSKLPositionAsync();
+
+
             ViewBag.Departamentos = departamentos;
+            ViewBag.UserTypes = usertypes;
+            ViewBag.Shifts = shifts;
+            ViewBag.Positions = positions;
 
             ViewData["Title"] = "Nuevo Usuario";
             ViewBag.Action = "Insert";

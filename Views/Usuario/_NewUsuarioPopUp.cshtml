@@ -35,15 +35,15 @@
             </div>
         </div>
         <div class="row g-2">
-@*             <div class="col mb-0">
-                <label asp-for="IdDepartment" class="form-label">Departamento</label>
-                <select asp-for="IdDepartment" class="form-control">
-                    @foreach (var dep in ViewBag.Departamentos)
+            <div class="col mb-0">
+                <label asp-for="IdRole" class="form-label">Roles</label>
+                <select asp-for="IdRole" class="form-control">
+                    @foreach (var role in ViewBag.UserTypes)
                     {
-                        <option value="@dep.Id">@dep.Name</option>
+                        <option value="@role.Id">@role.Name</option>
                     }
                 </select>
-            </div> *@
+            </div>
             <div class="col mb-0">
                 <label asp-for="IdDepartment" class="form-label">Departamento</label>
                 <select asp-for="IdDepartment" class="form-control">
@@ -52,6 +52,38 @@
                         <option value="@dep.Id">@dep.Name</option>
                     }
                 </select>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col mb-0">
+                <label asp-for="IdShift" class="form-label">Turno</label>
+                <select asp-for="IdShift" class="form-control">
+                    @foreach (var shi in ViewBag.Shifts)
+                    {
+                        <option value="@shi.Id">@shi.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col mb-0">
+                <label asp-for="IdPosition" class="form-label">Posicion</label>
+                <select asp-for="IdPosition" class="form-control">
+                    @foreach (var pos in ViewBag.Positions)
+                    {
+                        <option value="@pos.Id">@pos.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label asp-for="EmpNo" class="form-label">Numero de Empleado</label>
+                <input asp-for="EmpNo" class="form-control" type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label asp-for="UserImage" class="form-label">Multiple files input example</label>
+                <input class="form-control" type="file" asp-for="UserImage" multiple />
             </div>
         </div>
     </div>

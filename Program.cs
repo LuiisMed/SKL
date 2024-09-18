@@ -23,9 +23,11 @@ builder.Services.AddScoped<SkipLevelContext>(s => new(SkipLevelContext));
 
 //Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ISKLRepositories, SKLRepository>();
 
 //Services
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<ISKLServices, SKLServices>();
 
 builder.Services.AddHttpContextAccessor();
 

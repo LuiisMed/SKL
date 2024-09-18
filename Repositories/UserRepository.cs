@@ -18,10 +18,6 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Department>> GetSKLDepartmentsAsync()
-    => await _context.ExecuteStoredProcedureQueryAsync<Department>(_storedProcedure,
-        new { Option = "GET_DEPARTMENT" });
-
     public async Task<IEnumerable<Usuario>> GetSKLUsuarios()
 => await _context.ExecuteStoredProcedureQueryAsync<Usuario>(_storedProcedure,
     new { Option = "GET_USUARIOS" });

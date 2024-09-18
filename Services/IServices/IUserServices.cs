@@ -7,7 +7,6 @@ public interface IUserServices
 {
     event EventHandler? DataChangeEventHandler;
 
-    Task<IEnumerable<Department>> GetSKLDepartmentsAsync();
     Task<IEnumerable<Usuario>> GetSKLUsuarios();
     Task<Usuario> GetSKLUsuarioAsync(int idusr);
     Task<IEnumerable<Login>> GetSKLCredentials();
