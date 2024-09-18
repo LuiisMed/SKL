@@ -163,59 +163,6 @@ namespace SKL.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(Usuario data, IFormFile imageFile)
-        {
-            var (error, message) = (false, "");
-            if (ModelState.IsValid)
-            {
-                var existingUser = await _service.GetSKLUsuarioAsync(data.Id);
-                if (existingUser == null)
-                {
-                    return NotFound();
-                }
-
-                if (imageFile != null && imageFile.Length > 0)
-                {
-                    // Guardar la nueva imagen en el servidor
-                    var fileName = Path.GetFileName(imageFile.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await imageFile.CopyToAsync(stream);
-                    }
-
-                    // Actualizar la ruta de la imagen en el modelo
-                    data.ImagePath = $"/images/{fileName}";
-                }
-                else
-                {
-                    // Mantener la imagen existente
-                    data.ImagePath = existingUser.ImagePath;
-                }
-
-                // Actualizar otros campos del usuario
-                existingUser.Name = data.Name;
-                existingUser.Email = data.Email;
-                // Otros campos que necesites actualizar
-
-                _service.DataChangeEventHandler += RefreshUserGrid;
-                (error, message) = await _service.UpdateSKLUsuariosAsync(existingUser);
-            }
-
-            var jsonResult = Json(new
-            {
-                Status = error ? "error" : "success",
-                Message = error ? message : "Usuario actualizado exitosamente.",
-                Icon = error ? "error" : "success"
-            });
-
-            return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                ? jsonResult
-                : RedirectToAction("Error");
-        }
-
-
         public async Task<IActionResult> Update(Usuario data)
         {
             var (error, message) = (false, "");
