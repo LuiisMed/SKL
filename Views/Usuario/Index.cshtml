@@ -41,6 +41,7 @@
         $("#btnNew").click(function () {
             $.ajax({
                 url: '@Url.Action("NewUsuarioPopUp", "Usuario")',
+                type: 'POST',
                 success: function (data) {
                     $('#ModalWindow .modal-content').html(data);
                     $('#ModalWindow').modal('show');

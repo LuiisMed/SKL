@@ -1,4 +1,8 @@
-﻿@model NewUsuarioViewModel
+﻿@* @model NewUsuarioViewModel
+ *@
+
+@model SKL.Models.Usuario
+
 @{
 
 }
@@ -11,26 +15,41 @@
             data-bs-dismiss="modal"
             aria-label="Close"></button>
 </div>
-<form id="form1" asp-controller="Usuario" asp-action="@ViewBag.Action" role="form" method="post">
-    <input type="hidden" asp-for="@Model.Usuario.IdUser" />
+<form id="form1" asp-controller="Usuario" asp-action="Insert" role="form" method="post">
+    <input type="hidden" asp-for="IdUser" />
     <div class="modal-body">
-        <div class="row">
+        <div class="row"> 
             <div class="col mb-3">
-                <label asp-for="@Model.Usuario.Name" class="form-label" style="padding-top:5px;"></label>
-                <input asp-for="@Model.Usuario.Name" class="form-control" />
+                <label asp-for="Name" class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" type="text" />
             </div>
         </div>
         <div class="row g-2">
             <div class="col mb-0">
-                <label for="emailBasic" class="form-label">Email</label>
-                <input type="text" id="emailBasic" class="form-control" placeholder="xxxx@xxx.xx" />
+                <label asp-for="UserName" class="form-label">UserName</label>
+                <input asp-for="UserName" class="form-control" type="text" />
             </div>
             <div class="col mb-0">
-                <label class="form-label" for="department">Departamento:</label>
-                <select id="department" class="form-control" name="department">
-                    @foreach (var department in Model.Departments)
+                <label asp-for="UserPassword" class="form-label">Password</label>
+                <input asp-for="UserPassword" class="form-control" type="text" />
+            </div>
+        </div>
+        <div class="row g-2">
+@*             <div class="col mb-0">
+                <label asp-for="IdDepartment" class="form-label">Departamento</label>
+                <select asp-for="IdDepartment" class="form-control">
+                    @foreach (var dep in ViewBag.Departamentos)
                     {
-                        <option value="@department.Id">@department.Name</option>
+                        <option value="@dep.Id">@dep.Name</option>
+                    }
+                </select>
+            </div> *@
+            <div class="col mb-0">
+                <label asp-for="IdDepartment" class="form-label">Departamento</label>
+                <select asp-for="IdDepartment" class="form-control">
+                    @foreach (var dep in ViewBag.Departamentos)
+                    {
+                        <option value="@dep.Id">@dep.Name</option>
                     }
                 </select>
             </div>

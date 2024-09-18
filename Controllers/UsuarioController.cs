@@ -24,30 +24,42 @@ namespace SKL.Controllers
             return View();
         }
 
+        //public async Task<IActionResult> NewUsuarioPopUp()
+        //{
+        //    ViewData["Title"] = $"New Usuario";
+        //    ViewBag.Action = "Insert";
+
+        //    // Obtener la lista de departamentos del servicio
+        //    var departments = await _service.GetSKLDepartmentsAsync();
+
+        //    // Crear un modelo que incluya tanto el usuario como la lista de departamentos
+        //    var viewModel = new NewUsuarioViewModel
+        //    {
+        //        Usuario = new Usuario(),
+        //        Departments = departments
+        //    };
+
+        //    return PartialView("_NewUsuarioPopUp", viewModel);
+        //}
+
+        [HttpPost]
         public async Task<IActionResult> NewUsuarioPopUp()
         {
-            ViewData["Title"] = $"New Usuario";
+            var departamentos = await _service.GetSKLDepartmentsAsync(); // Método que devuelve una lista con {Id, Nombre}
+            ViewBag.Departamentos = departamentos;
+
+            ViewData["Title"] = "Nuevo Usuario";
             ViewBag.Action = "Insert";
-
-            // Obtener la lista de departamentos del servicio
-            var departments = await _service.GetSKLDepartmentsAsync();
-
-            // Crear un modelo que incluya tanto el usuario como la lista de departamentos
-            var viewModel = new NewUsuarioViewModel
-            {
-                Usuario = new Usuario(),
-                Departments = departments
-            };
-
-            return PartialView("_NewUsuarioPopUp", viewModel);
+            return PartialView("_NewUsuarioPopUp", new Usuario());
         }
 
+
+        [HttpPost]
         public async Task<IActionResult> Insert(Usuario data)
         {
             var (error, message) = (false, "");
             if (ModelState.IsValid)
             {
-                // Inserta el usuario con su departamento asignado por ID
                 _service.DataChangeEventHandler += RefreshUserGrid;
                 (error, message) = await _service.InsertSKLUsuariosAsync(data);
             }
