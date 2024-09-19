@@ -19,7 +19,6 @@ public class SKLRepository : ISKLRepositories
     }
 
     /*--------------------------------DEPARTMENTS----------------------------------*/
-
     public async Task<IEnumerable<Department>> GetSKLDepartmentsAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<Department>(_storedProcedure,
     new { Option = "GET_DEPARTMENT" });
@@ -55,21 +54,18 @@ public class SKLRepository : ISKLRepositories
             });
     }
 
-    public async Task<(bool, string)> DeleteSKLDepartmentsAsync(int idDepartment)
+    public async Task<(bool, string)> DeleteSKLDepartmentsAsync(int Id)
     {
         _context.DataChangeEventHandler += DataChangeEventHandler;
         return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
             new
             {
                 Option = "DEL_DEPARTMENT",
-                Param1 = idDepartment
+                Param1 = Id
             });
     }
-
     /*------------------------------------------------------------------------------*/
     /*-----------------------------------USERTYPE-----------------------------------*/
-
-
     public async Task<IEnumerable<UserType>> GetSKLUserTypesAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<UserType>(_storedProcedure,
     new { Option = "GET_USERTYPE" });
@@ -115,10 +111,8 @@ public class SKLRepository : ISKLRepositories
                 Param1 = idUsertype
             });
     }
-
     /*------------------------------------------------------------------------------*/
     /*------------------------------------SHIFT-------------------------------------*/
-
     public async Task<IEnumerable<Shift>> GetSKLShiftsAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<Shift>(_storedProcedure,
     new { Option = "GET_SHIFTS" });
@@ -168,12 +162,8 @@ public class SKLRepository : ISKLRepositories
                 Param1 = idShift
             });
     }
-
-
     /*------------------------------------------------------------------------------*/
     /*----------------------------------POSITION------------------------------------*/
-
-
     public async Task<IEnumerable<Position>> GetSKLPositionsAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<Position>(_storedProcedure,
     new { Option = "GET_POSITION" });
@@ -218,6 +208,106 @@ public class SKLRepository : ISKLRepositories
             {
                 Option = "DEL_POSITION",
                 Param1 = idPosition
+            });
+    }
+    /*------------------------------------------------------------------------------*/
+    /*----------------------------------ASPECTS------------------------------------*/
+    public async Task<IEnumerable<Aspect>> GetSKLAspectsAsync()
+    => await _context.ExecuteStoredProcedureQueryAsync<Aspect>(_storedProcedure,
+    new { Option = "GET_ASPECT" });
+
+    public async Task<Aspect> GetSKLAspectAsync(int idAspect)
+    {
+        var list = await _context.ExecuteStoredProcedureQueryAsync<Aspect>(_storedProcedure,
+            new { Option = "GET_ONE_ASPECT", Param1 = idAspect });
+        return list.FirstOrDefault() ?? new() { Name = "" };
+    }
+
+    public async Task<(bool, string)> InsertSKLAspectAsync(Aspect aspect)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_ASPECT",
+                Param1 = aspect.Name
+
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLAspectAsync(Aspect aspect)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_ASPECT",
+                Param1 = aspect.Id,
+                Param2 = aspect.Name
+
+            });
+    }
+
+    public async Task<(bool, string)> DeleteSKLAspectAsync(int idAspect)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "DEL_ASPECT",
+                Param1 = idAspect
+            });
+    }
+    /*------------------------------------------------------------------------------*/
+    /*------------------------------------FASE--------------------------------------*/
+    public async Task<IEnumerable<Fase>> GetSKLFasesAsync()
+    => await _context.ExecuteStoredProcedureQueryAsync<Fase>(_storedProcedure,
+    new { Option = "GET_FASE" });
+
+    public async Task<Fase> GetSKLFaseAsync(int idFase)
+    {
+        var list = await _context.ExecuteStoredProcedureQueryAsync<Fase>(_storedProcedure,
+            new { Option = "GET_ONE_FASE", Param1 = idFase });
+        return list.FirstOrDefault() ?? new() { Name = "" };
+    }
+
+    public async Task<(bool, string)> InsertSKLFaseAsync(Fase fase)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_FASE",
+                Param1 = fase.Name,
+                Param2 = fase.Start,
+                Param3 = fase.End
+
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLFaseAsync(Fase fase)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_FASE",
+                Param1 = fase.Id,
+                Param2 = fase.Name,
+                Param3 = fase.Start,
+                Param4 = fase.End
+
+            });
+    }
+
+    public async Task<(bool, string)> DeleteSKLFaseAsync(int idFase)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "DEL_FASE",
+                Param1 = idFase
             });
     }
 

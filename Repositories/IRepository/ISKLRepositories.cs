@@ -34,6 +34,20 @@ public interface ISKLRepositories
     Task<(bool, string)> InsertSKLPositionAsync(Position position);
     Task<(bool, string)> UpdateSKLPositionAsync(Position position);
     Task<(bool, string)> DeleteSKLPositionAsync(int idPosition);
+    /*---------------------------------------------------------------------------*/
+    /*----------------------------------ASPECTS------------------------------------*/
+    Task<IEnumerable<Aspect>> GetSKLAspectsAsync();
+    Task<Aspect> GetSKLAspectAsync(int idAspect);
+    Task<(bool, string)> InsertSKLAspectAsync(Aspect aspect);
+    Task<(bool, string)> UpdateSKLAspectAsync(Aspect aspect);
+    Task<(bool, string)> DeleteSKLAspectAsync(int idAspect);
+    /*---------------------------------------------------------------------------*/
+    /*------------------------------------FASE--------------------------------------*/
+    Task<IEnumerable<Fase>> GetSKLFasesAsync();
+    Task<Fase> GetSKLFaseAsync(int idFase);
+    Task<(bool, string)> InsertSKLFaseAsync(Fase fase);
+    Task<(bool, string)> UpdateSKLFaseAsync(Fase fase);
+    Task<(bool, string)> DeleteSKLFaseAsync(int idFase);
 
 
 }

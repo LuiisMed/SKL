@@ -83,7 +83,7 @@
 
                     <!-- Roles -->
                     <li class="menu-item">
-                        <a asp-controller="Home" asp-action="Privacy" class="menu-link">
+                        <a asp-controller="Usertype" asp-action="Index" class="menu-link">
                             <i class="menu-icon tf-icons bx bxs-user-badge"></i>
                             <div data-i18n="Layouts">Roles </div>
                         </a>
@@ -91,7 +91,7 @@
 
                     <!-- Departamentos -->
                     <li class="menu-item">
-                        <a asp-controller="Home" asp-action="Privacy" class="menu-link">
+                        <a asp-controller="Department" asp-action="Index" class="menu-link">
                             <i class="menu-icon tf-icons bx bxs-business"></i>
                             <div data-i18n="Layouts">Departamentos </div>
                         </a>
@@ -99,7 +99,7 @@
 
                     <!-- Posiciones -->
                     <li class="menu-item">
-                        <a asp-controller="Home" asp-action="Privacy" class="menu-link">
+                        <a asp-controller="Position" asp-action="Index" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-briefcase"></i>
                             <div data-i18n="Layouts">Posiciones </div>
                         </a>
@@ -115,7 +115,7 @@
 
                     <!-- Turnos -->
                     <li class="menu-item">
-                        <a asp-controller="Home" asp-action="Privacy" class="menu-link">
+                        <a asp-controller="Shift" asp-action="Index" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-time"></i>
                             <div data-i18n="Layouts">Turnos </div>
                         </a>
@@ -163,11 +163,11 @@
 
                                             if (!string.IsNullOrEmpty(imagePath))
                                             {
-                                                <img id="miImagen" src="@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
+                                                <img src="@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                             }
                                             else
                                             {
-                                                <p>No image available.</p>
+                                                <img src="~/assets/img/avatars/Unknkow.png" alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                             }
                                         }
 
@@ -185,11 +185,11 @@
 
                                                             if (!string.IsNullOrEmpty(imagePath))
                                                             {
-                                                                <img id="miImagen" src="@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
+                                                                <img src="@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                                             }
                                                             else
                                                             {
-                                                                <p>No image available.</p>
+                                                                <img src="~/assets/img/avatars/Unknkow.png" alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                                             }
                                                         }
                                                     </div>
@@ -280,21 +280,6 @@
     <!-- Page JS -->
     <script src="~/assets/js/dashboards-analytics.js"></script>
 
-    <script>
-        document.getElementById('miImagen').onerror = function () {
-            this.src = '../assets/img/avatars/Unknkow.png';
-            this.alt = 'Imagen alternativa cargada porque la original no se encontró';
-        };
-
-        document.addEventListener("DOMContentLoaded", function () {
-            var img = document.getElementById('miImagen');
-
-            // Verificar si el src está vacío o incorrecto
-            if (!img.src || img.src.includes('../assets/img/avatars/') || img.src === window.location.href) {
-                img.src = '../assets/img/avatars/Unknkow.png';
-            }
-        });
-    </script>
 
 
     

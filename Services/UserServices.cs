@@ -26,16 +26,6 @@ public class UserServices : IUserServices
     public async Task<IEnumerable<Login>> GetSKLCredentials()
     => await _repository.GetSKLCredentials();
 
-    public async Task<(bool, string)> SaveSKLUsuariosAsync(Usuario usuario)
-    {
-        _repository.DataChangeEventHandler += DataChangeEventHandler;
-        Func<Usuario, Task<(bool, string)>> method = usuario.IdUser == 0
-            ? _repository.InsertSKLUsuariosAsync
-            : _repository.UpdateSKLUsuariosAsync;
-        return await method.Invoke(usuario);
-    }
-
-
     public async Task<(bool, string)> InsertSKLUsuariosAsync(Usuario data)
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;
@@ -53,5 +43,14 @@ public class UserServices : IUserServices
         _repository.DataChangeEventHandler += DataChangeEventHandler;
         return await _repository.DeleteSKLUsuariosAsync(idusr);
     }
+
+    //public async Task<(bool, string)> SaveSKLUsuariosAsync(Usuario usuario)
+    //{
+    //    _repository.DataChangeEventHandler += DataChangeEventHandler;
+    //    Func<Usuario, Task<(bool, string)>> method = usuario.IdUser == 0
+    //        ? _repository.InsertSKLUsuariosAsync
+    //        : _repository.UpdateSKLUsuariosAsync;
+    //    return await method.Invoke(usuario);
+    //}
 
 }

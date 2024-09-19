@@ -7,9 +7,10 @@ namespace SKL.Models;
 
 public partial class Aspect
 {
-    public int IdAspects { get; set; }
-
-    public string AspectsName { get; set; }
+    [Map("id_aspects")]
+    public int Id { get; set; }
+    [Map("aspects_name")]
+    public string Name { get; set; }
 
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 }

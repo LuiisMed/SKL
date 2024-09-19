@@ -31,9 +31,9 @@ namespace SKL.Controllers
         public async Task<IActionResult> NewUsuarioPopUp()
         {
             var departamentos = await _Sklservice.GetSKLDepartmentsAsync();
-            var usertypes = await _Sklservice.GetSKLUserTypeAsync();
+            var usertypes = await _Sklservice.GetSKLUserTypesAsync();
             var shifts = await _Sklservice.GetSKLShiftsAsync();
-            var positions = await _Sklservice.GetSKLPositionAsync();
+            var positions = await _Sklservice.GetSKLPositionsAsync();
 
 
             ViewBag.Departamentos = departamentos;
@@ -51,7 +51,7 @@ namespace SKL.Controllers
         public async Task<IActionResult> Insert(Usuario data, IFormFile imageFile)
         {
             var (error, message) = (false, "");
-            if (ModelState.IsValid)
+            if (data.IdUser == 0)
             {
                 if (imageFile != null && imageFile.Length > 0)
                 {
@@ -147,9 +147,9 @@ namespace SKL.Controllers
         public async Task<IActionResult> UpdateUsuarioPopUp(int idusr)
         {
             var departamentos = await _Sklservice.GetSKLDepartmentsAsync();
-            var usertypes = await _Sklservice.GetSKLUserTypeAsync();
+            var usertypes = await _Sklservice.GetSKLUserTypesAsync();
             var shifts = await _Sklservice.GetSKLShiftsAsync();
-            var positions = await _Sklservice.GetSKLPositionAsync();
+            var positions = await _Sklservice.GetSKLPositionsAsync();
             var model = await _service.GetSKLUsuarioAsync(idusr);
 
 
@@ -249,11 +249,15 @@ namespace SKL.Controllers
             var existingUser = await _service.GetSKLUsuarioAsync(model.IdUser);
             if (existingUser != null)
             {
-                // Eliminar la imagen del servidor si existe
-                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingUser.ImagePath.TrimStart('/'));
-                if (System.IO.File.Exists(imagePath))
+                // Verificar si el usuario tiene una imagen antes de intentar eliminarla
+                if (!string.IsNullOrWhiteSpace(existingUser.ImagePath))
                 {
-                    System.IO.File.Delete(imagePath);
+                    // Eliminar la imagen del servidor si existe
+                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingUser.ImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
                 }
 
                 // Eliminar el usuario
@@ -277,6 +281,7 @@ namespace SKL.Controllers
                 ? jsonResult
                 : RedirectToAction("Error");
         }
+
 
 
 

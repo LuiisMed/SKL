@@ -1,0 +1,94 @@
+﻿@* @model NewUsuarioViewModel
+ *@
+
+@model SKL.Models.UserType
+
+@{
+
+}
+<div class="modal-header">
+    <h5 class="modal-title" id="">@ViewData["Title"]</h5>
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"></button>
+</div>
+<form id="form1" asp-controller="Usertype" asp-action="Update" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <div class="modal-body">
+        <div class="row">
+            <div class="col mb-3">
+                <label asp-for="Name" class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" type="text" />
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            Close
+        </button>
+        <button type="submit" id="submit" class="btn btn-primary">Save changes</button>
+    </div>
+</form>
+
+<script>
+    $(function () {
+        var formProvider = $('#form1');
+        formProvider.submit(function (e) {
+            e.preventDefault();
+            formProvider.validate();
+            if (formProvider.valid()) {
+                var form = $(this);
+                $.post(form.attr('action'), form.serialize(), function (res) {
+                    if (res.status === 'success') {
+                        // Show success toast
+                        showToast('bg-success text-white', 'bx-check-circle', 'Success', res.message);
+                        // Hide modal window
+                        $('#ModalWindow').modal("hide");
+                    } else if (res.status === 'error') {
+                        // Show error toast
+                        showToast('bg-danger text-white', 'bx-x-circle', 'Error', res.message);
+                    }
+                });
+            }
+        });
+
+        // Function to display toast by adding and removing "show" class
+        function showToast(type, icon, header, message) {
+            var toastElement = `
+                                    <div class="bs-toast toast toast-placement-ex m-2 bg-success top-0 start-0 fade show ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                                    <div class="toast-header">
+                                        <i class="bx ${icon} me-2"></i>
+                                        <strong class="me-auto">${header}</strong>
+                                        <small class="text-white">Just now</small>
+                                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                    </div>
+                                    <div class="toast-body">
+                                        ${message}
+                                    </div>
+                                </div>`;
+
+            var toastContainer = $('#toastContainer');
+            if (!toastContainer.length) {
+                toastContainer = $('<div id="toastContainer" style="position: fixed; top: 0; left: 0; z-index: 9999;"></div>');
+                $('body').append(toastContainer);
+            }
+
+            var toast = $(toastElement);
+            toastContainer.append(toast);
+
+            // Show toast (by adding "show" class)
+            setTimeout(function () {
+                toast.addClass('show');
+            }, 100); // Slight delay to allow CSS transition
+
+            // Hide the toast after 3 seconds (by removing "show" class)
+            setTimeout(function () {
+                toast.removeClass('show');
+                setTimeout(function () {
+                    toast.remove(); // Remove from DOM after transition ends
+                }, 500); // Wait for the hide transition to complete
+            }, 3000);
+        }
+    });
+</script>

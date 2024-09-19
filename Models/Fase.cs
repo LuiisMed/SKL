@@ -7,13 +7,14 @@ namespace SKL.Models;
 
 public partial class Fase
 {
-    public int IdFase { get; set; }
-
-    public string FaseName { get; set; }
-
-    public DateTime FaseStartdate { get; set; }
-
-    public DateTime FaseEnddate { get; set; }
+    [Map("id_fase")]
+    public int Id { get; set; }
+    [Map("fase_name")]
+    public string Name { get; set; }
+    [Map("fase_startdate")]
+    public DateTime Start { get; set; }
+    [Map("fase_enddate")]
+    public DateTime End { get; set; }
 
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 }
