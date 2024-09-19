@@ -50,7 +50,13 @@ public class CredencialesController : Controller
         {
             new Claim(ClaimTypes.Name, usuario_encontrado.Name),
             new Claim(ClaimTypes.Role, usuario_encontrado.RolName)
+            
         };
+
+        if (!string.IsNullOrEmpty(usuario_encontrado.ImagePath))
+        {
+            claims.Add(new Claim("imageFile", usuario_encontrado.ImagePath));
+        }
 
         ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         AuthenticationProperties properties = new AuthenticationProperties()

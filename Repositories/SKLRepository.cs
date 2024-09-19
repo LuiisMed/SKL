@@ -18,19 +18,207 @@ public class SKLRepository : ISKLRepositories
         _context = context;
     }
 
+    /*--------------------------------DEPARTMENTS----------------------------------*/
+
     public async Task<IEnumerable<Department>> GetSKLDepartmentsAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<Department>(_storedProcedure,
     new { Option = "GET_DEPARTMENT" });
 
-    public async Task<IEnumerable<UserType>> GetSKLUserTypeAsync()
+    public async Task<Department> GetSKLDepartmentAsync(int idDepartment)
+    {
+        var list = await _context.ExecuteStoredProcedureQueryAsync<Department>(_storedProcedure,
+            new { Option = "GET_ONE_DEPARTMENT", Param1 = idDepartment });
+        return list.FirstOrDefault() ?? new() { Name = "" };
+    }
+
+    public async Task<(bool, string)> InsertSKLDepartmentsAsync(Department department)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_DEPARTMENT",
+                Param1 = department.Name
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLDepartmentsAsync(Department department)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_DEPARTMENT",
+                Param1 = department.Id,
+                Param2 = department.Name
+
+            });
+    }
+
+    public async Task<(bool, string)> DeleteSKLDepartmentsAsync(int idDepartment)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "DEL_DEPARTMENT",
+                Param1 = idDepartment
+            });
+    }
+
+    /*------------------------------------------------------------------------------*/
+    /*-----------------------------------USERTYPE-----------------------------------*/
+
+
+    public async Task<IEnumerable<UserType>> GetSKLUserTypesAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<UserType>(_storedProcedure,
     new { Option = "GET_USERTYPE" });
+
+    public async Task<UserType> GetSKLUsertypeAsync(int idUsertype)
+    {
+        var list = await _context.ExecuteStoredProcedureQueryAsync<UserType>(_storedProcedure,
+            new { Option = "GET_ONE_USERTYPE", Param1 = idUsertype });
+        return list.FirstOrDefault() ?? new() { Name = "" };
+    }
+
+    public async Task<(bool, string)> InsertSKLUsertypesAsync(UserType userType)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_USERTYPE",
+                Param1 = userType.Name
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLUsertypesAsync(UserType userType)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_USERTYPE",
+                Param1 = userType.Id,
+                Param2 = userType.Name
+
+            });
+    }
+
+    public async Task<(bool, string)> DeleteSKLUsertypesAsync(int idUsertype)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "DEL_USERTYPE",
+                Param1 = idUsertype
+            });
+    }
+
+    /*------------------------------------------------------------------------------*/
+    /*------------------------------------SHIFT-------------------------------------*/
 
     public async Task<IEnumerable<Shift>> GetSKLShiftsAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<Shift>(_storedProcedure,
     new { Option = "GET_SHIFTS" });
-    public async Task<IEnumerable<Position>> GetSKLPositionAsync()
+
+    public async Task<Shift> GetSKLShiftAsync(int idShift)
+    {
+        var list = await _context.ExecuteStoredProcedureQueryAsync<Shift>(_storedProcedure,
+            new { Option = "GET_ONE_SHIFT", Param1 = idShift });
+        return list.FirstOrDefault() ?? new() { Name = "" };
+    }
+
+    public async Task<(bool, string)> InsertSKLShiftsAsync(Shift shift)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_SHIFTS",
+                Param1 = shift.Name,
+                Param2 = shift.Start,
+                Param3 = shift.End
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLShiftsAsync(Shift shift)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_SHIFTS",
+                Param1 = shift.Id,
+                Param2 = shift.Name,
+                Param3 = shift.Start,
+                Param4 = shift.End
+
+            });
+    }
+
+    public async Task<(bool, string)> DeleteSKLShiftsAsync(int idShift)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "DEL_SHIFTS",
+                Param1 = idShift
+            });
+    }
+
+
+    /*------------------------------------------------------------------------------*/
+    /*----------------------------------POSITION------------------------------------*/
+
+
+    public async Task<IEnumerable<Position>> GetSKLPositionsAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<Position>(_storedProcedure,
     new { Option = "GET_POSITION" });
+
+    public async Task<Position> GetSKLPositionAsync(int idPosition)
+    {
+        var list = await _context.ExecuteStoredProcedureQueryAsync<Position>(_storedProcedure,
+            new { Option = "GET_ONE_POSITION", Param1 = idPosition });
+        return list.FirstOrDefault() ?? new() { Name = "" };
+    }
+
+    public async Task<(bool, string)> InsertSKLPositionAsync(Position position)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_POSITION",
+                Param1 = position.Name
+
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLPositionAsync(Position position)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_POSITION",
+                Param1 = position.Id,
+                Param2 = position.Name
+
+            });
+    }
+
+    public async Task<(bool, string)> DeleteSKLPositionAsync(int idPosition)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "DEL_POSITION",
+                Param1 = idPosition
+            });
+    }
 
 }

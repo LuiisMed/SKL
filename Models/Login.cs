@@ -14,5 +14,8 @@ namespace SKL.Models
         public int Rol { get; set; }
         [Map("usr_type_name")]
         public string RolName { get; set; }
+        [Map("usr_img")]
+        public string ImagePath { get; set; }
+
     }
 }
