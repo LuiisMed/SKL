@@ -110,9 +110,29 @@ namespace SKL.Controllers
                 : RedirectToAction("Error");
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> FasesJSON()
+        //=> Ok(await _Sklservice.GetSKLFasesAsync());
+
         [HttpGet]
         public async Task<IActionResult> FasesJSON()
-        => Ok(await _Sklservice.GetSKLFasesAsync());
+        {
+            var fases = await _Sklservice.GetSKLFasesAsync();
+
+            // Proyectar a un objeto anónimo con las fechas formateadas
+            var fasesFormateadas = fases.Select(f => new
+            {
+                f.Id,
+                f.Name,
+                f.CurrentDate,
+                Start = f.Start.ToString("yyyy-MM-dd"), 
+                End = f.End.ToString("yyyy-MM-dd")      
+            });
+
+            // Devolver el resultado como JSON
+            return Json(fasesFormateadas);
+        }
+
 
         private async void RefreshFasesGrid(object? sender, EventArgs e)
             => await _context.Clients.All.SendAsync("RefreshFasesGrid");

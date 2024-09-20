@@ -23,13 +23,13 @@
                 <label asp-for="Name" class="form-label">Nombre</label>
                 <input asp-for="Name" class="form-control" type="text" />
             </div>
-            <div class="col mb-3">
-                <label asp-for="Start" class="form-label">Inicio de Fase</label>
-                <input asp-for="Start" class="form-control" type="text" />
+            <div class="mb-3 mb-3">
+                <label asp-for="Start" class="col-md-2 col-form-label">Date</label>
+                <input class="form-control" value="CurrentDate" type="date" asp-for="Start" />
             </div>
-            <div class="col mb-3">
-                <label asp-for="End" class="form-label">Cierre de Fase</label>
-                <input asp-for="End" class="form-control" type="text" />
+            <div class="mb-3 mb-3">
+                <label asp-for="End" class="col-md-2 col-form-label">Date</label>
+                <input class="form-control" value="CurrentDate" type="date" asp-for="End" />
             </div>
         </div>
     </div>
