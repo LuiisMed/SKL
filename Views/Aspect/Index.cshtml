@@ -1,0 +1,191 @@
+﻿
+
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4">Aspectos</h4>
+        <button type="button" id="btnNew" class="btn btn-primary  btn-sm" style="width:90px" title="New Position"><i class="fa fa-save" aria-hidden="true"></i> New</button>
+
+        <hr class="my-5" />
+
+        <div id="myGrid" style="height: 600px" class="ag-theme-quartz"></div>
+
+    </div>
+    <!-- / Content -->
+
+    <div class="content-backdrop fade"></div>
+</div>
+
+<!-- Modal vacío que se llenará dinámicamente -->
+<div id="ModalWindow" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- Aquí se cargará el contenido dinámicamente -->
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @*     <script src="~/lib/paramquery-pro/jsZip-2.5.0/jszip.min.js"></script>
+    <script src="~/lib/paramquery-pro/jszip-utils-0.0.2/jszip-utils.min.js"></script>
+    <script src="~/lib/paramquery-pro/pqgrid.min.js"></script>
+    <script src="~/lib/paramquery-pro/localize/pq-localize-en.js"></script> *@
+    <script src="~/lib/FileSaver/dist/FileSaver.min.js"></script>
+
+    <script>
+
+        var minRowHeight = 25;
+        var currentRowHeight;
+
+        let gridApi;
+
+        const gridOptions = {
+            columnDefs: [
+                { field: "id", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "name", headerName: "Nombre", minWidtha: 150 },
+                {
+                    headerName: "Acciones",
+                    field: "actions",
+                    cellRenderer: function (params) {
+                        // Aquí puedes agregar HTML para los botones
+                        return `
+
+                                                                    <button type="button" onclick="handleDelete('${params.data.id}')" class="btn btn-icon btn-danger">
+                                                                      <span class="tf-icons bx bx-trash"></span>
+                                                                    </button>
+                                                                    <button type="button" onclick="handleUpdate('${params.data.id}')" class="btn btn-icon btn-primary">
+                                                                      <span class="tf-icons bx bx-pen"></span>
+                                                                    </button>
+
+                                                    `;
+                    },
+                    minWidth: 150
+                }
+            ],
+            rowData: null,
+            autoSizeStrategy: {
+                type: "fitGridWidth",
+            },
+            onGridReady: (params) => {
+                gridApi = params.api; // Obtener la instancia de gridApi
+                minRowHeight = params.api.getSizesForCurrentTheme().rowHeight;
+                currentRowHeight = minRowHeight;
+            },
+
+            defaultColDef: {
+                filter: "agTextColumnFilter",
+                floatingFilter: true,
+            },
+            rowSelection: "multiple",
+            suppressRowClickSelection: true,
+            pagination: true,
+            paginationPageSize: 10,
+            paginationPageSizeSelector: [10, 25, 50],
+        };
+
+
+
+        // Función para abrir el popup desde el controlador y cargarlo en el modal
+        $("#btnNew").click(function () {
+            $.ajax({
+                url: '@Url.Action("NewAspectPopUp", "Aspect")',
+                type: 'POST',
+                success: function (data) {
+                    $('#ModalWindow .modal-content').html(data);
+                    $('#ModalWindow').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar el contenido del modal:", status, error);
+                    alert("Error al cargar el contenido del modal.");
+                }
+            });
+        });
+
+        function handleDelete(id) {
+            $.ajax({
+                url: '@Url.Action("DeleteAspectPopUp", "Aspect")' + '?idAspect=' + id,  // Llama a la acción de eliminación
+                type: 'POST',
+                success: function (data) {
+                    $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
+                    $('#ModalWindow').modal('show');  // Muestra el modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar el contenido del modal:", status, error);
+                    alert("Error al cargar el contenido del modal.");
+                }
+            });
+        }
+
+        function handleUpdate(id) {
+            $.ajax({
+                url: '@Url.Action("UpdateAspectPopUp", "Aspect")' + '?idAspect=' + id,  // Llama a la acción de eliminación
+                type: 'POST',
+                success: function (data) {
+                    $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
+                    $('#ModalWindow').modal('show');  // Muestra el modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar el contenido del modal:", status, error);
+                    alert("Error al cargar el contenido del modal.");
+                }
+            });
+        }
+
+
+        // setup the grid after the page has finished loading
+        document.addEventListener("DOMContentLoaded", function () {
+            var gridDiv = document.querySelector("#myGrid");
+            var gridApi = agGrid.createGrid(gridDiv, gridOptions);
+
+            // Cargar los datos iniciales
+            fetch('@Url.Action("AspectsJSON", "Aspect")')
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Datos recibidos:", data); // Imprime los datos en la consola
+                    gridApi.setGridOption("rowData", data); // Establece los datos en el grid
+                })
+                .catch((error) => {
+                    console.error("Ocurrió un error durante la solicitud:", error);
+                });
+
+            // Función para refrescar el grid
+            function refreshGrid() {
+                fetch('@Url.Action("AspectsJSON", "Aspect")')
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log("Datos actualizados recibidos:", data);
+                        gridApi.setGridOption("rowData", data); // Actualiza los datos en el grid
+                    })
+                    .catch((error) => {
+                        console.error("Ocurrió un error durante la solicitud de actualización:", error);
+                    });
+            }
+
+            // Conectar SignalR para escuchar el evento de refresco
+            const connection = new signalR.HubConnectionBuilder().withUrl(systemHubUrl()).build();
+
+            connection.on("RefreshAspectsGrid", function () {
+                refreshGrid(); // Llamada a la función que refresca los datos del grid
+            });
+
+            connection.start().catch(function (err) {
+                return console.error(err.toString());
+            });
+        });
+
+    </script>
+}

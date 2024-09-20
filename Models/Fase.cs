@@ -12,9 +12,9 @@ public partial class Fase
     [Map("fase_name")]
     public string Name { get; set; }
     [Map("fase_startdate")]
-    public DateTime Start { get; set; }
+    public string Start { get; set; }
     [Map("fase_enddate")]
-    public DateTime End { get; set; }
+    public string End { get; set; }
 
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 }
