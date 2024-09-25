@@ -280,7 +280,8 @@ public class SKLRepository : ISKLRepositories
                 Option = "INS_FASE",
                 Param1 = fase.Name,
                 Param2 = fase.Start,
-                Param3 = fase.End
+                Param3 = fase.End,
+                Param4 = fase.IsActive
 
             });
     }
@@ -295,7 +296,8 @@ public class SKLRepository : ISKLRepositories
                 Param1 = fase.Id,
                 Param2 = fase.Name,
                 Param3 = fase.Start,
-                Param4 = fase.End
+                Param4 = fase.End,
+                Param5 = fase.IsActive
 
             });
     }

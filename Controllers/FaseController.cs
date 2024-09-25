@@ -125,6 +125,7 @@ namespace SKL.Controllers
                 f.Id,
                 f.Name,
                 f.CurrentDate,
+                f.IsActive,
                 Start = f.Start.ToString("yyyy-MM-dd"), 
                 End = f.End.ToString("yyyy-MM-dd")      
             });

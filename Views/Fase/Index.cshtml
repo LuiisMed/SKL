@@ -1,4 +1,51 @@
-﻿
+﻿@* 
+<style>
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        justify-content: center; /* Centrar horizontalmente */
+        height: 100%; /* Asegura que tome el alto del contenedor */
+    }
+
+    input[type="checkbox"] {
+        display: none; /* Ocultamos el checkbox nativo */
+    }
+
+    .custom-checkbox {
+        width: 20px; /* Tamaño del checkbox */
+        height: 20px;
+        border: 2px solid #ccc; /* Borde gris */
+        border-radius: 3px; /* Bordes redondeados */
+        position: relative;
+        margin-right: 8px; /* Espacio entre el checkbox y el texto */
+    }
+
+        .custom-checkbox.checked {
+            background-color: green; /* Color de fondo cuando está marcado */
+            border-color: green; /* Color del borde cuando está marcado */
+        }
+
+        .custom-checkbox.unchecked {
+            background-color: red; /* Color de fondo cuando no está marcado */
+            border-color: red; /* Color del borde cuando no está marcado */
+        }
+
+        .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            width: 50%; /* Tamaño del "check" */
+            height: 50%;
+            background-color: white; /* Color del "check" */
+            left: 25%; /* Centrar el "check" */
+            top: 25%;
+            display: none; /* Inicialmente no mostrar */
+        }
+
+    input[type="checkbox"]:checked + .custom-checkbox::after {
+        display: block; /* Mostrar el "check" cuando está marcado */
+    }
+
+</style> *@
 
 
 <div class="content-wrapper">
@@ -49,6 +96,20 @@
                 { field: "name", headerName: "Nombre", minWidtha: 150 },
                 { field: "start", headerName: "Inicio de Fase", minWidtha: 150 },
                 { field: "end", headerName: "Cierre de Fase", minWidtha: 150 },
+                {
+                    field: "isActive",
+                    headerName: "Estado",
+                    minWidth: 150,
+                    cellRenderer: (params) => {
+                        const checked = params.value ? 'checked' : '';
+                        return `
+                    <div class="checkbox-container">
+                        <input type="checkbox" ${checked} disabled />
+                        <span class="custom-checkbox ${checked ? 'checked' : ''}"></span>
+                    </div>
+                `;
+                    }
+                },
                 {
                     headerName: "Acciones",
                     field: "actions",

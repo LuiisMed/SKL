@@ -17,8 +17,10 @@ public partial class Fase
     public DateTime End { get; set; }
     [Map("currentdate")]
     public DateTime CurrentDate { get; set; }
+    [Map("Is_Active")]
+    public Boolean IsActive { get; set; }
 
-    
+
 
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 }
