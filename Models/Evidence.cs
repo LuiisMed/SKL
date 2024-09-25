@@ -13,5 +13,5 @@ public partial class Evidence
 
     public string Evidences { get; set; }
 
-    public virtual Action IdActionNavigation { get; set; }
+    public virtual Tasks IdActionNavigation { get; set; }
 }

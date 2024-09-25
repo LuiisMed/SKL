@@ -22,5 +22,5 @@ public partial class Fase
 
 
 
-    public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
+    public virtual ICollection<Tasks> Actions { get; set; } = new List<Tasks>();
 }

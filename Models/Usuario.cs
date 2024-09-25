@@ -37,7 +37,7 @@ public partial class Usuario
 
 
 
-    public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
+    public virtual ICollection<Tasks> Actions { get; set; } = new List<Tasks>();
 
     public virtual Shift IdShiftNavigation { get; set; }
 

@@ -21,9 +21,10 @@ namespace SKL.Controllers
         }
 
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var fases = await _Sklservice.GetSKLFasesAsync();
+            return View(fases);
         }
 
         [Authorize(Roles = "Administrador")]
@@ -32,23 +33,23 @@ namespace SKL.Controllers
             return View();
         }
 
-        public async Task<IActionResult> FasesJSON()
-        {
-            var fases = await _Sklservice.GetSKLFasesAsync();
+        //public async Task<IActionResult> FasesJSON()
+        //{
+        //    var fases = await _Sklservice.GetSKLFasesAsync();
 
-            // Proyectar a un objeto anónimo con las fechas formateadas
-            var fasesFormateadas = fases.Select(f => new
-            {
-                f.Id,
-                f.Name,
-                f.CurrentDate,
-                Start = f.Start.ToString("yyyy-MM-dd"),
-                End = f.End.ToString("yyyy-MM-dd")
-            });
+        //    // Proyectar a un objeto anónimo con las fechas formateadas
+        //    var fasesFormateadas = fases.Select(f => new
+        //    {
+        //        f.Id,
+        //        f.Name,
+        //        f.CurrentDate,
+        //        Start = f.Start.ToString("yyyy-MM-dd"),
+        //        End = f.End.ToString("yyyy-MM-dd")
+        //    });
 
-            // Devolver el resultado como JSON
-            return Json(fasesFormateadas);
-        }
+        //    // Devolver el resultado como JSON
+        //    return Json(fasesFormateadas);
+        //}
 
         public async Task<IActionResult> Logout()
         {
