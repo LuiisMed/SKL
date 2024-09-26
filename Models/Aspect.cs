@@ -12,5 +12,4 @@ public partial class Aspect
     [Map("aspect_name")]
     public string Name { get; set; }
 
-    public virtual ICollection<Tasks> Actions { get; set; } = new List<Tasks>();
 }

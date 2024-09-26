@@ -31,7 +31,7 @@ namespace SKL.Controllers
 
             return View();
         }
-
+        //Los ID Del Modelo Principal y del ViewModel Tienen que ser los mismos
         public async Task<IActionResult> Insert(Tasks taskData, Eval evalData)
         {
             var (error, message) = (false, "");

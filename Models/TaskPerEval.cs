@@ -14,7 +14,6 @@
         public int IdAspect { get; set; }
         [Map("id_evidences")]
         public int IdEvidences { get; set; }
-
         [Map("id_eval")]
         public int IdEval { get; set; }
         [Map("emp_no")]

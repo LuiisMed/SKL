@@ -333,8 +333,8 @@ public class SKLRepository : ISKLRepositories
             new
             {
                 Option = "INS_TASK",
-                Param1 = tasks.IdUser,
-                Param2 = tasks.IdFase,
+                Param1 = tasks.IdUserT,
+                Param2 = tasks.IdFaseT,
                 Param3 = tasks.Accion,
                 Param4 = tasks.IdAspect,
                 Param5 = tasks.IdEvidences
@@ -350,8 +350,8 @@ public class SKLRepository : ISKLRepositories
             {
                 Option = "UPD_TASK",
                 Param1 = tasks.Id,
-                Param2 = tasks.IdUser,
-                Param3 = tasks.IdFase,
+                Param2 = tasks.IdUserT,
+                Param3 = tasks.IdFaseT,
                 Param4 = tasks.Accion,
                 Param5 = tasks.IdAspect,
                 Param6 = tasks.IdEvidences
@@ -390,8 +390,8 @@ public class SKLRepository : ISKLRepositories
             new
             {
                 Option = "INS_EVAL",
-                Param1 = eval.IdUser,
-                Param2 = eval.IdFase,
+                Param1 = eval.IdUserE,
+                Param2 = eval.IdFaseE,
                 Param3 = eval.UserEval,
                 Param4 = eval.Comentario,
                 Param5 = eval.Results
@@ -407,8 +407,8 @@ public class SKLRepository : ISKLRepositories
             {
                 Option = "UPD_EVAL",
                 Param1 = eval.Id,
-                Param2 = eval.IdUser,
-                Param3 = eval.IdFase,
+                Param2 = eval.IdUserE,
+                Param3 = eval.IdFaseE,
                 Param4 = eval.UserEval,
                 Param5 = eval.Comentario,
                 Param6 = eval.Results

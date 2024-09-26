@@ -5,9 +5,9 @@
         [Map("id_eval")]
         public int Id { get; set; }
         [Map("emp_no")]
-        public int IdUser { get; set; }
+        public int IdUserE { get; set; }
         [Map("id_fase")]
-        public int IdFase { get; set; }
+        public int IdFaseE { get; set; }
         [Map("eval")]
         public string UserEval { get; set; }
         [Map("comment")]

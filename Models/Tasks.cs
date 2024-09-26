@@ -10,9 +10,9 @@ public partial class Tasks
     [Map("id_task")]
     public int Id { get; set; }
     [Map("id_usr")]
-    public int IdUser { get; set; }
+    public int IdUserT { get; set; }
     [Map("id_fase")]
-    public int IdFase { get; set; }
+    public int IdFaseT { get; set; }
     [Map("accion")]
     public string Accion { get; set; }
     [Map("id_aspect")]
