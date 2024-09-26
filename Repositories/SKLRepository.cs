@@ -371,56 +371,59 @@ public class SKLRepository : ISKLRepositories
     }
 
     /*------------------------------------EVAL--------------------------------------*/
-    public async Task<IEnumerable<Fase>> GetSKLEvalAsync()
-    => await _context.ExecuteStoredProcedureQueryAsync<Fase>(_storedProcedure,
+    public async Task<IEnumerable<Eval>> GetSKLEvalsAsync()
+    => await _context.ExecuteStoredProcedureQueryAsync<Eval>(_storedProcedure,
     new { Option = "GET_EVAL" });
 
-    public async Task<Fase> GetSKLEvalAsync(int idFase)
-    {
-        var list = await _context.ExecuteStoredProcedureQueryAsync<Fase>(_storedProcedure,
-            new { Option = "GET_ONE_EVAL", Param1 = idFase });
-        return list.FirstOrDefault() ?? new() { Name = "" };
-    }
 
-    public async Task<(bool, string)> InsertSKLFaseAsync(Fase fase)
+    public async Task<IEnumerable<Eval>> GetSKLEvalAsync(int idEval)
+    => await _context.ExecuteStoredProcedureQueryAsync<Eval>(_storedProcedure, new
+    {
+        Option = "GET_ONE_EVAL",
+        Param1 = idEval
+    });
+
+    public async Task<(bool, string)> InsertSKLEvalAsync(Eval eval)
     {
         _context.DataChangeEventHandler += DataChangeEventHandler;
         return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
             new
             {
                 Option = "INS_EVAL",
-                Param1 = fase.Name,
-                Param2 = fase.Start,
-                Param3 = fase.End,
-                Param4 = fase.IsActive
+                Param1 = eval.IdUser,
+                Param2 = eval.IdFase,
+                Param3 = eval.UserEval,
+                Param4 = eval.Comentario,
+                Param5 = eval.Results
 
             });
     }
 
-    public async Task<(bool, string)> UpdateSKLFaseAsync(Fase fase)
+    public async Task<(bool, string)> UpdateSKLEvalAsync(Eval eval)
     {
         _context.DataChangeEventHandler += DataChangeEventHandler;
         return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
             new
             {
                 Option = "UPD_EVAL",
-                Param1 = fase.Id,
-                Param2 = fase.Name,
-                Param3 = fase.Start,
-                Param4 = fase.End,
-                Param5 = fase.IsActive
+                Param1 = eval.Id,
+                Param2 = eval.IdUser,
+                Param3 = eval.IdFase,
+                Param4 = eval.UserEval,
+                Param5 = eval.Comentario,
+                Param6 = eval.Results
 
             });
     }
 
-    public async Task<(bool, string)> DeleteSKLFaseAsync(int idFase)
+    public async Task<(bool, string)> DeleteSKLEvalAsync(int idEval)
     {
         _context.DataChangeEventHandler += DataChangeEventHandler;
         return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
             new
             {
                 Option = "DEL_EVAL",
-                Param1 = idFase
+                Param1 = idEval
             });
     }
 

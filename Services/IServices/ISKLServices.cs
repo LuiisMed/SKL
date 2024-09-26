@@ -48,6 +48,25 @@ public interface ISKLServices
     Task<(bool, string)> InsertSKLFaseAsync(Fase data);
     Task<(bool, string)> UpdateSKLFaseAsync(Fase data);
     Task<(bool, string)> DeleteSKLFaseAsync(int idFase);
+    /*---------------------------------------------------------------------------*/
+    /*------------------------------------TASKS--------------------------------------*/
+    Task<IEnumerable<Tasks>> GetSKLTasksAsync();
+    Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser);
+    Task<(bool, string)> InsertSKLTaskAsync(Tasks taskdata);
+    Task<(bool, string)> UpdateSKLTaskAsync(Tasks data);
+    Task<(bool, string)> DeleteSKLTaskAsync(int idTask);
+    /*---------------------------------------------------------------------------*/
+    /*------------------------------------EVAL--------------------------------------*/
+    Task<IEnumerable<Eval>> GetSKLEvalsAsync();
+    Task<IEnumerable<Eval>> GetSKLEvalAsync(int idEval);
+    Task<(bool, string)> InsertSKLEvalAsync(Eval evaldata);
+    Task<(bool, string)> UpdateSKLEvalAsync(Eval data);
+    Task<(bool, string)> DeleteSKLEvalAsync(int idEval);
+
+
+
+
+
 
 
 

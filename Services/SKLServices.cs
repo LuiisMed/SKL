@@ -168,6 +168,54 @@ public class SKLServices : ISKLServices
         _repository.DataChangeEventHandler += DataChangeEventHandler;
         return await _repository.DeleteSKLFaseAsync(idFase);
     }
+    /*---------------------------------------------------------------------------*/
+    /*------------------------------------TASKS--------------------------------------*/
+    public async Task<IEnumerable<Tasks>> GetSKLTasksAsync()
+    => await _repository.GetSKLTasksAsync();
 
+    public async Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser)
+            => await _repository.GetSKLTaskPerUserFase(idFase, idUser);
 
+    public async Task<(bool, string)> InsertSKLTaskAsync(Tasks taskdata)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.InsertSKLTaskAsync(taskdata);
+    }
+
+    public async Task<(bool, string)> UpdateSKLTaskAsync(Tasks data)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.UpdateSKLTaskAsync(data);
+    }
+
+    public async Task<(bool, string)> DeleteSKLTaskAsync(int idTask)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.DeleteSKLTaskAsync(idTask);
+    }
+    /*---------------------------------------------------------------------------*/
+    /*------------------------------------EVAL--------------------------------------*/
+    public async Task<IEnumerable<Eval>> GetSKLEvalsAsync()
+    => await _repository.GetSKLEvalsAsync();
+
+    public async Task<IEnumerable<Eval>> GetSKLEvalAsync(int idEval)
+    => await _repository.GetSKLEvalAsync(idEval);
+
+    public async Task<(bool, string)> InsertSKLEvalAsync(Eval evaldata)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.InsertSKLEvalAsync(evaldata);
+    }
+
+    public async Task<(bool, string)> UpdateSKLEvalAsync(Eval data)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.UpdateSKLEvalAsync(data);
+    }
+
+    public async Task<(bool, string)> DeleteSKLEvalAsync(int idEval)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.DeleteSKLEvalAsync(idEval);
+    }
 }

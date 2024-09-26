@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SKL.Models;
 using SKL.Services.IServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SKL.Controllers
 {
@@ -31,34 +32,28 @@ namespace SKL.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Insert(Task taskData, E evalData)
+        public async Task<IActionResult> Insert(Tasks taskData, Eval evalData)
         {
             var (error, message) = (false, "");
-            using (var transaction = _context.Database.BeginTransaction())
+            try
             {
-                try
+                if (ModelState.IsValid)
                 {
-                    if (ModelState.IsValid)
-                    {
-                        // Insertar en la tabla Tasks
-                        _context.Tasks.Add(taskData);
-                        await _context.SaveChangesAsync(); // Guarda cambios en la tabla Tasks
+                    // Insertar en la tabla Tasks
+                    await _Sklservice.InsertSKLTaskAsync(taskData); // Guarda cambios en la tabla Tasks
 
-                        // Insertar en la tabla Eval
-                        _context.Eval.Add(evalData);
-                        await _context.SaveChangesAsync(); // Guarda cambios en la tabla Eval
+                    // Insertar en la tabla Eval
+                    await _Sklservice.InsertSKLEvalAsync(evalData); // Guarda cambios en la tabla Tasks
 
-                        // Confirma la transacción
-                        await transaction.CommitAsync();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Si ocurre un error, se revierte la transacción
-                    await transaction.RollbackAsync();
-                    message = ex.Message;
-                    error = true;
-                }
+                    _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
+
+                }  
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores
+                message = ex.Message;
+                error = true;
             }
 
             var jsonResult = Json(new
@@ -74,5 +69,7 @@ namespace SKL.Controllers
         }
 
 
+        private async void RefreshTasksGrid(object? sender, EventArgs e)
+        => await _context.Clients.All.SendAsync("RefreshTasksGrid");
     }
 }
