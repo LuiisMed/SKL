@@ -27,5 +27,15 @@
         [Map("eval_file")]
         public string? Results { get; set; }
 
+
+        [Display(Name = "Usuarios")]
+        public int UserFilter { get; set; }
+        [Display(Name = "Fases")]
+        public int FaseFilter { get; set; }
+
+        public IEnumerable<Fase> Fases { get; set; }
+        public IEnumerable<Usuario> Usuarios { get; set; }
+
+
     }
 }

@@ -302,9 +302,6 @@ namespace SKL.Controllers
         //        : RedirectToAction("Error");
         //}
 
-
-
-
         [HttpGet]
         public async Task<IActionResult> UsuariosJSON()
             => Ok(await _service.GetSKLUsuarios());

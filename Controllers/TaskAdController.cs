@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SKL.Models;
+using SKL.Models.ViewModels;
 using SKL.Services.IServices;
+using static Microsoft.CodeAnalysis.IOperation;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SKL.Controllers
@@ -19,19 +21,25 @@ namespace SKL.Controllers
             _Sklservice = sklservice;
         }
 
-        public async Task<IActionResult> Index()
-        {
+        public async Task<IActionResult> Index(int userfilter, int fasefilter)
+            {
+
             var users = await _service.GetSKLUsuarios();
             var aspects = await _Sklservice.GetSKLAspectsAsync();
-
-
-
             ViewBag.Usuarios = users;
             ViewBag.Aspectos = aspects;
 
-            return View();
+            TaskPerEval model = new()
+            {
+                UserFilter = userfilter,
+                FaseFilter = fasefilter
+            };
+            return View(model);
         }
+
+
         //Los ID Del Modelo Principal y del ViewModel Tienen que ser los mismos
+        //RECUERDA RESULTS NO PUEDE SER NULL
         public async Task<IActionResult> Insert(Tasks taskData, Eval evalData)
         {
             var (error, message) = (false, "");
@@ -71,5 +79,8 @@ namespace SKL.Controllers
 
         private async void RefreshTasksGrid(object? sender, EventArgs e)
         => await _context.Clients.All.SendAsync("RefreshTasksGrid");
+
+        public async Task<IActionResult> TaskJson(int idUser, int idFase)
+        => Ok(await _Sklservice.GetSKLTaskPerUserFase(idUser, idFase));
     }
 }

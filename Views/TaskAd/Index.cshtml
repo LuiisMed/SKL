@@ -8,29 +8,37 @@
                 <div class="card mb-4">
                     <h5 class="card-header">Asignar Acciones</h5>
                     <div class="card-body">
+                        <form asp-controller="TaskAd" asp-action="Index" method="get" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label asp-for="UserFilter" class="form-label">Aspecto</label>
+                                <select asp-for="UserFilter" class="form-control select2">
+                                    <option value="">Selecciona un usuario</option>
+                                    @foreach (var role in ViewBag.Usuarios)
+                                    {
+                                        <option value="@role.IdUser">@role.EmpNo - @role.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                             <input type="hidden" asp-for="FaseFilter" />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </form>
+                        <br />
+                        <!--FIN DEL FORMULARIO DE FILTRO-->
                         <form asp-controller="TaskAd" asp-action="Insert" method="post" enctype="multipart/form-data">
                             <input type="hidden" asp-for="Id" />
                             <input type="hidden" asp-for="IdFaseT" />
                             <input type="hidden" asp-for="IdFaseE" />
-
-                            <div class="mb-3">
-                                <label asp-for="IdUserT" class="form-label">Aspecto</label>
-                                <select asp-for="IdUserT" class="form-control">
-                                    @foreach (var role in ViewBag.Usuarios)
-                                    {
-                                        <option value="@role.IdUser">@role.Name</option>
-                                    }
-                                </select>
-                            </div>
-
+                            <input type="hidden" asp-for="IdUserE" />
+                            <input type="hidden" asp-for="IdUserT" />
                             <div>
                                 <label asp-for="Accion" class="form-label">Accion a realizar</label>
                                 <textarea class="form-control" asp-for="Accion" rows="3"></textarea>
                             </div>
-
                             <div class="mb-3">
                                 <label asp-for="IdAspect" class="form-label">Aspecto</label>
-                                <select asp-for="IdAspect" class="form-control">
+                                <select asp-for="IdAspect" class="form-control selec2">
                                     @foreach (var aspect in ViewBag.Aspectos)
                                     {
                                         <option value="@aspect.Id">@aspect.Name</option>
@@ -40,9 +48,8 @@
                             <div class="mb-3">
                                 <label asp-for="UserEval" class="form-label">Calificacion</label>
                                 <input type="text" asp-for="UserEval" class="form-control" aria-describedby="defaultFormControlHelp">
-                               
                             </div>
-                            <button type="submit" id="submit" class="btn btn-primary">Save changes</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
                         </form>
                     </div>
                 </div>
@@ -76,17 +83,29 @@
                 return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
             }
 
-            // Obtener el idfase de la URL
+            // Intentar obtener el idfase de la URL
             var idFase = getUrlParameter('idfase');
+            var idFaseFilter = getUrlParameter('FaseFilter');
+            var idUserFilter = getUrlParameter('UserFilter');
+
+            // Si el idFase está en la URL, lo guardamos en localStorage
+            if (idFase) {
+                localStorage.setItem('idfase', idFase);
+            } else {
+                // Si no está en la URL, intentamos recuperarlo de localStorage
+                idFase = localStorage.getItem('idfase');
+            }
 
             // Asignar el valor de idfase al input hidden
-            $('input[name="IdFaseT"]').val(idFase);
-            $('input[name="IdFaseE"]').val(idFase);
+            $('input[name="IdFaseT"]').val(idFaseFilter || idFase);
+            $('input[name="IdFaseE"]').val(idFaseFilter || idFase);
+            $('input[name="IdUserE"]').val(idUserFilter);
+            $('input[name="IdUserT"]').val(idUserFilter);
+            $('input[name="FaseFilter"]').val(idFase);
 
         });
 
 
-        // In your Javascript (external .js resource or <script> tag)
         $(document).ready(function () {
             // Inicializar Select2 en el select con clase .select2
             $('.select2').select2({
@@ -95,6 +114,12 @@
             });
         });
 
+        let getQueryParameters = () => {
+            let idUser = document.getElementById("UserFilter").value;
+            let idFase = document.getElementById("FaseFilter").value;
+
+            return '?idUser=' + idUser + '&idFase=' + idFase;
+        };
 
         var minRowHeight = 25;
         var currentRowHeight;
@@ -103,19 +128,12 @@
 
         const gridOptions = {
             columnDefs: [
-                { field: "idUser", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "name", headerName: "Nombre", minWidtha: 150 },
-                { field: "userName", headerName: "Usuario", minWidth: 70, maxWidth: 150, },
-                { field: "userPassword", headerName: "Contraseña", minWidth: 130 },
-                { field: "idRole", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "roleName", headerName: "Permisos", minWidth: 120 },
-                { field: "idPosition", minWidth: 120, hide: true },
-                { field: "positionName", headerName: "Posicion", minWidth: 80 },
-                { field: "idShift", minWidth: 80, hide: true },
-                { field: "shiftName", headerName: "Turno", minWidth: 80 },
-                { field: "idDepartment", minWidth: 80, hide: true },
-                { field: "departmentName", headerName: "Departamento", minWidth: 80 },
-                { field: "empNo", headerName: "Numero de Empleado", minWidth: 80 },
+                { field: "id", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "idUserT", headerName: "Nombre", minWidtha: 150 },
+                { field: "idFaseT", headerName: "Usuario", minWidth: 70, maxWidth: 150, },
+                { field: "accion", headerName: "Contraseña", minWidth: 130 },
+                { field: "idAspect", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "IdEvidences", headerName: "Permisos", minWidth: 120 },
                 {
                     headerName: "Acciones",
                     field: "actions",
@@ -156,27 +174,9 @@
             paginationPageSizeSelector: [10, 25, 50],
         };
 
-
-
-        // Función para abrir el popup desde el controlador y cargarlo en el modal
-        $("#btnNew").click(function () {
-            $.ajax({
-                url: '@Url.Action("NewUsuarioPopUp", "Usuario")',
-                type: 'POST',
-                success: function (data) {
-                    $('#ModalWindow .modal-content').html(data);
-                    $('#ModalWindow').modal('show');
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error al cargar el contenido del modal:", status, error);
-                    alert("Error al cargar el contenido del modal.");
-                }
-            });
-        });
-
         function handleDelete(idUser) {
             $.ajax({
-                url: '@Url.Action("DeleteUsuarioPopUp", "Usuario")' + '?idusr=' + idUser,  // Llama a la acción de eliminación
+                url: '@Url.Action("DeleteUsuarioPopUp", "TaskAd")' + '?idusr=' + idUser,  // Llama a la acción de eliminación
                 type: 'POST',
                 success: function (data) {
                     $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
@@ -191,7 +191,7 @@
 
         function handleUpdate(idUser) {
             $.ajax({
-                url: '@Url.Action("UpdateUsuarioPopUp", "Usuario")' + '?idusr=' + idUser,  // Llama a la acción de eliminación
+                url: '@Url.Action("UpdateUsuarioPopUp", "TaskAd")' + '?idusr=' + idUser,  // Llama a la acción de eliminación
                 type: 'POST',
                 success: function (data) {
                     $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
@@ -211,7 +211,7 @@
             var gridApi = agGrid.createGrid(gridDiv, gridOptions);
 
             // Cargar los datos iniciales
-            fetch('@Url.Action("UsuariosJSON", "Usuario")')
+            fetch('@Url.Action("TaskJson", "TaskAd")' + getQueryParameters())
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -226,9 +226,9 @@
                     console.error("Ocurrió un error durante la solicitud:", error);
                 });
 
-            // Función para refrescar el grid
+             // Función para refrescar el grid
             function refreshUserGrid() {
-                fetch('@Url.Action("UsuariosJSON", "Usuario")')
+                fetch('@Url.Action("TaskJson", "TaskAd")' + getQueryParameters())
                     .then((response) => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -247,7 +247,7 @@
             // Conectar SignalR para escuchar el evento de refresco
             const connection = new signalR.HubConnectionBuilder().withUrl(systemHubUrl()).build();
 
-            connection.on("RefreshUserGrid", function () {
+            connection.on("RefreshTasksGrid", function () {
                 refreshUserGrid(); // Llamada a la función que refresca los datos del grid
             });
 
