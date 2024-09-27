@@ -9,9 +9,9 @@
         [Map("id_fase")]
         public int IdFaseE { get; set; }
         [Map("eval")]
-        public string UserEval { get; set; }
+        public Decimal UserEval { get; set; }
         [Map("comment")]
-        public string Comentario { get; set; }
+        public string? Comentario { get; set; }
         [Map("eval_file")]
         public string? Results { get; set; }
     }

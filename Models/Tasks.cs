@@ -23,7 +23,5 @@ public partial class Tasks
     public int IdAspect { get; set; }
     [Map("aspect_name")]
     public string AspectName { get; set; }
-    [Map("id_evidences")]
-    public int IdEvidences { get; set; }
 
 }

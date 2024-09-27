@@ -201,6 +201,9 @@ public class SKLServices : ISKLServices
     public async Task<IEnumerable<Eval>> GetSKLEvalAsync(int idEval)
     => await _repository.GetSKLEvalAsync(idEval);
 
+    public async Task<IEnumerable<Eval>> GetSKLEvalPerUserAsync(int IdUserE, int IdFaseE)
+=> await _repository.GetSKLEvalPerUserAsync(IdUserE, IdFaseE);
+
     public async Task<(bool, string)> InsertSKLEvalAsync(Eval evaldata)
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;

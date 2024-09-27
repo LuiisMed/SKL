@@ -59,6 +59,7 @@ public interface ISKLServices
     /*------------------------------------EVAL--------------------------------------*/
     Task<IEnumerable<Eval>> GetSKLEvalsAsync();
     Task<IEnumerable<Eval>> GetSKLEvalAsync(int idEval);
+    Task<IEnumerable<Eval>> GetSKLEvalPerUserAsync(int IdUserE, int IdFaseE);
     Task<(bool, string)> InsertSKLEvalAsync(Eval evaldata);
     Task<(bool, string)> UpdateSKLEvalAsync(Eval data);
     Task<(bool, string)> DeleteSKLEvalAsync(int idEval);

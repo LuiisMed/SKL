@@ -336,8 +336,7 @@ public class SKLRepository : ISKLRepositories
                 Param1 = tasks.IdUserT,
                 Param2 = tasks.IdFaseT,
                 Param3 = tasks.Accion,
-                Param4 = tasks.IdAspect,
-                Param5 = tasks.IdEvidences
+                Param4 = tasks.IdAspect
 
             });
     }
@@ -353,8 +352,7 @@ public class SKLRepository : ISKLRepositories
                 Param2 = tasks.IdUserT,
                 Param3 = tasks.IdFaseT,
                 Param4 = tasks.Accion,
-                Param5 = tasks.IdAspect,
-                Param6 = tasks.IdEvidences
+                Param5 = tasks.IdAspect
 
             });
     }
@@ -381,6 +379,14 @@ public class SKLRepository : ISKLRepositories
     {
         Option = "GET_ONE_EVAL",
         Param1 = idEval
+    });
+
+    public async Task<IEnumerable<Eval>> GetSKLEvalPerUserAsync(int IdUserE, int IdFaseE)
+    => await _context.ExecuteStoredProcedureQueryAsync<Eval>(_storedProcedure, new
+    {
+        Option = "GET_EVAL_PER_USER",
+        Param1 = IdUserE,
+        Param2 = IdFaseE
     });
 
     public async Task<(bool, string)> InsertSKLEvalAsync(Eval eval)

@@ -8,30 +8,41 @@
                 <div class="card mb-4">
                     <h5 class="card-header">Asignar Acciones</h5>
                     <div class="card-body">
-                        <form asp-controller="TaskAd" asp-action="Index" method="get" enctype="multipart/form-data">
+                        <!--INICIO DEL FORMULARIO DE FILTRO-->
+                        <form id="userForm" method="get" asp-controller="TaskAd" asp-action="Index">
                             <div class="mb-3">
-                                <label asp-for="UserFilter" class="form-label">Aspecto</label>
-                                <select asp-for="UserFilter" class="form-control select2">
+                                <label asp-for="UserFilter" class="form-label">Empleado</label>
+                                <select asp-for="UserFilter" class="form-control select2" id="UserFilter">
                                     <option value="">Selecciona un usuario</option>
-                                    @foreach (var role in ViewBag.Usuarios)
+                                    @foreach (var role in Model.Usuarios)
                                     {
                                         <option value="@role.IdUser">@role.EmpNo - @role.Name</option>
                                     }
                                 </select>
                             </div>
+
                             <div class="mb-3">
-                             <input type="hidden" asp-for="FaseFilter" />
+                                <input type="hidden" asp-for="FaseFilter" id="FaseFilter" />
                             </div>
-                            <button type="submit" class="btn btn-primary">Search</button>
+
+                            <button type="submit" class="btn btn-primary" hidden id="searchButton">Search</button>
                         </form>
+
+  
+                        <div class="divider">
+                            <div class="divider-text">Acciones de la Fase</div>
+                        </div>
+                        
                         <br />
                         <!--FIN DEL FORMULARIO DE FILTRO-->
-                        <form asp-controller="TaskAd" asp-action="Insert" method="post" enctype="multipart/form-data">
+                        <!--INICIO DEL FORMULARIO DE INSERT-->
+                        <form id="form1" asp-controller="TaskAd" asp-action="Insert" method="post" enctype="multipart/form-data">
                             <input type="hidden" asp-for="Id" />
                             <input type="hidden" asp-for="IdFaseT" />
                             <input type="hidden" asp-for="IdFaseE" />
                             <input type="hidden" asp-for="IdUserE" />
                             <input type="hidden" asp-for="IdUserT" />
+                            <!--INICIO DEL FORMULARIO DE ACCIONES-->
                             <div>
                                 <label asp-for="Accion" class="form-label">Accion a realizar</label>
                                 <textarea class="form-control" asp-for="Accion" rows="3"></textarea>
@@ -39,18 +50,49 @@
                             <div class="mb-3">
                                 <label asp-for="IdAspect" class="form-label">Aspecto</label>
                                 <select asp-for="IdAspect" class="form-control selec2">
-                                    @foreach (var aspect in ViewBag.Aspectos)
+                                    @foreach (var aspect in Model.Aspectos)
                                     {
                                         <option value="@aspect.Id">@aspect.Name</option>
                                     }
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label asp-for="UserEval" class="form-label">Calificacion</label>
-                                <input type="text" asp-for="UserEval" class="form-control" aria-describedby="defaultFormControlHelp">
+                            <!--INICIO DEL FORMULARIO DE EVALUACION-->
+
+                            <div class="divider">
+                                <div class="divider-text">Evaluacion de la Fase</div>
                             </div>
+
+                            @if (Model.Evals != null && Model.Evals.Any(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter))
+                            {
+                                var eval = Model.Evals.First(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter);
+
+                                <div class="mb-3">
+                                    <label asp-for="UserEval" class="form-label">Calificacion</label>
+                                    <input type="text" asp-for="UserEval" class="form-control" value="@eval.UserEval" aria-describedby="defaultFormControlHelp" readonly>
+                                </div>
+                                <div>
+                                    <label asp-for="Comentario" class="form-label">Comentarios</label>
+                                    <textarea class="form-control" asp-for="Comentario" rows="3" placeholder="Comentarios al Usuario de la calificacion obtenida" readonly>@eval.Comentario</textarea>
+                                </div>
+                            }
+
+                            else
+                            {
+                                <div class="mb-3">
+                                    <label asp-for="UserEval" class="form-label">Calificacion</label>
+                                    <input type="text" asp-for="UserEval" class="form-control" aria-describedby="defaultFormControlHelp">
+                                </div>
+                                <div>
+                                    <label asp-for="Comentario" class="form-label">Comentarios</label>
+                                    <textarea class="form-control" asp-for="Comentario" rows="3" placeholder="Comentarios al Usuario de la calificacion obtenida"></textarea>
+                                </div>
+                            }
+
+                            <br />
                             <button type="submit" class="btn btn-primary">Save changes</button>
                         </form>
+                        <!--FIN DEL FORMULARIO DE FILTRO-->
+
                     </div>
                 </div>
             </div>
@@ -58,6 +100,14 @@
         <div id="myGrid" style="height: 600px" class="ag-theme-quartz"></div>
 
     </div>
+    <div id="ModalWindow" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Aquí se cargará el contenido dinámicamente -->
+            </div>
+        </div>
+    </div>
+
 
     <div class="content-backdrop fade"></div>
 
@@ -72,7 +122,10 @@
     <script src="~/lib/paramquery-pro/localize/pq-localize-en.js"></script> *@
     <script src="~/lib/FileSaver/dist/FileSaver.min.js"></script>
 
+
     <script>
+
+
 
         $(document).ready(function () {
             // Función para obtener el parámetro de la URL
@@ -107,19 +160,31 @@
 
 
         $(document).ready(function () {
-            // Inicializar Select2 en el select con clase .select2
-            $('.select2').select2({
+            // Inicializar Select2 en el select con el ID #UserFilter
+            $('#UserFilter').select2({
                 placeholder: "Selecciona un usuario",  // Texto del placeholder
                 allowClear: true  // Habilitar botón de limpiar selección
             });
+
+            // Escuchar el evento select2:select cuando se selecciona un usuario
+            $('#UserFilter').on('select2:select', function (e) {
+                // Verificar si se ha seleccionado un usuario
+                if (e.params.data.id) {
+                    // Enviar el formulario automáticamente
+                    $('#userForm').submit();
+                }
+            });
         });
 
+        // Función para obtener los parámetros de la URL
         let getQueryParameters = () => {
-            let idUser = document.getElementById("UserFilter").value;
-            let idFase = document.getElementById("FaseFilter").value;
+            // Usar jQuery para obtener el valor del select con Select2
+            let idUser = $('#UserFilter').val();
+            let idFase = $('#FaseFilter').val();
 
             return '?idUser=' + idUser + '&idFase=' + idFase;
         };
+
 
         var minRowHeight = 25;
         var currentRowHeight;
@@ -129,11 +194,13 @@
         const gridOptions = {
             columnDefs: [
                 { field: "id", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "idUserT", headerName: "Nombre", minWidtha: 150 },
-                { field: "idFaseT", headerName: "Usuario", minWidth: 70, maxWidth: 150, },
-                { field: "accion", headerName: "Contraseña", minWidth: 130 },
-                { field: "idAspect", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "IdEvidences", headerName: "Permisos", minWidth: 120 },
+                { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
+                { field: "name", headerName: "Usuario", minWidtha: 150, hide: false },
+                { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "faseName", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "accion", headerName: "Accion", minWidth: 130 },
+                { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "aspectName", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: false },
                 {
                     headerName: "Acciones",
                     field: "actions",
@@ -141,12 +208,12 @@
                         // Aquí puedes agregar HTML para los botones
                         return `
 
-                                            <button type="button" onclick="handleDelete('${params.data.idUser}')" class="btn btn-icon btn-danger">
-                                              <span class="tf-icons bx bx-trash"></span>
-                                            </button>
-                                            <button type="button" onclick="handleUpdate('${params.data.idUser}')" class="btn btn-icon btn-primary">
-                                              <span class="tf-icons bx bx-pen"></span>
-                                            </button>
+                                <button type="button" onclick="handleDelete('${params.data.idUser}')" class="btn btn-icon btn-danger">
+                                  <span class="tf-icons bx bx-trash"></span>
+                                </button>
+                                <button type="button" onclick="handleUpdate('${params.data.idUser}')" class="btn btn-icon btn-primary">
+                                  <span class="tf-icons bx bx-pen"></span>
+                                </button>
 
                             `;
                     },
@@ -162,7 +229,6 @@
                 minRowHeight = params.api.getSizesForCurrentTheme().rowHeight;
                 currentRowHeight = minRowHeight;
             },
-
             defaultColDef: {
                 filter: "agTextColumnFilter",
                 floatingFilter: true,
@@ -254,6 +320,66 @@
             connection.start().catch(function (err) {
                 return console.error(err.toString());
             });
+        });
+
+        $(function () {
+            var formProvider = $('#form1');
+            formProvider.submit(function (e) {
+                e.preventDefault();
+                formProvider.validate();
+                if (formProvider.valid()) {
+                    var form = $(this);
+                    $.post(form.attr('action'), form.serialize(), function (res) {
+                        if (res.status === 'success') {
+                            // Show success toast
+                            showToast('bg-success text-white', 'bx-check-circle', 'Success', res.message);
+                            // Hide modal window
+                            $('#ModalWindow').modal("hide");
+                        } else if (res.status === 'error') {
+                            // Show error toast
+                            showToast('bg-danger text-white', 'bx-x-circle', 'Error', res.message);
+                        }
+                    });
+                }
+            });
+
+            // Function to display toast by adding and removing "show" class
+            function showToast(type, icon, header, message) {
+                var toastElement = `
+                                    <div class="bs-toast toast toast-placement-ex m-2 bg-success top-0 start-0 fade show ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                                    <div class="toast-header">
+                                        <i class="bx ${icon} me-2"></i>
+                                        <strong class="me-auto">${header}</strong>
+                                        <small class="text-white">Just now</small>
+                                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                    </div>
+                                    <div class="toast-body">
+                                        ${message}
+                                    </div>
+                                </div>`;
+
+                var toastContainer = $('#toastContainer');
+                if (!toastContainer.length) {
+                    toastContainer = $('<div id="toastContainer" style="position: fixed; top: 0; left: 0; z-index: 9999;"></div>');
+                    $('body').append(toastContainer);
+                }
+
+                var toast = $(toastElement);
+                toastContainer.append(toast);
+
+                // Show toast (by adding "show" class)
+                setTimeout(function () {
+                    toast.addClass('show');
+                }, 100); // Slight delay to allow CSS transition
+
+                // Hide the toast after 3 seconds (by removing "show" class)
+                setTimeout(function () {
+                    toast.removeClass('show');
+                    setTimeout(function () {
+                        toast.remove(); // Remove from DOM after transition ends
+                    }, 500); // Wait for the hide transition to complete
+                }, 3000);
+            }
         });
 
     </script>
