@@ -51,6 +51,7 @@ public interface ISKLServices
     /*---------------------------------------------------------------------------*/
     /*------------------------------------TASKS--------------------------------------*/
     Task<IEnumerable<Tasks>> GetSKLTasksAsync();
+    Task<Tasks> GetSKLTask(int idTask);
     Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser);
     Task<(bool, string)> InsertSKLTaskAsync(Tasks taskdata);
     Task<(bool, string)> UpdateSKLTaskAsync(Tasks data);

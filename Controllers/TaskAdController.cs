@@ -41,16 +41,16 @@ namespace SKL.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteTaskPopUp(int idAspect)
+        public async Task<IActionResult> DeleteTaskPopUp(int idTask)
         {
-            var model = await _Sklservice.GetSKLAspectAsync(idAspect);
-            return PartialView("_DeleteAspectPopUp", model);
+            var model = await _Sklservice.GetSKLTask(idTask);
+            return PartialView("DeleteTaskPopUp", model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateTaskPopUp(int idAspect)
+        public async Task<IActionResult> UpdateTaskPopUp(int idTask)
         {
-            var model = await _Sklservice.GetSKLAspectAsync(idAspect);
+            var model = await _Sklservice.GetSKLTask(idTask);
 
             ViewData["Title"] = "Actualizar Accion";
             ViewBag.Action = "Insert";
@@ -108,12 +108,11 @@ namespace SKL.Controllers
 
             var existingEval = await _Sklservice.GetSKLEvalPerUserAsync(evalData.IdUserE, evalData.IdFaseE);
 
-
-            if (existingEval == null)
+            if (existingEval == null || !existingEval.Any())
             {
                 await _Sklservice.InsertSKLEvalAsync(evalData);
-
             }
+
 
             var jsonResult = Json(new
             {
@@ -127,13 +126,13 @@ namespace SKL.Controllers
                 : RedirectToAction("Error");
         }
 
-        public async Task<IActionResult> Update(Aspect data)
+        public async Task<IActionResult> Update(Tasks data)
         {
             var (error, message) = (false, "");
             if (ModelState.IsValid)
             {
                 _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
-                (error, message) = await _Sklservice.UpdateSKLAspectAsync(data);
+                (error, message) = await _Sklservice.UpdateSKLTaskAsync(data);
             }
 
             var jsonResult = Json(new
@@ -149,10 +148,10 @@ namespace SKL.Controllers
         }
 
 
-        public async Task<IActionResult> Delete(Aspect model)
+        public async Task<IActionResult> Delete(Tasks model)
         {
             _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
-            var (error, message) = await _Sklservice.DeleteSKLAspectAsync(model.Id);
+            var (error, message) = await _Sklservice.DeleteSKLTaskAsync(model.Id);
             //
             var jsonResult = Json(
                  new

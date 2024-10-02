@@ -318,6 +318,13 @@ public class SKLRepository : ISKLRepositories
     => await _context.ExecuteStoredProcedureQueryAsync<Tasks>(_storedProcedure,
     new { Option = "GET_TASK" });
 
+    public async Task<Tasks> GetSKLTask(int idTask)
+    {
+        var list = await _context.ExecuteStoredProcedureQueryAsync<Tasks>(_storedProcedure,
+            new { Option = "GET_ONE_TASK", Param1 = idTask });
+        return list.FirstOrDefault() ?? new() { Name = "" };
+    }
+
     public async Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser)
     => await _context.ExecuteStoredProcedureQueryAsync<Tasks>(_storedProcedure, new
     {

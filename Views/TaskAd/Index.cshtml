@@ -100,6 +100,7 @@
         <div id="myGrid" style="height: 600px" class="ag-theme-quartz"></div>
 
     </div>
+
     <div id="ModalWindow" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -208,10 +209,10 @@
                         // Aquí puedes agregar HTML para los botones
                         return `
 
-                                <button type="button" onclick="handleDelete('${params.data.idUser}')" class="btn btn-icon btn-danger">
+                                        <button type="button" onclick="handleDelete('${params.data.id}')" class="btn btn-icon btn-danger">
                                   <span class="tf-icons bx bx-trash"></span>
                                 </button>
-                                <button type="button" onclick="handleUpdate('${params.data.idUser}')" class="btn btn-icon btn-primary">
+                                        <button type="button" onclick="handleUpdate('${params.data.id}')" class="btn btn-icon btn-primary">
                                   <span class="tf-icons bx bx-pen"></span>
                                 </button>
 
@@ -240,9 +241,9 @@
             paginationPageSizeSelector: [10, 25, 50],
         };
 
-        function handleDelete(idUser) {
+        function handleDelete(id) {
             $.ajax({
-                url: '@Url.Action("DeleteUsuarioPopUp", "TaskAd")' + '?idusr=' + idUser,  // Llama a la acción de eliminación
+                url: '@Url.Action("DeleteTaskPopUp", "TaskAd")' + '?idTask=' + id,  // Llama a la acción de eliminación
                 type: 'POST',
                 success: function (data) {
                     $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
@@ -255,9 +256,9 @@
             });
         }
 
-        function handleUpdate(idUser) {
+        function handleUpdate(id) {
             $.ajax({
-                url: '@Url.Action("UpdateUsuarioPopUp", "TaskAd")' + '?idusr=' + idUser,  // Llama a la acción de eliminación
+                url: '@Url.Action("UpdateUsuarioPopUp", "TaskAd")' + '?idTask=' + id,  // Llama a la acción de eliminación
                 type: 'POST',
                 success: function (data) {
                     $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
