@@ -20,7 +20,7 @@ namespace SKL.Controllers
             _Sklservice = sklservice;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index()
         {
             var fases = await _Sklservice.GetSKLFasesAsync();

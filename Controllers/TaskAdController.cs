@@ -21,6 +21,7 @@ namespace SKL.Controllers
             _Sklservice = sklservice;
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index(int userfilter, int fasefilter)
             {
 
@@ -52,9 +53,13 @@ namespace SKL.Controllers
         {
             var model = await _Sklservice.GetSKLTask(idTask);
 
+            var aspects = await _Sklservice.GetSKLAspectsAsync();
+
             ViewData["Title"] = "Actualizar Accion";
+
+            ViewBag.Aspectos = aspects;
             ViewBag.Action = "Insert";
-            return PartialView("_UpdateAspectPopUp", model);
+            return PartialView("UpdateTaskPopUp", model);
         }
 
 
@@ -100,19 +105,18 @@ namespace SKL.Controllers
         {
             var (error, message) = (false, "");
             //ACUERDATE LUIS DEL FUTURO DE CAMBIAR AQUI PARA QUE SI EL ARCHIVO DEL LA EVALUACION ES NULL NO ACEPTE LA INSERCION DE DATOS
-            if (taskData.Id == 0)
+            var existingEval = await _Sklservice.GetSKLEvalPerUserAsync(evalData.IdUserE, evalData.IdFaseE);
+
+            if (taskData.IdTask == 0)
             {
                 _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
                 (error, message) = await _Sklservice.InsertSKLTaskAsync(taskData);
             }
 
-            var existingEval = await _Sklservice.GetSKLEvalPerUserAsync(evalData.IdUserE, evalData.IdFaseE);
-
             if (existingEval == null || !existingEval.Any())
             {
                 await _Sklservice.InsertSKLEvalAsync(evalData);
             }
-
 
             var jsonResult = Json(new
             {
@@ -122,9 +126,10 @@ namespace SKL.Controllers
             });
 
             return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                ? jsonResult 
+                ? jsonResult
                 : RedirectToAction("Error");
         }
+
 
         public async Task<IActionResult> Update(Tasks data)
         {
@@ -147,17 +152,16 @@ namespace SKL.Controllers
                 : RedirectToAction("Error");
         }
 
-
         public async Task<IActionResult> Delete(Tasks model)
         {
             _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
-            var (error, message) = await _Sklservice.DeleteSKLTaskAsync(model.Id);
-            //
+            var (error, message) = await _Sklservice.DeleteSKLTaskAsync(model.IdTask);
+
             var jsonResult = Json(
                  new
                  {
                      Status = error ? "error" : "success",
-                     Message = error ? message : "Accion deleted successfully.",
+                     Message = error ? message : "Action deleted successfully.",
                      Icon = error ? "error" : "success"
                  });
             return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")

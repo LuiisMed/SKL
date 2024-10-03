@@ -18,6 +18,9 @@ namespace SKL.Controllers
             _service = service;
             _Sklservice = sklservice;
         }
+
+        [Authorize(Roles = "Administrador")]
+
         public IActionResult Index()
         {
             return View();

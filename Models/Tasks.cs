@@ -8,7 +8,7 @@ namespace SKL.Models;
 public partial class Tasks
 {
     [Map("id_task")]
-    public int Id { get; set; }
+    public int IdTask { get; set; }
     [Map("id_usr")]
     public int IdUserT { get; set; }
     [Map("name")]

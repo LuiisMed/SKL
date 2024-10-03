@@ -4,6 +4,8 @@ namespace SKL.Models
 {
     public class Login
     {
+        [Map("id_usr")]
+        public int IdUser { get; set; }
         [Map("name")]
         public string Name { get; set; }
         [Map("usr_name")]

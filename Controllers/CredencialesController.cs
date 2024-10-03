@@ -7,6 +7,7 @@ using RepoDb;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace SKL.Controllers;
@@ -49,7 +50,8 @@ public class CredencialesController : Controller
         List<Claim> claims = new List<Claim>()
         {
             new Claim(ClaimTypes.Name, usuario_encontrado.Name),
-            new Claim(ClaimTypes.Role, usuario_encontrado.RolName)
+            new Claim(ClaimTypes.Role, usuario_encontrado.RolName),
+            new Claim(ClaimTypes.NameIdentifier, usuario_encontrado.IdUser.ToString())
             
         };
 

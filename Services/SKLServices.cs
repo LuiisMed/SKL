@@ -173,7 +173,7 @@ public class SKLServices : ISKLServices
     public async Task<IEnumerable<Tasks>> GetSKLTasksAsync()
             => await _repository.GetSKLTasksAsync();
 
-    public async Task<Tasks> GetSKLTask(int idTask)
+    public async Task<TaskPerEval> GetSKLTask(int idTask)
     => await _repository.GetSKLTask(idTask);
 
     public async Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser)

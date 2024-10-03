@@ -37,7 +37,7 @@
                         <!--FIN DEL FORMULARIO DE FILTRO-->
                         <!--INICIO DEL FORMULARIO DE INSERT-->
                         <form id="form1" asp-controller="TaskAd" asp-action="Insert" method="post" enctype="multipart/form-data">
-                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="IdTask" />
                             <input type="hidden" asp-for="IdFaseT" />
                             <input type="hidden" asp-for="IdFaseE" />
                             <input type="hidden" asp-for="IdUserE" />
@@ -62,6 +62,7 @@
                                 <div class="divider-text">Evaluacion de la Fase</div>
                             </div>
 
+
                             @if (Model.Evals != null && Model.Evals.Any(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter))
                             {
                                 var eval = Model.Evals.First(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter);
@@ -72,7 +73,7 @@
                                 </div>
                                 <div>
                                     <label asp-for="Comentario" class="form-label">Comentarios</label>
-                                    <textarea class="form-control" asp-for="Comentario" rows="3" placeholder="Comentarios al Usuario de la calificacion obtenida" readonly>@eval.Comentario</textarea>
+                                    <textarea class="form-control" rows="3" readonly>@eval.Comentario</textarea>
                                 </div>
                             }
 
@@ -194,7 +195,7 @@
 
         const gridOptions = {
             columnDefs: [
-                { field: "id", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: false },
                 { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
                 { field: "name", headerName: "Usuario", minWidtha: 150, hide: false },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
@@ -209,10 +210,10 @@
                         // Aquí puedes agregar HTML para los botones
                         return `
 
-                                        <button type="button" onclick="handleDelete('${params.data.id}')" class="btn btn-icon btn-danger">
+                                                <button type="button" onclick="handleDelete('${params.data.idTask}')" class="btn btn-icon btn-danger">
                                   <span class="tf-icons bx bx-trash"></span>
                                 </button>
-                                        <button type="button" onclick="handleUpdate('${params.data.id}')" class="btn btn-icon btn-primary">
+                                                <button type="button" onclick="handleUpdate('${params.data.idTask}')" class="btn btn-icon btn-primary">
                                   <span class="tf-icons bx bx-pen"></span>
                                 </button>
 
@@ -241,9 +242,9 @@
             paginationPageSizeSelector: [10, 25, 50],
         };
 
-        function handleDelete(id) {
+        function handleDelete(idTask) {
             $.ajax({
-                url: '@Url.Action("DeleteTaskPopUp", "TaskAd")' + '?idTask=' + id,  // Llama a la acción de eliminación
+                url: '@Url.Action("DeleteTaskPopUp", "TaskAd")' + '?idTask=' + idTask,  // Llama a la acción de eliminación
                 type: 'POST',
                 success: function (data) {
                     $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
@@ -256,9 +257,9 @@
             });
         }
 
-        function handleUpdate(id) {
+        function handleUpdate(idTask) {
             $.ajax({
-                url: '@Url.Action("UpdateUsuarioPopUp", "TaskAd")' + '?idTask=' + id,  // Llama a la acción de eliminación
+                url: '@Url.Action("UpdateTaskPopUp", "TaskAd")' + '?idTask=' + idTask,  // Llama a la acción de eliminación
                 type: 'POST',
                 success: function (data) {
                     $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal

@@ -51,7 +51,7 @@ public interface ISKLRepositories
     /*---------------------------------------------------------------------------*/
     /*------------------------------------TASKS--------------------------------------*/
     Task<IEnumerable<Tasks>> GetSKLTasksAsync();
-    Task<Tasks> GetSKLTask(int idTask);
+    Task<TaskPerEval> GetSKLTask(int idTask);
     Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser);
     Task<(bool, string)> InsertSKLTaskAsync(Tasks tasks);
     Task<(bool, string)> UpdateSKLTaskAsync(Tasks tasks);

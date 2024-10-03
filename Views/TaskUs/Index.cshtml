@@ -1,0 +1,186 @@
+﻿@model SKL.Models.TaskPerEval
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutUsuario.cshtml";
+}
+
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <h5 class="card-header">Asignar Acciones</h5>
+                    <div class="card-body">
+                        <!--INICIO DEL FORMULARIO DE FILTRO-->
+                        <a asp-controller="TaskUs" asp-action="TaskJson" asp-route-idUser="@Model.UserFilter" asp-route-idFase="@Model.FaseFilter" hidden>
+                            Cargar Tareas
+                        </a>
+
+
+                        <div class="divider">
+                            <div class="divider-text">Acciones de la Fase</div>
+                        </div>
+
+                        <br />
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="myGrid" style="height: 600px" class="ag-theme-quartz"></div>
+
+    </div>
+
+    <div id="ModalWindow" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Aquí se cargará el contenido dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+
+    <div class="content-backdrop fade"></div>
+
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @*     <script src="~/lib/paramquery-pro/jsZip-2.5.0/jszip.min.js"></script>
+    <script src="~/lib/paramquery-pro/jszip-utils-0.0.2/jszip-utils.min.js"></script>
+    <script src="~/lib/paramquery-pro/pqgrid.min.js"></script>
+    <script src="~/lib/paramquery-pro/localize/pq-localize-en.js"></script> *@
+    <script src="~/lib/FileSaver/dist/FileSaver.min.js"></script>
+
+
+    <script>
+
+        var minRowHeight = 25;
+        var currentRowHeight;
+
+        let gridApi;
+
+        const gridOptions = {
+            columnDefs: [
+                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
+                { field: "name", headerName: "Usuario", minWidtha: 150, hide: true },
+                { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "faseName", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "accion", headerName: "Accion", minWidth: 130 },
+                { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "aspectName", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: false },
+                {
+                    headerName: "Acciones",
+                    field: "actions",
+                    cellRenderer: function (params) {
+                        // Aquí puedes agregar HTML para los botones
+                        return `
+
+                        <button type="button" onclick="handleUpdate('${params.data.idTask}')" class="btn btn-icon btn-primary">
+                          <span class="tf-icons bx bx-pen"></span>
+                        </button>
+
+                                    `;
+                    },
+                    minWidth: 150
+                }
+            ],
+            rowData: null,
+            autoSizeStrategy: {
+                type: "fitGridWidth",
+            },
+            onGridReady: (params) => {
+                gridApi = params.api; // Obtener la instancia de gridApi
+                minRowHeight = params.api.getSizesForCurrentTheme().rowHeight;
+                currentRowHeight = minRowHeight;
+            },
+            defaultColDef: {
+                filter: "agTextColumnFilter",
+                floatingFilter: true,
+            },
+            rowSelection: "multiple",
+            suppressRowClickSelection: true,
+            pagination: true,
+            paginationPageSize: 10,
+            paginationPageSizeSelector: [10, 25, 50],
+        };
+
+        function handleUpdate(idTask) {
+            $.ajax({
+                url: '@Url.Action("UpdateTaskPopUp", "TaskAd")' + '?idTask=' + idTask,  // Llama a la acción de eliminación
+                type: 'POST',
+                success: function (data) {
+                    $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
+                    $('#ModalWindow').modal('show');  // Muestra el modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar el contenido del modal:", status, error);
+                    alert("Error al cargar el contenido del modal.");
+                }
+            });
+        }
+
+        const userFilter = @Model.UserFilter;
+        const faseFilter = @Model.FaseFilter;
+
+
+        // setup the grid after the page has finished loading
+        document.addEventListener("DOMContentLoaded", function () {
+            var gridDiv = document.querySelector("#myGrid");
+            var gridApi = agGrid.createGrid(gridDiv, gridOptions);
+
+            // Cargar los datos iniciales
+            fetch('@Url.Action("TaskJson", "TaskUs")' + '?idUser=' + userFilter + '&idFase=' + faseFilter)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Datos recibidos:", data); // Imprime los datos en la consola
+                    gridApi.setGridOption("rowData", data); // Establece los datos en el grid
+                })
+                .catch((error) => {
+                    console.error("Ocurrió un error durante la solicitud:", error);
+                });
+
+            // Función para refrescar el grid
+            function refreshUserGrid() {
+                fetch('@Url.Action("TaskJson", "TaskUs")' + '?idUser=' + userFilter + '&idFase=' + faseFilter)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log("Datos actualizados recibidos:", data);
+                        gridApi.setGridOption("rowData", data); // Actualiza los datos en el grid
+                    })
+                    .catch((error) => {
+                        console.error("Ocurrió un error durante la solicitud de actualización:", error);
+                    });
+            }
+
+            // Conectar SignalR para escuchar el evento de refresco
+            const connection = new signalR.HubConnectionBuilder().withUrl(systemHubUrl()).build();
+
+            connection.on("RefreshTasksGrid", function () {
+                refreshUserGrid(); // Llamada a la función que refresca los datos del grid
+            });
+
+            connection.start().catch(function (err) {
+                return console.error(err.toString());
+            });
+        });
+
+
+    </script>
+}

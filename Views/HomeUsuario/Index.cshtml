@@ -1,8 +1,90 @@
-﻿
+﻿@model IEnumerable<Fase>
+
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_LayoutUsuario.cshtml";
 }
 
-<h1>Index</h1>
 
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-lg-12 mb-4 order-0">
+                <div class="card">
+                    <div class="d-flex align-items-end row">
+                        <div class="col-sm-7">
+                            @if (User.Identity!.IsAuthenticated)
+                            {
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">Bienvenido a la Plataforma Skip Level <b>@User.Claims.Where(c => c.Type == ClaimTypes.Name).Select(c => c.Value).SingleOrDefault()</b>! 🎉</h5>
+                                    <p class="mb-4">
+                                        Para mas Informacion de como usar la plataforma acercate a <span class="fw-bold">Recursos Humanos</span> para mas informacion.
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-sm-5 text-center text-sm-left">
+                            <div class="card-body pb-0 px-0 px-md-4">
+                                <img src="../assets/img/illustrations/man-with-laptop-light.png"
+                                     height="140"
+                                     alt="View Badge User"
+                                     data-app-dark-img="illustrations/man-with-laptop-dark.png"
+                                     data-app-light-img="illustrations/man-with-laptop-light.png" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @{
+            var userId = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
+        }
+
+        <div class="row">
+            @if (Model != null && Model.Any(fase => fase.IsActive == true))
+            {
+                foreach (var fase in Model.Where(fase => fase.IsActive == true))
+                {
+                    <div class="col-2 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title d-flex justify-content-between">
+                                    <div class="avatar flex-shrink-0">
+                                        <i class='bx bxs-calendar-check' style='color:#49d189 ; font-size: 40px'></i>
+                                    </div>
+                                </div>
+                                <h3 class="card-title text-nowrap mb-2"> @fase.Name </h3>
+                                <button data-id="@fase.Id" data-userid="@userId" type="button" class="btn rounded-pill btn-md btn-primary btnNew">Acciones</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <div class="content-backdrop fade"></div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @*     <script src="~/lib/paramquery-pro/jsZip-2.5.0/jszip.min.js"></script>
+    <script src="~/lib/paramquery-pro/jszip-utils-0.0.2/jszip-utils.min.js"></script>
+    <script src="~/lib/paramquery-pro/pqgrid.min.js"></script>
+    <script src="~/lib/paramquery-pro/localize/pq-localize-en.js"></script> *@
+    <script src="~/lib/FileSaver/dist/FileSaver.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".btnNew").click(function () {
+                var idFase = $(this).data("id");
+                var userId = $(this).data("userid");
+                // Usamos el idFase y el userId en la URL
+                window.location.href = '@Url.Action("Index", "TaskUs")' + '?fasefilter=' + idFase + '&userfilter=' + userId;
+            });
+        });
+    </script>
+
+
+
+}

@@ -318,9 +318,9 @@ public class SKLRepository : ISKLRepositories
     => await _context.ExecuteStoredProcedureQueryAsync<Tasks>(_storedProcedure,
     new { Option = "GET_TASK" });
 
-    public async Task<Tasks> GetSKLTask(int idTask)
+    public async Task<TaskPerEval> GetSKLTask(int idTask)
     {
-        var list = await _context.ExecuteStoredProcedureQueryAsync<Tasks>(_storedProcedure,
+        var list = await _context.ExecuteStoredProcedureQueryAsync<TaskPerEval>(_storedProcedure,
             new { Option = "GET_ONE_TASK", Param1 = idTask });
         return list.FirstOrDefault() ?? new() { Name = "" };
     }
@@ -355,11 +355,9 @@ public class SKLRepository : ISKLRepositories
             new
             {
                 Option = "UPD_TASK",
-                Param1 = tasks.Id,
-                Param2 = tasks.IdUserT,
-                Param3 = tasks.IdFaseT,
-                Param4 = tasks.Accion,
-                Param5 = tasks.IdAspect
+                Param1 = tasks.IdTask,
+                Param2 = tasks.Accion,
+                Param3 = tasks.IdAspect
 
             });
     }
