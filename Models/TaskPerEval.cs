@@ -20,6 +20,8 @@
         public string AspectName { get; set; }
         [Map("id_evidences")]
         public int IdEvidences { get; set; }
+        [Map("evidences")]
+        public string Evidences { get; set; }
         [Map("id_eval")]
         public int IdEval { get; set; }
         [Map("emp_no")]

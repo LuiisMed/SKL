@@ -7,11 +7,13 @@ namespace SKL.Models;
 
 public partial class Evidence
 {
+    [Map("id_evidences")]
     public int IdEvidences { get; set; }
-
-    public int IdAction { get; set; }
-
+    [Map("id_task")]
+    public int IdTask { get; set; }
+    [Map("evidences")]
     public string Evidences { get; set; }
 
-    public virtual Tasks IdActionNavigation { get; set; }
+    public IEnumerable<Task> Task { get; set; }
+
 }

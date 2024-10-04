@@ -224,4 +224,35 @@ public class SKLServices : ISKLServices
         _repository.DataChangeEventHandler += DataChangeEventHandler;
         return await _repository.DeleteSKLEvalAsync(idEval);
     }
+    /*---------------------------------------------------------------------------*/
+    /*---------------------------------EVIDENCES-----------------------------------*/
+    public async Task<IEnumerable<Evidence>> GetSKLEvidencesAsync()
+    => await _repository.GetSKLEvidencesAsync();
+
+    public async Task<IEnumerable<Evidence>> GetSKLTaskEvidence(int idTask)
+    => await _repository.GetSKLTaskEvidence(idTask);
+
+    public async Task<IEnumerable<Evidence>> GetSKLEvidenceAsync(int idEvidences)
+    => await _repository.GetSKLEvidenceAsync(idEvidences);
+
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLEviPerTaskAsync(int IdUserE, int IdFaseE)
+    => await _repository.GetSKLEviPerTaskAsync(IdUserE, IdFaseE);
+
+    public async Task<(bool, string)> InsertSKLEvidencesAsync(Evidence evidencedata)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.InsertSKLEvidencesAsync(evidencedata);
+    }
+
+    public async Task<(bool, string)> UpdateSKLEvidencesAsync(Evidence evidencedata)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.UpdateSKLEvidencesAsync(evidencedata);
+    }
+
+    public async Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidences)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.DeleteSKLEvidencesAsync(idEvidences);
+    }
 }

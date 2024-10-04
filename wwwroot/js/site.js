@@ -21,7 +21,8 @@ function showWindowPopUp(url) {
 
 // Hub URL
 function systemHubUrl() {
-    return '/systemHub';
+    const virtualApp = window.location.host == 'localhost' ? '' : window.location.pathname.split('/')[1]
+    return '/' + virtualApp + '/systemHub';
 }
 
 function waitTime(refresh) {

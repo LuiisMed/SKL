@@ -64,6 +64,16 @@ public interface ISKLRepositories
     Task<(bool, string)> InsertSKLEvalAsync(Eval eval);
     Task<(bool, string)> UpdateSKLEvalAsync(Eval eval);
     Task<(bool, string)> DeleteSKLEvalAsync(int idEval);
+    /*---------------------------------------------------------------------------*/
+    /*----------------------------------EVIDENCES------------------------------------*/
+    Task<IEnumerable<Evidence>> GetSKLEvidencesAsync();
+    Task<IEnumerable<Evidence>> GetSKLTaskEvidence(int idTask);
+    Task<IEnumerable<TaskPerEvi>> GetSKLEviPerTaskAsync(int IdUserE, int IdFaseE);
+    Task<IEnumerable<Evidence>> GetSKLEvidenceAsync(int idEvidences);
+    Task<(bool, string)> InsertSKLEvidencesAsync(Evidence evidence);
+    Task<(bool, string)> UpdateSKLEvidencesAsync(Evidence evidence);
+    Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidences);
+
 
 
 

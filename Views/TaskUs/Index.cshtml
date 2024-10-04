@@ -72,9 +72,10 @@
                 { field: "name", headerName: "Usuario", minWidtha: 150, hide: true },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "faseName", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "accion", headerName: "Accion", minWidth: 130 },
+                { field: "accion", headerName: "Accion", minWidth: 400 },
                 { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "aspectName", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "aspectName", headerName: "Aspecto", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 400, hide: false },
                 {
                     headerName: "Acciones",
                     field: "actions",
@@ -82,13 +83,18 @@
                         // Aquí puedes agregar HTML para los botones
                         return `
 
-                        <button type="button" onclick="handleUpdate('${params.data.idTask}')" class="btn btn-icon btn-primary">
-                          <span class="tf-icons bx bx-pen"></span>
+                        <button type="button" onclick="InsertEvidence('${params.data.idTask}')" class="btn btn-icon btn-primary">
+                          <span class="tf-icons bx bx-upload"></span>
+                        </button>
+
+                        <button type="button" onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary">
+                          <span class="tf-icons bx bx-download"></span>
                         </button>
 
                                     `;
                     },
-                    minWidth: 150
+                    minWidth: 150,
+                   
                 }
             ],
             rowData: null,
@@ -111,9 +117,9 @@
             paginationPageSizeSelector: [10, 25, 50],
         };
 
-        function handleUpdate(idTask) {
+        function InsertEvidence(idTask) {
             $.ajax({
-                url: '@Url.Action("UpdateTaskPopUp", "TaskAd")' + '?idTask=' + idTask,  // Llama a la acción de eliminación
+                url: '@Url.Action("NewEvidencePopUp", "TaskUs")' + '?idTask=' + idTask,  // Llama a la acción de eliminación
                 type: 'POST',
                 success: function (data) {
                     $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
@@ -125,6 +131,11 @@
                 }
             });
         }
+
+        function Download(evidences) {
+            window.location.href = '@Url.Action("DownloadFile", "TaskUs")' + '?fileName=' + encodeURIComponent(evidences);
+        }
+
 
         const userFilter = @Model.UserFilter;
         const faseFilter = @Model.FaseFilter;

@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using Microsoft.Build.Framework;
+using Microsoft.VisualBasic;
 using SKL.Data;
 using SKL.Models;
 using SKL.Repositories.IRepository;
@@ -435,6 +436,71 @@ public class SKLRepository : ISKLRepositories
             {
                 Option = "DEL_EVAL",
                 Param1 = idEval
+            });
+    }
+
+    /*----------------------------------EVIDENCES------------------------------------*/
+    public async Task<IEnumerable<Evidence>> GetSKLEvidencesAsync()
+    => await _context.ExecuteStoredProcedureQueryAsync<Evidence>(_storedProcedure,
+    new { Option = "GET_EVIDENCES" });
+
+    public async Task<IEnumerable<Evidence>> GetSKLTaskEvidence(int idTask)
+    => await _context.ExecuteStoredProcedureQueryAsync<Evidence>(_storedProcedure, new
+    {
+        Option = "GET_TASK_EVIDENCE",
+        Param1 = idTask
+    });
+
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLEviPerTaskAsync(int IdUserE, int IdFaseE)
+    => await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure, new
+    {
+        Option = "GET_TASK_USER_FASE_EVI",
+        Param1 = IdUserE,
+        Param2 = IdFaseE
+    });
+
+    public async Task<IEnumerable<Evidence>> GetSKLEvidenceAsync(int idEvidence)
+    => await _context.ExecuteStoredProcedureQueryAsync<Evidence>(_storedProcedure, new
+    {
+        Option = "GET_ONE_EVIDENCE",
+        Param1 = idEvidence
+    });
+
+    public async Task<(bool, string)> InsertSKLEvidencesAsync(Evidence evidence)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_EVIDENCES",
+                Param1 = evidence.Evidences,
+                Param2 = evidence.IdTask
+
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLEvidencesAsync(Evidence evidence)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_EVIDENCES",
+                Param1 = evidence.IdEvidences,
+                Param2 = evidence.Evidences,
+                Param3 = evidence.IdTask
+
+            });
+    }
+
+    public async Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidence)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "DEL_EVIDENCES",
+                Param1 = idEvidence
             });
     }
 

@@ -417,6 +417,7 @@
     <Folder Include="wwwroot\lib\jquery\" />
     <Folder Include="wwwroot\lib\jquery\dist\" />
     <Folder Include="wwwroot\img\" />
+    <Folder Include="wwwroot\evidences\" />
   </ItemGroup>
 
 </Project>

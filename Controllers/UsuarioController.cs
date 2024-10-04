@@ -57,16 +57,17 @@ namespace SKL.Controllers
                 {
                     // Generar un nombre único para la imagen
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
+                    //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
+                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH", uniqueFileName);
 
                     // Guardar la imagen en el servidor
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    using (var stream = System.IO.File.Create(filePath))
                     {
                         await imageFile.CopyToAsync(stream);
                     }
 
                     // Guardar la ruta de la imagen en el modelo
-                    data.ImagePath = $"/img/{uniqueFileName}";
+                    data.ImagePath = $"{uniqueFileName}";
                 }
 
                 _service.DataChangeEventHandler += RefreshUserGrid;
@@ -176,15 +177,17 @@ namespace SKL.Controllers
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
+                    //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
+                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH", uniqueFileName);
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+
+                    using (var stream = System.IO.File.Create(filePath))
                     {
                         await imageFile.CopyToAsync(stream);
                     }
 
                     // Actualizar la ruta de la imagen en el modelo
-                    data.ImagePath = $"/img/{uniqueFileName}";
+                    data.ImagePath = $"{uniqueFileName}";
                 }
                 else
                 {
