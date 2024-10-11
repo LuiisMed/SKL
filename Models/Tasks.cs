@@ -23,5 +23,11 @@ public partial class Tasks
     public int IdAspect { get; set; }
     [Map("aspect_name")]
     public string AspectName { get; set; }
+    [Map("isCompleted")]
+    public Boolean IsCompleted { get; set; }
+    [Map("task_start")]
+    public DateTime Start {  get; set; }
+    [Map("task_end")]
+    public DateTime End { get; set; }
 
 }

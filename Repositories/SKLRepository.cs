@@ -318,6 +318,9 @@ public class SKLRepository : ISKLRepositories
     public async Task<IEnumerable<Tasks>> GetSKLTasksAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<Tasks>(_storedProcedure,
     new { Option = "GET_TASK" });
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedAsync()
+    => await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure,
+    new { Option = "GET_TASKS_COMPLETED" });
 
     public async Task<TaskPerEval> GetSKLTask(int idTask)
     {
@@ -326,8 +329,8 @@ public class SKLRepository : ISKLRepositories
         return list.FirstOrDefault() ?? new() { Name = "" };
     }
 
-    public async Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser)
-    => await _context.ExecuteStoredProcedureQueryAsync<Tasks>(_storedProcedure, new
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLTaskPerUserFase(int idFase, int idUser)
+    => await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure, new
     {
         Option = "GET_TASK_PER_USER_FASE",
         Param1 = idFase,
@@ -344,7 +347,10 @@ public class SKLRepository : ISKLRepositories
                 Param1 = tasks.IdUserT,
                 Param2 = tasks.IdFaseT,
                 Param3 = tasks.Accion,
-                Param4 = tasks.IdAspect
+                Param4 = tasks.IdAspect,
+                Param5 = tasks.IsCompleted,
+                Param6 = tasks.Start,
+                Param7 = tasks.End
 
             });
     }
@@ -358,7 +364,10 @@ public class SKLRepository : ISKLRepositories
                 Option = "UPD_TASK",
                 Param1 = tasks.IdTask,
                 Param2 = tasks.Accion,
-                Param3 = tasks.IdAspect
+                Param3 = tasks.IdAspect,
+                Param4 = tasks.IsCompleted,
+                Param5 = tasks.Start,
+                Param6 = tasks.End
 
             });
     }
@@ -452,19 +461,19 @@ public class SKLRepository : ISKLRepositories
     });
 
     public async Task<IEnumerable<TaskPerEvi>> GetSKLEviPerTaskAsync(int IdUserE, int IdFaseE)
-    => await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure, new
+    =>  await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure, new
     {
         Option = "GET_TASK_USER_FASE_EVI",
         Param1 = IdUserE,
         Param2 = IdFaseE
     });
 
-    public async Task<IEnumerable<Evidence>> GetSKLEvidenceAsync(int idEvidence)
-    => await _context.ExecuteStoredProcedureQueryAsync<Evidence>(_storedProcedure, new
+    public async Task<Evidence> GetSKLEvidenceAsync(int idEvidences)
     {
-        Option = "GET_ONE_EVIDENCE",
-        Param1 = idEvidence
-    });
+        var list = await _context.ExecuteStoredProcedureQueryAsync<Evidence>(_storedProcedure,
+            new { Option = "GET_ONE_TASK", Param1 = idEvidences });
+        return list.FirstOrDefault() ?? new() { Evidences = "" };
+    }
 
     public async Task<(bool, string)> InsertSKLEvidencesAsync(Evidence evidence)
     {
@@ -493,14 +502,14 @@ public class SKLRepository : ISKLRepositories
             });
     }
 
-    public async Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidence)
+    public async Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidences)
     {
         _context.DataChangeEventHandler += DataChangeEventHandler;
         return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
             new
             {
                 Option = "DEL_EVIDENCES",
-                Param1 = idEvidence
+                Param1 = idEvidences
             });
     }
 

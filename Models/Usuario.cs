@@ -13,7 +13,7 @@ public partial class Usuario
     [Map("usr_name")]
     public string UserName { get; set; }
     [Map("usr_pass")]
-    public string? UserPassword { get; set; }
+    public string UserPassword { get; set; }
     [Map("id_usr_type")]
     public int IdRole { get; set; }
     [Map("usr_type_name")]

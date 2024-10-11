@@ -24,40 +24,17 @@ namespace SKL.Controllers
         public async Task<IActionResult> Index(int userfilter, int fasefilter)
         {
 
-            var users = await _service.GetSKLUsuarios();
-            var aspects = await _Sklservice.GetSKLAspectsAsync();
             var eval = await _Sklservice.GetSKLEvalsAsync();
 
             TaskPerEval model = new()
             {
                 UserFilter = userfilter,
                 FaseFilter = fasefilter,
-                Usuarios = users,
-                Aspectos = aspects,
                 Evals = eval
             };
 
             return View(model);
         }
-
-
-        //[HttpPost]
-        //public IActionResult NewEvidencePopUp2()
-        //{
-
-        //    ViewData["Title"] = "Nuevo Usuario";
-        //    ViewBag.Action = "Insert";
-        //    return PartialView("NewEvidencePopUp", new Evidence());
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> NewEvidencePopUp(int idTask)
-        //{
-        //    var model = await _Sklservice.GetSKLTaskEvidence(idTask);
-        //    ViewData["Title"] = "Nuevo Usuario";
-        //    ViewBag.Action = "Insert";
-        //    return PartialView("NewEvidencePopUp", new Evidence());
-        //}
 
         [HttpPost]
         public async Task<IActionResult> NewEvidencePopUp(int idTask)
@@ -68,10 +45,18 @@ namespace SKL.Controllers
 
             var evidence = new Evidence
             {
-                IdTask = idTask // Asigna idTask al modelo Evidence
+                IdTask = idTask 
             };
 
             return PartialView("NewEvidencePopUp", evidence);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteEviPopUp(int idEvidences)
+        {
+            var model = await _Sklservice.GetSKLEvidenceAsync(idEvidences);
+            return PartialView("DeleteEviPopUp", model);
         }
 
 
@@ -85,8 +70,7 @@ namespace SKL.Controllers
                 {
                     // Generar un nombre único para la imagen
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    //var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"\\reyprdnas01\Pasmxshared\Hector Garcia\SKL", uniqueFileName);
-                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH", uniqueFileName);
+                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH\Evidences", uniqueFileName);
 
                     // Guardar la imagen en el servidor
                     using (var stream = System.IO.File.Create(filePath))
@@ -114,19 +98,86 @@ namespace SKL.Controllers
                 : RedirectToAction("Error");
         }
 
+        public async Task<IActionResult> Delete(Evidence model)
+        {
+            _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
+            var (error, message) = await _Sklservice.DeleteSKLEvidencesAsync(model.IdEvidences);
+
+            var jsonResult = Json(
+                 new
+                 {
+                     Status = error ? "error" : "success",
+                     Message = error ? message : "Action deleted successfully.",
+                     Icon = error ? "error" : "success"
+                 });
+            return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                ? jsonResult
+                : RedirectToAction("Error");
+        }
+
         private async void RefreshTasksGrid(object? sender, EventArgs e)
         => await _context.Clients.All.SendAsync("RefreshTasksGrid");
 
+        //public async Task<IActionResult> TaskJson(int idUser, int idFase)
+        //{
+        //    var tasks = await _Sklservice.GetSKLEviPerTaskAsync(idUser, idFase);
+        //    return Ok(tasks);
+        //}
+
+        [HttpGet]
         public async Task<IActionResult> TaskJson(int idUser, int idFase)
         {
             var tasks = await _Sklservice.GetSKLEviPerTaskAsync(idUser, idFase);
-            return Ok(tasks);
+
+            // Proyectar a un objeto anónimo con las fechas formateadas
+            var fasesFormateadas = tasks.Select(f => new
+            {
+                f.IdTask,
+                f.IdUserT,
+                f.Name,
+                f.IdFaseT,
+                f.FaseName,
+                f.Accion,
+                f.IdAspect,
+                f.AspectName,
+                f.IsCompleted,
+                Start = f.Start.ToString("yyyy-MM-dd"),
+                End = f.End.ToString("yyyy-MM-dd"),
+                f.IdEvidences,
+                f.Evidences,
+                Month = f.Start.ToString("MMMM")
+        });
+
+            // Devolver el resultado como JSON
+            return Json(fasesFormateadas);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> DownloadFile(string fileName)
         {
-            var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH", fileName);
+            var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH\Evidences", fileName);
+
+            if (System.IO.File.Exists(filePath))
+            {
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(filePath, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                return File(memory, "application/octet-stream", fileName);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadEva(string fileName)
+        {
+            var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH\Evaluations", fileName);
 
             if (System.IO.File.Exists(filePath))
             {

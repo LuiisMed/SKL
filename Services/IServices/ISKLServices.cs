@@ -51,8 +51,9 @@ public interface ISKLServices
     /*---------------------------------------------------------------------------*/
     /*------------------------------------TASKS--------------------------------------*/
     Task<IEnumerable<Tasks>> GetSKLTasksAsync();
+    Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedAsync();
     Task<TaskPerEval> GetSKLTask(int idTask);
-    Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser);
+    Task<IEnumerable<TaskPerEvi>> GetSKLTaskPerUserFase(int idFase, int idUser);
     Task<(bool, string)> InsertSKLTaskAsync(Tasks taskdata);
     Task<(bool, string)> UpdateSKLTaskAsync(Tasks data);
     Task<(bool, string)> DeleteSKLTaskAsync(int idTask);
@@ -69,16 +70,14 @@ public interface ISKLServices
     /*---------------------------------EVIDENCES-----------------------------------*/
     Task<IEnumerable<Evidence>> GetSKLEvidencesAsync();
     Task<IEnumerable<Evidence>> GetSKLTaskEvidence(int idTask);
-    Task<IEnumerable<Evidence>> GetSKLEvidenceAsync(int idEvidences);
+    Task<Evidence> GetSKLEvidenceAsync(int idEvidences);
     Task<IEnumerable<TaskPerEvi>> GetSKLEviPerTaskAsync(int idFase, int idUser);
     Task<(bool, string)> InsertSKLEvidencesAsync(Evidence evidencedata);
     Task<(bool, string)> UpdateSKLEvidencesAsync(Evidence evidencedata);
     Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidences);
-
-
-
-
-
+    /*---------------------------------------------------------------------------*/
+    /*---------------------------------CHARTS-----------------------------------*/
+    Task<object> GetChartTasksCompletedAsync();
 
 
 

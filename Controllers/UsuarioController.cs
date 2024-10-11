@@ -57,8 +57,7 @@ namespace SKL.Controllers
                 {
                     // Generar un nombre único para la imagen
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
-                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH", uniqueFileName);
+                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH\User photos", uniqueFileName);
 
                     // Guardar la imagen en el servidor
                     using (var stream = System.IO.File.Create(filePath))
@@ -178,7 +177,7 @@ namespace SKL.Controllers
                 {
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
                     //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
-                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH", uniqueFileName);
+                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH\User photos", uniqueFileName);
 
 
                     using (var stream = System.IO.File.Create(filePath))
@@ -256,7 +255,7 @@ namespace SKL.Controllers
                 if (!string.IsNullOrWhiteSpace(existingUser.ImagePath))
                 {
                     // Eliminar la imagen del servidor si existe
-                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingUser.ImagePath.TrimStart('/'));
+                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "User photos", existingUser.ImagePath.TrimStart('/'));
                     if (System.IO.File.Exists(imagePath))
                     {
                         System.IO.File.Delete(imagePath);

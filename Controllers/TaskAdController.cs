@@ -101,11 +101,38 @@ namespace SKL.Controllers
         //        : RedirectToAction("Error");
         //}
 
-        public async Task<IActionResult> Insert(Tasks taskData, Eval evalData)
+        public async Task<IActionResult> InsertEval(Eval evalData, IFormFile imageFile)
         {
             var (error, message) = (false, "");
-            //ACUERDATE LUIS DEL FUTURO DE CAMBIAR AQUI PARA QUE SI EL ARCHIVO DEL LA EVALUACION ES NULL NO ACEPTE LA INSERCION DE DATOS
             var existingEval = await _Sklservice.GetSKLEvalPerUserAsync(evalData.IdUserE, evalData.IdFaseE);
+
+            if (existingEval == null || !existingEval.Any())
+            {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH\Evaluations", uniqueFileName);
+
+                    using (var stream = System.IO.File.Create(filePath))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    evalData.Results = $"{uniqueFileName}";
+                }
+
+                await _Sklservice.InsertSKLEvalAsync(evalData);
+
+                // Redirigir a la acción Index después de insertar la evaluación
+            }
+            return RedirectToAction("Index", new { UserFilter = evalData.IdUserE, FaseFilter = evalData.IdFaseE });
+
+        }
+
+
+        public async Task<IActionResult> Insert(Tasks taskData)
+        {
+            var (error, message) = (false, "");
 
             if (taskData.IdTask == 0)
             {
@@ -113,22 +140,19 @@ namespace SKL.Controllers
                 (error, message) = await _Sklservice.InsertSKLTaskAsync(taskData);
             }
 
-            if (existingEval == null || !existingEval.Any())
-            {
-                await _Sklservice.InsertSKLEvalAsync(evalData);
-            }
-
+            // Si ya existe una evaluación, no hacer redirección
             var jsonResult = Json(new
             {
                 Status = error ? "error" : "success",
-                Message = error ? message : "Accion creada exitosamente.",
-                Icon = error ? "error" : "success"
+                Message = error ? message : "Evaluación ya existente.",
+                Icon = error ? "error" : "info" // O cualquier otro icono que prefieras para este caso
             });
 
             return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 ? jsonResult
                 : RedirectToAction("Error");
         }
+
 
 
         public async Task<IActionResult> Update(Tasks data)
@@ -172,7 +196,37 @@ namespace SKL.Controllers
         private async void RefreshTasksGrid(object? sender, EventArgs e)
         => await _context.Clients.All.SendAsync("RefreshTasksGrid");
 
+        //public async Task<IActionResult> TaskJson(int idUser, int idFase)
+        //=> Ok(await _Sklservice.GetSKLTaskPerUserFase(idUser, idFase));
+
+
+        [HttpGet]
         public async Task<IActionResult> TaskJson(int idUser, int idFase)
-        => Ok(await _Sklservice.GetSKLTaskPerUserFase(idUser, idFase));
+        {
+            var tasks = await _Sklservice.GetSKLTaskPerUserFase(idUser, idFase);
+
+            // Proyectar a un objeto anónimo con las fechas formateadas
+            var fasesFormateadas = tasks.Select(f => new
+            {
+                f.IdTask,
+                f.IdUserT,
+                f.Name,
+                f.IdFaseT,
+                f.FaseName,
+                f.Accion,
+                f.IdAspect,
+                f.AspectName,
+                f.IsCompleted,
+                f.Evidences,
+                Start = f.Start.ToString("yyyy-MM-dd"),
+                End = f.End.ToString("yyyy-MM-dd"),
+                Month = f.Start.ToString("MMMM")
+        });
+
+            // Devolver el resultado como JSON
+            return Json(fasesFormateadas);
+        }
+
+
     }
 }

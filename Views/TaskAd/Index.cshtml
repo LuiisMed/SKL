@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card mb-4">
-                    <h5 class="card-header">Asignar Acciones</h5>
+                    <h5 class="card-header">Buscar Empleado</h5>
                     <div class="card-body">
                         <!--INICIO DEL FORMULARIO DE FILTRO-->
                         <form id="userForm" method="get" asp-controller="TaskAd" asp-action="Index">
@@ -27,20 +27,64 @@
 
                             <button type="submit" class="btn btn-primary" hidden id="searchButton">Search</button>
                         </form>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <h5 class="card-header">Insertar Evaluacion de Fase</h5>
+                    <div class="card-body">
+                        <form asp-controller="TaskAd" asp-action="InsertEval" method="post" enctype="multipart/form-data">
+                            <input type="hidden" asp-for="IdTask" />
+                            <input type="hidden" asp-for="IdFaseE" />
+                            <input type="hidden" asp-for="IdUserE" />
 
-  
-                        <div class="divider">
-                            <div class="divider-text">Acciones de la Fase</div>
-                        </div>
-                        
-                        <br />
-                        <!--FIN DEL FORMULARIO DE FILTRO-->
-                        <!--INICIO DEL FORMULARIO DE INSERT-->
+                            @if (Model.Evals != null && Model.Evals.Any(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter))
+
+                            {
+                                var eval = Model.Evals.First(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter);
+
+                                <div class="mb-3">
+                                    <label asp-for="UserEval" class="form-label">Calificacion</label>
+                                    <input type="text" asp-for="UserEval" class="form-control" value="@eval.UserEval" aria-describedby="defaultFormControlHelp" readonly>
+                                </div>
+                                <div>
+                                    <label asp-for="Comentario" class="form-label">Comentarios</label>
+                                    <textarea class="form-control" rows="3" readonly>@eval.Comentario</textarea>
+                                </div>
+                                <div>
+                                    <label asp-for="Results" class="form-label">Evidencia</label>
+                                    <input asp-for="Results" name="imageFile" class="form-control" type="file" readonly />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mb-3">
+                                    <label asp-for="UserEval" class="form-label">Calificacion</label>
+                                    <input type="text" asp-for="UserEval" class="form-control" aria-describedby="defaultFormControlHelp" placeholder="Calificacion">
+                                </div>
+                                <div>
+                                    <label asp-for="Comentario" class="form-label">Comentarios</label>
+                                    <textarea class="form-control" asp-for="Comentario" rows="3" placeholder="Comentarios al Usuario de la calificacion obtenida"></textarea>
+                                </div>
+                                <div>
+                                    <label asp-for="Results" class="form-label">Evidencia</label>
+                                    <input asp-for="Results" name="imageFile" type="hidden" />
+                                    <input asp-for="Results" name="imageFile" class="form-control" type="file" />
+                                </div>
+                                <br />
+
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+
+                            }
+                            <br />
+                        </form>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <h5 class="card-header">Asignar Acciones</h5>
+                    <div class="card-body">
                         <form id="form1" asp-controller="TaskAd" asp-action="Insert" method="post" enctype="multipart/form-data">
                             <input type="hidden" asp-for="IdTask" />
                             <input type="hidden" asp-for="IdFaseT" />
-                            <input type="hidden" asp-for="IdFaseE" />
-                            <input type="hidden" asp-for="IdUserE" />
                             <input type="hidden" asp-for="IdUserT" />
                             <!--INICIO DEL FORMULARIO DE ACCIONES-->
                             <div>
@@ -56,44 +100,17 @@
                                     }
                                 </select>
                             </div>
-                            <!--INICIO DEL FORMULARIO DE EVALUACION-->
-
-                            <div class="divider">
-                                <div class="divider-text">Evaluacion de la Fase</div>
+                            <div class="mb-3 mb-3">
+                                <label asp-for="Start" class="col-md-2 col-form-label">Fecha de Asignacion</label>
+                                <input class="form-control" value="CurrentDate" type="date" asp-for="Start" />
                             </div>
-
-
-                            @if (Model.Evals != null && Model.Evals.Any(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter))
-                            {
-                                var eval = Model.Evals.First(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter);
-
-                                <div class="mb-3">
-                                    <label asp-for="UserEval" class="form-label">Calificacion</label>
-                                    <input type="text" asp-for="UserEval" class="form-control" value="@eval.UserEval" aria-describedby="defaultFormControlHelp" readonly>
-                                </div>
-                                <div>
-                                    <label asp-for="Comentario" class="form-label">Comentarios</label>
-                                    <textarea class="form-control" rows="3" readonly>@eval.Comentario</textarea>
-                                </div>
-                            }
-
-                            else
-                            {
-                                <div class="mb-3">
-                                    <label asp-for="UserEval" class="form-label">Calificacion</label>
-                                    <input type="text" asp-for="UserEval" class="form-control" aria-describedby="defaultFormControlHelp">
-                                </div>
-                                <div>
-                                    <label asp-for="Comentario" class="form-label">Comentarios</label>
-                                    <textarea class="form-control" asp-for="Comentario" rows="3" placeholder="Comentarios al Usuario de la calificacion obtenida"></textarea>
-                                </div>
-                            }
-
+                            <div class="mb-3 mb-3">
+                                <label asp-for="End" class="col-md-2 col-form-label">Fecha de Cierre</label>
+                                <input class="form-control" value="CurrentDate" type="date" asp-for="End" />
+                            </div>
                             <br />
                             <button type="submit" class="btn btn-primary">Save changes</button>
                         </form>
-                        <!--FIN DEL FORMULARIO DE FILTRO-->
-
                     </div>
                 </div>
             </div>
@@ -195,14 +212,32 @@
 
         const gridOptions = {
             columnDefs: [
-                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
-                { field: "name", headerName: "Usuario", minWidtha: 150, hide: false },
+                { field: "name", headerName: "Usuario", minWidtha: 150, maxWidth: 150, hide: false },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "faseName", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "accion", headerName: "Accion", minWidth: 130 },
+                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 90, hide: false },
+                { field: "accion", headerName: "Accion", minWidth: 300 },
                 { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "aspectName", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "start", headerName: "Fecha de Asignacion", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "end", headerName: "Fecha de Cierre", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 150, hide: false },
+                {
+                    field: "isCompleted",
+                    headerName: "Revisado",
+                    minWidth: 70,
+                    maxWidth: 90,
+                    cellRenderer: (params) => {
+                        const checked = params.value ? 'checked' : '';
+                        return `
+                            <div class="checkbox-container">
+                                <input type="checkbox" ${checked} disabled />
+                                <span class="custom-checkbox ${checked ? 'checked' : ''}"></span>
+                            </div>
+                        `;
+                    }
+                },
                 {
                     headerName: "Acciones",
                     field: "actions",
@@ -215,6 +250,9 @@
                                 </button>
                                                 <button type="button" onclick="handleUpdate('${params.data.idTask}')" class="btn btn-icon btn-primary">
                                   <span class="tf-icons bx bx-pen"></span>
+                                </button>
+                                                                <button type="button" onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary">
+                                  <span class="tf-icons bx bx-download"></span>
                                 </button>
 
                             `;
@@ -272,6 +310,10 @@
             });
         }
 
+        function Download(evidences) {
+            window.location.href = '@Url.Action("DownloadFile", "TaskUs")' + '?fileName=' + encodeURIComponent(evidences);
+        }
+
 
         // setup the grid after the page has finished loading
         document.addEventListener("DOMContentLoaded", function () {
@@ -324,14 +366,20 @@
             });
         });
 
-        $(function () {
-            var formProvider = $('#form1');
-            formProvider.submit(function (e) {
-                e.preventDefault();
-                formProvider.validate();
-                if (formProvider.valid()) {
-                    var form = $(this);
-                    $.post(form.attr('action'), form.serialize(), function (res) {
+    $(function () {
+        var formProvider = $('#form1');
+        formProvider.submit(function (e) {
+            e.preventDefault();
+            formProvider.validate();
+            if (formProvider.valid()) {
+                var formData = new FormData(this);
+                $.ajax({
+                    url: formProvider.attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
                         if (res.status === 'success') {
                             // Show success toast
                             showToast('bg-success text-white', 'bx-check-circle', 'Success', res.message);
@@ -341,48 +389,49 @@
                             // Show error toast
                             showToast('bg-danger text-white', 'bx-x-circle', 'Error', res.message);
                         }
-                    });
-                }
-            });
-
-            // Function to display toast by adding and removing "show" class
-            function showToast(type, icon, header, message) {
-                var toastElement = `
-                                    <div class="bs-toast toast toast-placement-ex m-2 bg-success top-0 start-0 fade show ${type}" role="alert" aria-live="assertive" aria-atomic="true">
-                                    <div class="toast-header">
-                                        <i class="bx ${icon} me-2"></i>
-                                        <strong class="me-auto">${header}</strong>
-                                        <small class="text-white">Just now</small>
-                                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                                    </div>
-                                    <div class="toast-body">
-                                        ${message}
-                                    </div>
-                                </div>`;
-
-                var toastContainer = $('#toastContainer');
-                if (!toastContainer.length) {
-                    toastContainer = $('<div id="toastContainer" style="position: fixed; top: 0; left: 0; z-index: 9999;"></div>');
-                    $('body').append(toastContainer);
-                }
-
-                var toast = $(toastElement);
-                toastContainer.append(toast);
-
-                // Show toast (by adding "show" class)
-                setTimeout(function () {
-                    toast.addClass('show');
-                }, 100); // Slight delay to allow CSS transition
-
-                // Hide the toast after 3 seconds (by removing "show" class)
-                setTimeout(function () {
-                    toast.removeClass('show');
-                    setTimeout(function () {
-                        toast.remove(); // Remove from DOM after transition ends
-                    }, 500); // Wait for the hide transition to complete
-                }, 3000);
+                    }
+                });
             }
         });
+
+        // Function to display toast by adding and removing "show" class
+        function showToast(type, icon, header, message) {
+            var toastElement = `
+                    <div class="bs-toast toast toast-placement-ex m-2 bg-success top-0 start-0 fade show ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            <i class="bx ${icon} me-2"></i>
+                            <strong class="me-auto">${header}</strong>
+                            <small class="text-white">Just now</small>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                    </div>`;
+
+            var toastContainer = $('#toastContainer');
+            if (!toastContainer.length) {
+                toastContainer = $('<div id="toastContainer" style="position: fixed; top: 0; left: 0; z-index: 9999;"></div>');
+                $('body').append(toastContainer);
+            }
+
+            var toast = $(toastElement);
+            toastContainer.append(toast);
+
+            // Show toast (by adding "show" class)
+            setTimeout(function () {
+                toast.addClass('show');
+            }, 100); // Slight delay to allow CSS transition
+
+            // Hide the toast after 3 seconds (by removing "show" class)
+            setTimeout(function () {
+                toast.removeClass('show');
+                setTimeout(function () {
+                    toast.remove(); // Remove from DOM after transition ends
+                }, 500); // Wait for the hide transition to complete
+            }, 3000);
+        }
+    });
 
     </script>
 }

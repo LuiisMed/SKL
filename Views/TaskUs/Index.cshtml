@@ -12,16 +12,57 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card mb-4">
-                    <h5 class="card-header">Asignar Acciones</h5>
+                    <h5 class="card-header">Resultados de Encuestas</h5>
                     <div class="card-body">
                         <!--INICIO DEL FORMULARIO DE FILTRO-->
                         <a asp-controller="TaskUs" asp-action="TaskJson" asp-route-idUser="@Model.UserFilter" asp-route-idFase="@Model.FaseFilter" hidden>
                             Cargar Tareas
                         </a>
+                        @if (Model.Evals != null && Model.Evals.Any(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter))
+                        {
+                            var eval = Model.Evals.First(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter);
+
+                            <div class="mb-3">
+                                <label asp-for="UserEval" class="form-label">Calificación</label>
+                                <input type="text" asp-for="UserEval" class="form-control" value="@eval.UserEval" aria-describedby="defaultFormControlHelp" readonly>
+                            </div>
+                            <div>
+                                <label asp-for="Comentario" class="form-label">Comentarios</label>
+                                <textarea class="form-control" rows="3" readonly>@eval.Comentario</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Results" class="form-label">Archivo de Resultado</label>
+                                <input type="text" asp-for="Results" id="resultsInput" class="form-control" value="@eval.Results" aria-describedby="defaultFormControlHelp" readonly>
+                            </div>
+
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="DownloadEva(document.getElementById('resultsInput').value)">
+                                Descargar
+                            </button>
+                        }
+
+
+                        else
+                        {
+                            <div class="mb-3">
+                                <label asp-for="UserEval" class="form-label">Calificacion</label>
+                                <input type="text" asp-for="UserEval" class="form-control" aria-describedby="defaultFormControlHelp" readonly>
+                            </div>
+                            <div>
+                                <label asp-for="Comentario" class="form-label">Comentarios</label>
+                                <textarea class="form-control" asp-for="Comentario" rows="3" placeholder="Comentarios al Usuario de la calificacion obtenida" readonly></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Results" class="form-label">Archivo de Reultado</label>
+                                <input type="text" asp-for="Results" class="form-control" aria-describedby="defaultFormControlHelp" readonly>
+                            </div>
+                        }
+
+
+
 
 
                         <div class="divider">
-                            <div class="divider-text">Acciones de la Fase</div>
+                            <div class="divider-text">Acciones a Realizar</div>
                         </div>
 
                         <br />
@@ -60,8 +101,7 @@
 
     <script>
 
-        var minRowHeight = 25;
-        var currentRowHeight;
+
 
         let gridApi;
 
@@ -71,47 +111,80 @@
                 { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
                 { field: "name", headerName: "Usuario", minWidtha: 150, hide: true },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "faseName", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 150, hide: false },
                 { field: "accion", headerName: "Accion", minWidth: 400 },
                 { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "aspectName", headerName: "Aspecto", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 400, hide: false },
+                { field: "idEvidences", headerName: "ID Evidence", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "month", headerName: "Month", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "start", headerName: "Inicio", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "end", headerName: "Cierre", minWidth: 70, maxWidth: 150, hide: false },
+                {
+                    field: "isCompleted",
+                    headerName: "Revisado",
+                    minWidth: 50,
+                    maxWidth: 120,
+                    cellRenderer: (params) => {
+                        const checked = params.value ? 'checked' : '';
+                        return `
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" ${checked} disabled />
+                                        <span class="custom-checkbox ${checked ? 'checked' : ''}"></span>
+                                    </div>
+                                `;
+                    }
+                },
                 {
                     headerName: "Acciones",
                     field: "actions",
                     cellRenderer: function (params) {
-                        // Aquí puedes agregar HTML para los botones
+                        const currentDate = new Date();
+                        const taskEndDate = new Date(params.data.end); // Asegúrate de que la fecha "end" esté en un formato correcto
+
+                        // Si la fecha de término ha pasado, deshabilitar botones
+                        const isDisabled = currentDate > taskEndDate ? 'disabled' : '';
+
                         return `
+                    <button type="button" onclick="InsertEvidence('${params.data.idTask}')" class="btn btn-icon btn-primary" ${isDisabled}>
+                      <span class="tf-icons bx bx-upload"></span>
+                    </button>
 
-                        <button type="button" onclick="InsertEvidence('${params.data.idTask}')" class="btn btn-icon btn-primary">
-                          <span class="tf-icons bx bx-upload"></span>
-                        </button>
+                    <button type="button" onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary" ${isDisabled}>
+                      <span class="tf-icons bx bx-download"></span>
+                    </button>
 
-                        <button type="button" onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary">
-                          <span class="tf-icons bx bx-download"></span>
-                        </button>
-
-                                    `;
+                    <button type="button" onclick="handleDelete('${params.data.idEvidences}')" class="btn btn-icon btn-danger" ${isDisabled}>
+                        <span class="tf-icons bx bx-trash"></span>
+                    </button>
+                `;
                     },
                     minWidth: 150,
-                   
                 }
+
             ],
-            rowData: null,
+            getRowStyle: function (params) {
+                const currentDate = new Date();
+                const taskEndDate = new Date(params.data.end);
+                if (currentDate > taskEndDate) {
+                    return {
+                        'pointer-events': 'none', // Desactiva la interacción de la fila
+                        'opacity': '0.5',        // Cambia la opacidad para indicar que está deshabilitada
+                    };
+                }
+            },
             autoSizeStrategy: {
                 type: "fitGridWidth",
             },
             onGridReady: (params) => {
                 gridApi = params.api; // Obtener la instancia de gridApi
-                minRowHeight = params.api.getSizesForCurrentTheme().rowHeight;
-                currentRowHeight = minRowHeight;
             },
             defaultColDef: {
                 filter: "agTextColumnFilter",
                 floatingFilter: true,
+                enableRowGroup: true
             },
-            rowSelection: "multiple",
-            suppressRowClickSelection: true,
+            rowGroupPanelShow: 'always',
             pagination: true,
             paginationPageSize: 10,
             paginationPageSizeSelector: [10, 25, 50],
@@ -119,11 +192,11 @@
 
         function InsertEvidence(idTask) {
             $.ajax({
-                url: '@Url.Action("NewEvidencePopUp", "TaskUs")' + '?idTask=' + idTask,  // Llama a la acción de eliminación
+                url: '@Url.Action("NewEvidencePopUp", "TaskUs")' + '?idTask=' + idTask, 
                 type: 'POST',
                 success: function (data) {
-                    $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
-                    $('#ModalWindow').modal('show');  // Muestra el modal
+                    $('#ModalWindow .modal-content').html(data);  
+                    $('#ModalWindow').modal('show');  
                 },
                 error: function (xhr, status, error) {
                     console.error("Error al cargar el contenido del modal:", status, error);
@@ -134,6 +207,25 @@
 
         function Download(evidences) {
             window.location.href = '@Url.Action("DownloadFile", "TaskUs")' + '?fileName=' + encodeURIComponent(evidences);
+        }
+
+        function DownloadEva(Results) {
+            window.location.href = '@Url.Action("DownloadEva", "TaskUs")' + '?fileName=' + encodeURIComponent(Results);
+        }
+
+        function handleDelete(idEvidences) {
+            $.ajax({
+                url: '@Url.Action("DeleteEviPopUp", "TaskUs")' + '?idEvidences=' + idEvidences,
+                type: 'POST',
+                success: function (data) {
+                    $('#ModalWindow .modal-content').html(data);
+                    $('#ModalWindow').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar el contenido del modal:", status, error);
+                    alert("Error al cargar el contenido del modal.");
+                }
+            });
         }
 
 

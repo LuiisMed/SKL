@@ -172,11 +172,13 @@ public class SKLServices : ISKLServices
     /*------------------------------------TASKS--------------------------------------*/
     public async Task<IEnumerable<Tasks>> GetSKLTasksAsync()
             => await _repository.GetSKLTasksAsync();
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedAsync()
+        => await _repository.GetSKLTasksCompletedAsync();
 
     public async Task<TaskPerEval> GetSKLTask(int idTask)
     => await _repository.GetSKLTask(idTask);
 
-    public async Task<IEnumerable<Tasks>> GetSKLTaskPerUserFase(int idFase, int idUser)
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLTaskPerUserFase(int idFase, int idUser)
             => await _repository.GetSKLTaskPerUserFase(idFase, idUser);
 
     public async Task<(bool, string)> InsertSKLTaskAsync(Tasks taskdata)
@@ -232,7 +234,7 @@ public class SKLServices : ISKLServices
     public async Task<IEnumerable<Evidence>> GetSKLTaskEvidence(int idTask)
     => await _repository.GetSKLTaskEvidence(idTask);
 
-    public async Task<IEnumerable<Evidence>> GetSKLEvidenceAsync(int idEvidences)
+    public async Task<Evidence> GetSKLEvidenceAsync(int idEvidences)
     => await _repository.GetSKLEvidenceAsync(idEvidences);
 
     public async Task<IEnumerable<TaskPerEvi>> GetSKLEviPerTaskAsync(int IdUserE, int IdFaseE)
@@ -254,5 +256,39 @@ public class SKLServices : ISKLServices
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;
         return await _repository.DeleteSKLEvidencesAsync(idEvidences);
+    }
+
+    /*---------------------------------------------------------------------------*/
+    /*---------------------------------CHARTS-----------------------------------*/
+
+    public async Task<object> GetChartTasksCompletedAsync()
+    {
+        var chartList = new List<object>();
+        var taskList = await GetSKLTasksCompletedAsync();
+
+        // Agrupar los datos por fase
+        var groupedTasks = taskList
+            .GroupBy(t => new { t.IdFaseT, t.FaseName })
+            .Select(group => new
+            {
+                Phase = group.Key.FaseName,
+                Completed = group.Count(t => t.IsCompleted),
+                NotCompleted = group.Count(t => !t.IsCompleted) 
+            });
+
+        // Preparar los datos para las gráficas de pastel
+        foreach (var phaseData in groupedTasks)
+        {
+            var chartData = new
+            {
+                phase = phaseData.Phase,
+                completed = phaseData.Completed,
+                notCompleted = phaseData.NotCompleted
+            };
+
+            chartList.Add(chartData);
+        }
+
+        return chartList;
     }
 }
