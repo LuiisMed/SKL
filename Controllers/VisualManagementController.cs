@@ -20,9 +20,10 @@ namespace SKL.Controllers
 
 
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var fases = await _Sklservice.GetSKLFasesAsync();
+            return View(fases);
         }
 
         public async Task<IActionResult> ChartDataJson()

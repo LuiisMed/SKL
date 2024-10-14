@@ -13,12 +13,15 @@
         public int IdFaseT { get; set; }
         [Map("fase_name")]
         public string? FaseName { get; set; }
+        [Map("Is_Active")]
+        public Boolean IsActive { get; set; }
         [Map("accion")]
         public string? Accion { get; set; }
         [Map("id_aspect")]
         public int IdAspect { get; set; }
         [Map("aspect_name")]
         public string? AspectName { get; set; }
+
         [Map("isCompleted")]
         public Boolean IsCompleted { get; set; }
         [Map("task_start")]

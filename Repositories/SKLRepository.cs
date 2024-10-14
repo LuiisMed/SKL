@@ -318,6 +318,7 @@ public class SKLRepository : ISKLRepositories
     public async Task<IEnumerable<Tasks>> GetSKLTasksAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<Tasks>(_storedProcedure,
     new { Option = "GET_TASK" });
+
     public async Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure,
     new { Option = "GET_TASKS_COMPLETED" });

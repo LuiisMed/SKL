@@ -266,17 +266,17 @@ public class SKLServices : ISKLServices
         var chartList = new List<object>();
         var taskList = await GetSKLTasksCompletedAsync();
 
-        // Agrupar los datos por fase
+
         var groupedTasks = taskList
+            .Where(t => t.IsActive)
             .GroupBy(t => new { t.IdFaseT, t.FaseName })
             .Select(group => new
             {
                 Phase = group.Key.FaseName,
                 Completed = group.Count(t => t.IsCompleted),
-                NotCompleted = group.Count(t => !t.IsCompleted) 
+                NotCompleted = group.Count(t => !t.IsCompleted),
             });
 
-        // Preparar los datos para las gráficas de pastel
         foreach (var phaseData in groupedTasks)
         {
             var chartData = new
@@ -291,4 +291,5 @@ public class SKLServices : ISKLServices
 
         return chartList;
     }
+
 }

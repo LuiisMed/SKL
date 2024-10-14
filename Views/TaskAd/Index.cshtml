@@ -115,7 +115,7 @@
                 </div>
             </div>
         </div>
-        <div id="myGrid" style="height: 600px" class="ag-theme-quartz"></div>
+        <div id="myGrid" style="height: 1000px" class="ag-theme-quartz"></div>
 
     </div>
 
@@ -216,12 +216,13 @@
                 { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
                 { field: "name", headerName: "Usuario", minWidtha: 150, maxWidth: 150, hide: false },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 90, hide: false },
-                { field: "accion", headerName: "Accion", minWidth: 300 },
+                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 80, hide: false },
+                { field: "accion", headerName: "Accion", minWidth: 250, maxWidth: 300, },
                 { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "aspectName", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "start", headerName: "Fecha de Asignacion", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "end", headerName: "Fecha de Cierre", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "aspectName", headerName: "Aspecto", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "month", headerName: "Month", minWidth: 70, maxWidth: 150, hide: true, rowGroup: true },
+                { field: "start", headerName: "Fecha de Asignacion", minWidth: 60, maxWidth: 120, hide: false },
+                { field: "end", headerName: "Fecha de Cierre", minWidth: 60, maxWidth: 120, hide: false },
                 { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 150, hide: false },
                 {
                     field: "isCompleted",
@@ -229,6 +230,7 @@
                     minWidth: 70,
                     maxWidth: 90,
                     cellRenderer: (params) => {
+                        if (!params.data) return null;
                         const checked = params.value ? 'checked' : '';
                         return `
                             <div class="checkbox-container">
@@ -242,7 +244,7 @@
                     headerName: "Acciones",
                     field: "actions",
                     cellRenderer: function (params) {
-                        // Aquí puedes agregar HTML para los botones
+                        if (!params.data) return ''; // Evita error si params.data es undefined
                         return `
 
                                                 <button type="button" onclick="handleDelete('${params.data.idTask}')" class="btn btn-icon btn-danger">
@@ -260,21 +262,19 @@
                     minWidth: 150
                 }
             ],
-            rowData: null,
-            autoSizeStrategy: {
-                type: "fitGridWidth",
-            },
             onGridReady: (params) => {
                 gridApi = params.api; // Obtener la instancia de gridApi
                 minRowHeight = params.api.getSizesForCurrentTheme().rowHeight;
                 currentRowHeight = minRowHeight;
             },
+            groupDefaultExpanded: -1,
             defaultColDef: {
                 filter: "agTextColumnFilter",
                 floatingFilter: true,
+                enableRowGroup: true
+
             },
-            rowSelection: "multiple",
-            suppressRowClickSelection: true,
+            rowGroupPanelShow: 'always',
             pagination: true,
             paginationPageSize: 10,
             paginationPageSizeSelector: [10, 25, 50],

@@ -144,7 +144,7 @@ namespace SKL.Controllers
             var jsonResult = Json(new
             {
                 Status = error ? "error" : "success",
-                Message = error ? message : "Evaluación ya existente.",
+                Message = error ? message : "Accion agregada correctamente.",
                 Icon = error ? "error" : "info" // O cualquier otro icono que prefieras para este caso
             });
 

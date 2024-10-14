@@ -72,7 +72,7 @@
                 </div>
             </div>
         </div>
-        <div id="myGrid" style="height: 600px" class="ag-theme-quartz"></div>
+        <div id="myGrid" style="height: 1000px" class="ag-theme-quartz"></div>
 
     </div>
 
@@ -104,6 +104,7 @@
 
 
         let gridApi;
+        const hoy = new Date(); 
 
         const gridOptions = {
             columnDefs: [
@@ -111,74 +112,66 @@
                 { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
                 { field: "name", headerName: "Usuario", minWidtha: 150, hide: true },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "accion", headerName: "Accion", minWidth: 400 },
+                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 80, hide: false },
+                { field: "accion", headerName: "Accion", minWidth: 250, maxWidth: 300, },
                 { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "aspectName", headerName: "Aspecto", minWidth: 70, maxWidth: 150, hide: false },
                 { field: "idEvidences", headerName: "ID Evidence", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "month", headerName: "Month", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "start", headerName: "Inicio", minWidth: 70, maxWidth: 150, hide: false },
-                { field: "end", headerName: "Cierre", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "month", headerName: "Month", minWidth: 70, maxWidth: 150, hide: true, rowGroup: true }, // Agrupación por mes
+                { field: "start", headerName: "Inicio", minWidth: 60, maxWidth: 120, hide: false },
+                { field: "end", headerName: "Cierre", minWidth: 60, maxWidth: 120, hide: false },
                 {
                     field: "isCompleted",
                     headerName: "Revisado",
                     minWidth: 50,
-                    maxWidth: 120,
+                    maxWidth: 115,
                     cellRenderer: (params) => {
+                        if (!params.data) return null;
+
                         const checked = params.value ? 'checked' : '';
                         return `
-                                    <div class="checkbox-container">
-                                        <input type="checkbox" ${checked} disabled />
-                                        <span class="custom-checkbox ${checked ? 'checked' : ''}"></span>
-                                    </div>
-                                `;
+                  <div class="checkbox-container">
+                    <input type="checkbox" ${checked} disabled />
+                    <span class="custom-checkbox ${checked ? 'checked' : ''}"></span>
+                  </div>
+                `;
                     }
                 },
                 {
                     headerName: "Acciones",
                     field: "actions",
-                    cellRenderer: function (params) {
-                        const currentDate = new Date();
-                        const taskEndDate = new Date(params.data.end); // Asegúrate de que la fecha "end" esté en un formato correcto
+                    minWidth: 150,
+                    cellRenderer: (params) => {
+                        if (!params.data) return ''; // Evita error si params.data es undefined
 
-                        // Si la fecha de término ha pasado, deshabilitar botones
-                        const isDisabled = currentDate > taskEndDate ? 'disabled' : '';
+                        const endDate = new Date(params.data.end);
+                        const disabled = hoy > endDate && !params.data.evidences ? 'disabled' : ''; // Desactivar si no hay evidencia y está vencida
 
                         return `
-                    <button type="button" onclick="InsertEvidence('${params.data.idTask}')" class="btn btn-icon btn-primary" ${isDisabled}>
-                      <span class="tf-icons bx bx-upload"></span>
-                    </button>
-
-                    <button type="button" onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary" ${isDisabled}>
-                      <span class="tf-icons bx bx-download"></span>
-                    </button>
-
-                    <button type="button" onclick="handleDelete('${params.data.idEvidences}')" class="btn btn-icon btn-danger" ${isDisabled}>
-                        <span class="tf-icons bx bx-trash"></span>
-                    </button>
-                `;
+                            <button type="button" ${disabled} onclick="InsertEvidence('${params.data.idTask}')" class="btn btn-icon btn-primary">
+                                <span class="tf-icons bx bx-upload"></span>
+                            </button>
+                            <button type="button" ${disabled} onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary">
+                                <span class="tf-icons bx bx-download"></span>
+                            </button>
+                            <button type="button" ${disabled} onclick="handleDelete('${params.data.idEvidences}')" class="btn btn-icon btn-danger">
+                                <span class="tf-icons bx bx-trash"></span>
+                            </button>
+                        `;
                     },
                     minWidth: 150,
                 }
-
             ],
-            getRowStyle: function (params) {
-                const currentDate = new Date();
-                const taskEndDate = new Date(params.data.end);
-                if (currentDate > taskEndDate) {
-                    return {
-                        'pointer-events': 'none', // Desactiva la interacción de la fila
-                        'opacity': '0.5',        // Cambia la opacidad para indicar que está deshabilitada
-                    };
-                }
-            },
-            autoSizeStrategy: {
-                type: "fitGridWidth",
+            rowClassRules: {
+                'row-vencida': (params) => params.data && !params.data.evidences && hoy > new Date(params.data.end),
+                'row-verde': (params) => params.data && params.data.evidences // Poner en verde si hay evidencia
+
             },
             onGridReady: (params) => {
                 gridApi = params.api; // Obtener la instancia de gridApi
             },
+            groupDefaultExpanded: -1,
             defaultColDef: {
                 filter: "agTextColumnFilter",
                 floatingFilter: true,
@@ -189,6 +182,18 @@
             paginationPageSize: 10,
             paginationPageSizeSelector: [10, 25, 50],
         };
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .row-vencida {
+                background-color: rgba(255, 0, 0, 0.1);
+                pointer-events: none; /* Desactiva la interacción */
+            }
+            .row-verde {
+            background-color: rgba(0, 128, 0, 0.2); /* Verde claro */
+            }
+        `;
+        document.head.appendChild(style);
 
         function InsertEvidence(idTask) {
             $.ajax({
