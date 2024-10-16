@@ -130,22 +130,59 @@ namespace SKL.Controllers
         }
 
 
+        //public async Task<IActionResult> Insert(Tasks taskData)
+        //{
+        //    var (error, message) = (false, "");
+
+        //    if (taskData.IdTask == 0)
+        //    {
+        //        _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
+        //        (error, message) = await _Sklservice.InsertSKLTaskAsync(taskData);
+        //    }
+
+        //    // Si ya existe una evaluación, no hacer redirección
+        //    var jsonResult = Json(new
+        //    {
+        //        Status = error ? "error" : "success",
+        //        Message = error ? message : "Accion agregada correctamente.",
+        //        Icon = error ? "error" : "info" // O cualquier otro icono que prefieras para este caso
+        //    });
+
+        //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        //        ? jsonResult
+        //        : RedirectToAction("Error");
+        //}
+
         public async Task<IActionResult> Insert(Tasks taskData)
         {
-            var (error, message) = (false, "");
+            var (error, message, newTaskId) = await _Sklservice.InsertSKLTaskAsync(taskData);
 
-            if (taskData.IdTask == 0)
+            if (!error && newTaskId > 0)
             {
-                _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
-                (error, message) = await _Sklservice.InsertSKLTaskAsync(taskData);
+                // Prepara los datos de notificación usando el ID generado
+                var notification = new Notifications
+                {
+                    IdTask = newTaskId,
+                    Message = taskData.Accion,
+                    IsReaded = false,
+                    IdUsr = taskData.IdUserT
+                };
+
+                // Realiza la inserción de la notificación
+                var secondInsertResult = await InsertRelatedDataAsync(notification);
+
+                if (!secondInsertResult)
+                {
+                    error = true;
+                    message = "Error en la inserción de los datos relacionados.";
+                }
             }
 
-            // Si ya existe una evaluación, no hacer redirección
             var jsonResult = Json(new
             {
                 Status = error ? "error" : "success",
-                Message = error ? message : "Accion agregada correctamente.",
-                Icon = error ? "error" : "info" // O cualquier otro icono que prefieras para este caso
+                Message = error ? message : "Acción agregada correctamente.",
+                Icon = error ? "error" : "info"
             });
 
             return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
@@ -153,6 +190,18 @@ namespace SKL.Controllers
                 : RedirectToAction("Error");
         }
 
+        private async Task<bool> InsertRelatedDataAsync(Notifications notifications)
+        {
+            try
+            {
+                await _Sklservice.InsertSKLNotificationsAsync(notifications);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
 
         public async Task<IActionResult> Update(Tasks data)
@@ -175,6 +224,7 @@ namespace SKL.Controllers
                 ? jsonResult
                 : RedirectToAction("Error");
         }
+
 
         public async Task<IActionResult> Delete(Tasks model)
         {

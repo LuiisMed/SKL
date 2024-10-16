@@ -46,7 +46,16 @@
     <script src="~/assets/js/config.js"></script>
 
     @RenderSection("CSS", required: false)
-
+    <style>
+        /* Estilo para el círculo rojo de notificación */
+        .notification-indicator {
+            width: 5px;
+            height: 5px;
+            border-radius: 20%; /* Hace el círculo completamente redondo */
+            background-color: red; /* Rojo para indicar notificación */
+            border: 2px solid white; /* Borde blanco para que destaque */
+        }
+    </style>
 </head>
 <body>
 
@@ -74,6 +83,20 @@
                         <a asp-controller="Home" asp-action="Index" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-home-circle"></i>
                             <div data-i18n="Analytics">Home</div>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-controller="VisualManagement" asp-action="Index" class="menu-link">
+                            <i class="menu-icon tf-icons bx bxs-pie-chart-alt-2"></i>
+                            <div data-i18n="Layouts">Grafica Acciones Completadas por Fase </div>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a asp-controller="Progress" asp-action="Index" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-bar-chart-alt"></i>
+                            <div data-i18n="Analytics">Progress</div>
                         </a>
                     </li>
                     <li class="menu-header small text-uppercase"><span class="menu-header-text"></span></li>
@@ -136,12 +159,7 @@
                         </a>
                     </li>
 
-                    <li class="menu-item">
-                        <a asp-controller="VisualManagement" asp-action="Index" class="menu-link">
-                            <i class="menu-icon tf-icons bx bxs-pie-chart-alt-2"></i>
-                            <div data-i18n="Layouts">Grafica Acciones por Fase </div>
-                        </a>
-                    </li>
+
 
 
 
@@ -174,7 +192,24 @@
 
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
                             <!-- Place this tag where you want the button to render. -->
+                            <!-- Botón con ícono de campana y círculo rojo para notificaciones -->
+                            <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow position-relative"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bx bxs-bell"></i>
+                                <span class="notification-indicator position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                    <span class="visually-hidden">New alerts</span>
+                                </span>
+                            </button>
 
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);">
+                                        <b>Fase 9</b> Llevar a cabo empleado del mes 
+                                    </a>
+                                </li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
+
+                            </ul>
                             <!-- User -->
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -246,6 +281,7 @@
                                     </li>
                                 </ul>
                             </li>
+
                             <!--/ User -->
                         </ul>
                     </div>

@@ -338,23 +338,67 @@ public class SKLRepository : ISKLRepositories
         Param2 = idUser
     });
 
-    public async Task<(bool, string)> InsertSKLTaskAsync(Tasks tasks)
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedPhaseAsync(int idFase)
+    => await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure, new
     {
-        _context.DataChangeEventHandler += DataChangeEventHandler;
-        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
-            new
-            {
-                Option = "INS_TASK",
-                Param1 = tasks.IdUserT,
-                Param2 = tasks.IdFaseT,
-                Param3 = tasks.Accion,
-                Param4 = tasks.IdAspect,
-                Param5 = tasks.IsCompleted,
-                Param6 = tasks.Start,
-                Param7 = tasks.End
+        Option = "GET_TASKS_COMPLETED_PER_PHASE",
+        Param1 = idFase
+    });
 
-            });
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLTaskCompletedPerDept(int idFase, int idDepartment)
+    => await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure, new
+    {
+        Option = "GET_TASK_PER_FASE_DEPT",
+        Param1 = idFase,
+        Param2 = idDepartment
+    });
+
+    //public async Task<(bool, string)> InsertSKLTaskAsync(Tasks tasks)
+    //{
+    //    _context.DataChangeEventHandler += DataChangeEventHandler;
+    //    return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+    //        new
+    //        {
+    //            Option = "INS_TASK",
+    //            Param1 = tasks.IdTask,
+    //            Param2 = tasks.IdUserT,
+    //            Param3 = tasks.IdFaseT,
+    //            Param4 = tasks.Accion,
+    //            Param5 = tasks.IdAspect,
+    //            Param6 = tasks.IsCompleted,
+    //            Param7 = tasks.Start,
+    //            Param8 = tasks.End
+
+    //        });
+    //}
+
+
+    public async Task<(bool, string, int)> InsertSKLTaskAsync(Tasks taskData)
+    {
+        var parameters = new
+        {
+            Option = "INS_TASK",
+            Param1 = taskData.IdUserT,
+            Param2 = taskData.IdFaseT,
+            Param3 = taskData.Accion,
+            Param4 = taskData.IdAspect,
+            Param5 = taskData.IsCompleted,
+            Param6 = taskData.Start,
+            Param7 = taskData.End
+        };
+
+        var (error, generatedId) = await _context.ExecuteStoredProcedureDMLAsync2("[SKL].[SKL_FUNCTIONS]", parameters);
+
+        if (error)
+        {
+            return (true, "Error en la inserción", 0);
+        }
+
+        return (false, "Inserción exitosa", generatedId);
     }
+
+
+
 
     public async Task<(bool, string)> UpdateSKLTaskAsync(Tasks tasks)
     {
@@ -511,6 +555,41 @@ public class SKLRepository : ISKLRepositories
             {
                 Option = "DEL_EVIDENCES",
                 Param1 = idEvidences
+            });
+    }
+    /*----------------------------------NOTIFICATIONS------------------------------------*/
+
+    public async Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser, int IdTask)
+    => await _context.ExecuteStoredProcedureQueryAsync<Notifications>(_storedProcedure, new
+    {
+        Option = "GET_NOTIFICATION",
+        Param1 = IdUser,
+        Param2 = IdTask
+    });
+
+    public async Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "INS_NOTIFICATION",
+                Param1 = notifications.IdTask,
+                Param2 = notifications.IdUsr,
+                Param3 = notifications.IsReaded,
+                Param4 = notifications.Message
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLNotificationsAsync(Notifications notifications)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_NOTIFICATION",
+                Param1 = notifications.IdNotification,
+                Param2 = notifications.IsReaded
             });
     }
 

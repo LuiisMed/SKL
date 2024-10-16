@@ -9,6 +9,10 @@
         public int IdUserT { get; set; }
         [Map("name")]
         public string? Name { get; set; }
+        [Map("id_usr_department")]
+        public int IdDepartment { get; set; }
+        [Map("department_name")]
+        public string? DepartmentName { get; set; }
         [Map("id_fase")]
         public int IdFaseT { get; set; }
         [Map("fase_name")]
@@ -21,7 +25,6 @@
         public int IdAspect { get; set; }
         [Map("aspect_name")]
         public string? AspectName { get; set; }
-
         [Map("isCompleted")]
         public Boolean IsCompleted { get; set; }
         [Map("task_start")]

@@ -2,6 +2,7 @@
 using SKL.Services.IServices;
 using SKL.Models;
 using System.Xml.Linq;
+using SKL.Models.ViewModels;
 
 namespace SKL.Services;
 
@@ -181,11 +182,25 @@ public class SKLServices : ISKLServices
     public async Task<IEnumerable<TaskPerEvi>> GetSKLTaskPerUserFase(int idFase, int idUser)
             => await _repository.GetSKLTaskPerUserFase(idFase, idUser);
 
-    public async Task<(bool, string)> InsertSKLTaskAsync(Tasks taskdata)
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLTaskCompletedPerDept(int idFase, int idDepartment)
+        => await _repository.GetSKLTaskCompletedPerDept(idFase, idDepartment);
+
+    public async Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedPhaseAsync(int idFase)
+        => await _repository.GetSKLTasksCompletedPhaseAsync(idFase);
+
+    //public async Task<(bool, string)> InsertSKLTaskAsync(Tasks taskdata)
+    //{
+    //    _repository.DataChangeEventHandler += DataChangeEventHandler;
+    //    return await _repository.InsertSKLTaskAsync(taskdata);
+    //}
+
+    public async Task<(bool, string, int)> InsertSKLTaskAsync(Tasks taskData)
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;
-        return await _repository.InsertSKLTaskAsync(taskdata);
+        return await _repository.InsertSKLTaskAsync(taskData);
     }
+
+
 
     public async Task<(bool, string)> UpdateSKLTaskAsync(Tasks data)
     {
@@ -267,6 +282,7 @@ public class SKLServices : ISKLServices
         var taskList = await GetSKLTasksCompletedAsync();
 
 
+
         var groupedTasks = taskList
             .Where(t => t.IsActive)
             .GroupBy(t => new { t.IdFaseT, t.FaseName })
@@ -291,5 +307,76 @@ public class SKLServices : ISKLServices
 
         return chartList;
     }
+
+    public async Task<object> GetChartTasksCompletedPerDeptAsync(int idFase, int idDepartment)
+    {
+        var chartList = new List<object>();
+        var taskList = await GetSKLTaskCompletedPerDept(idFase, idDepartment);
+
+
+
+        var groupedTasks = taskList
+            .GroupBy(t => new { t.IdDepartment, t.DepartmentName })
+            .Select(group => new
+            {
+                Department = group.Key.DepartmentName,
+                Completed = group.Count(t => t.IsCompleted),
+                NotCompleted = group.Count(t => !t.IsCompleted),
+            });
+
+        foreach (var phaseData in groupedTasks)
+        {
+            var chartData = new
+            {
+                department = phaseData.Department,
+                completed = phaseData.Completed,
+                notCompleted = phaseData.NotCompleted
+            };
+
+            chartList.Add(chartData);
+        }
+
+        return chartList;
+    }
+    /*---------------------------------------------------------------------------*/
+    /*---------------------------------NOTIFICATIONS--------------------------------*/
+
+    public async Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser, int IdTask)
+    => await _repository.GetSKLNotificationsAsync(IdUser, IdTask);
+
+    public async Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.InsertSKLNotificationsAsync(notifications);
+    }
+
+    public async Task<(bool, string)> UpdateSKLNotificationsAsync(Notifications notifications)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.UpdateSKLNotificationsAsync(notifications);
+    }
+
+    /*---------------------------------------------------------------------------*/
+    /*---------------------------------FUNCTIONS-----------------------------------*/
+    public async Task<List<PercentagePerDeptViewModel>> GetPercentageTasksPerDept(int fase)
+    {
+        var taskList = await GetSKLTasksCompletedPhaseAsync(fase);
+
+        var groupedTasks = taskList
+            .GroupBy(t => new { t.IdDepartment, t.DepartmentName })  // Agrupamos por ID y Nombre del Departamento
+            .Select(group => new PercentagePerDeptViewModel
+            {
+                DepartmentId = group.Key.IdDepartment,  // Asignamos el ID del departamento
+                Department = group.Key.DepartmentName,
+                PercentageCompleted = group.Count() > 0
+                    ? $"{Math.Round((group.Count(t => t.IsCompleted) / (double)group.Count()) * 100, 2)}% Completado"
+                    : "0% Completado"
+            })
+            .ToList();
+
+        return groupedTasks;
+    }
+
+
 
 }

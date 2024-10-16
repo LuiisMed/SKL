@@ -391,7 +391,7 @@
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.3.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
     <PackageReference Include="RepoDb" Version="1.13.1" />
     <PackageReference Include="RepoDb.SqlServer" Version="1.13.1" />
     <PackageReference Include="RepoDb.SqlServer.BulkOperations" Version="1.13.1" />

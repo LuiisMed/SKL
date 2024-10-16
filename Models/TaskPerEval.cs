@@ -1,4 +1,6 @@
-﻿namespace SKL.Models
+﻿using SKL.Models.ViewModels;
+
+namespace SKL.Models
 {
     public class TaskPerEval
     {
@@ -55,12 +57,21 @@
 
         public IEnumerable<Usuario>? Usuarios { get; set; }
         public IEnumerable<Aspect>? Aspectos { get; set; }
+        public IEnumerable<Fase>? Fases { get; set; }
         public IEnumerable<Eval>? Evals { get; set; }
+        public int IdFase { get; set; }
+        public int IdDepartment { get; set; }
+        public string? DepartmentName { get; set; }
+
+        public List<PercentagePerDeptViewModel> PercentagePerDept { get; set; }  // Nueva propiedad
+
 
         [Display(Name = "Usuarios")]
         public int UserFilter { get; set; }
         [Display(Name = "Fases")]
         public int FaseFilter { get; set; }
+        [Display(Name = "Departments")]
+        public int DepartmentFilter { get; set; }
 
         //public IEnumerable<Fase> Fases { get; set; }
         //public IEnumerable<Usuario> Usuarios { get; set; }

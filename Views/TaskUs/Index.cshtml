@@ -129,12 +129,16 @@
                     cellRenderer: (params) => {
                         if (!params.data) return null;
 
-                        const checked = params.value ? 'checked' : '';
+                        // Obtener el estado del checkbox
+                        const checked = params.data.isCompleted ? 'checked' : '';
+                        // Usar una clase CSS para aplicar el estilo de no interactuable
+                        const noInteract = 'no-interact';
+
                         return `
-                  <div class="checkbox-container">
-                    <input type="checkbox" ${checked} disabled />
-                    <span class="custom-checkbox ${checked ? 'checked' : ''}"></span>
-                  </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" ${checked} class="${noInteract}" />
+                        <span class="custom-checkbox ${checked ? 'checked' : ''}"></span>
+                    </div>
                 `;
                     }
                 },
@@ -165,7 +169,11 @@
             ],
             rowClassRules: {
                 'row-vencida': (params) => params.data && !params.data.evidences && hoy > new Date(params.data.end),
-                'row-verde': (params) => params.data && params.data.evidences // Poner en verde si hay evidencia
+                'row-verde': (params) =>
+                    params.data && params.data.isCompleted && params.data.evidences, // Verde: checkbox marcado y evidencia presente
+
+                'row-amarilla': (params) =>
+                    params.data && !params.data.isCompleted && params.data.evidences // Amarillo: sin checkbox pero con evidencia
 
             },
             onGridReady: (params) => {
@@ -183,14 +191,26 @@
             paginationPageSizeSelector: [10, 25, 50],
         };
 
+        //estilos de las rows
         const style = document.createElement('style');
         style.innerHTML = `
+            .checkbox-container input[type="checkbox"].no-interact {
+                pointer-events: none; /* Desactiva la interacción */
+                opacity: 0.6; /* Cambia la opacidad para parecer no interactuable */
+            }
+            /* Estilo adicional para el custom checkbox, si es necesario */
+            .custom-checkbox {
+                /* Aquí puedes agregar más estilos para personalizar */
+            }
             .row-vencida {
                 background-color: rgba(255, 0, 0, 0.1);
                 pointer-events: none; /* Desactiva la interacción */
             }
             .row-verde {
-            background-color: rgba(0, 128, 0, 0.2); /* Verde claro */
+                background-color: rgba(0, 128, 0, 0.2); /* Verde claro */
+            }
+            .row-amarilla {
+                background-color: rgba(255, 255, 0, 0.2); /* Amarillo claro */
             }
         `;
         document.head.appendChild(style);

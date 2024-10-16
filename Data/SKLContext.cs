@@ -67,6 +67,25 @@ public abstract class SKLContext : ISKLContext
         return (error, result);
     }
 
+    public async Task<(bool, int, string)> ExecuteStoredProcedureDMLAsync2(string storedProcedure, object parameters)
+    {
+        var (error, generatedId, message) = (false, 0, "");
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            generatedId = await connection.ExecuteScalarAsync<int>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+            message = "Operación realizada con éxito.";
+            OnDataChangeEventHandler();
+        }
+        catch (Exception ex)
+        {
+            error = true;
+            message = ex.Message; // Captura el mensaje de error
+        }
+        return (error, generatedId, message); // Retorna error, ID generado y mensaje
+    }
+
+
     public async Task<(bool, string)> ExecuteSP10MinAsync(string storedProcedure, object parameters)
     {
         var (error, result) = (false, "");
@@ -131,6 +150,9 @@ public abstract class SKLContext : ISKLContext
         }
         return (error, message);
     }
+
+
+
 
     protected virtual void OnDataChangeEventHandler() => DataChangeEventHandler?.Invoke(this, EventArgs.Empty);
 

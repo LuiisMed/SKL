@@ -1,0 +1,469 @@
+﻿@model SKL.Models.TaskPerEval
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <h5 class="card-header">Form Controls</h5>
+                    <div class="card-body">
+                        <input type="hidden" asp-for="FaseFilter" />
+                        <div class="mb-3">
+                            <label for="exampleFormControlReadOnlyInput1" class="form-label">Fase</label>
+                            <input class="form-control" type="text" value="@Model.FaseName" readonly />
+                        </div>
+                        <input type="hidden" asp-for="DepartmentFilter" />
+                        <div class="mb-3">
+                            <label for="exampleFormControlReadOnlyInput1" class="form-label">Read only</label>
+                            <input class="form-control" type="text" value="@Model.DepartmentName" readonly />
+                        </div>
+                        <div id="taskDataContainer"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="cardsContainer" class="col-md-6"></div>
+
+        </div>
+        <div id="myGrid" style="height: 1000px" class="ag-theme-quartz"></div>
+
+    </div>
+
+    <div id="ModalWindow" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Aquí se cargará el contenido dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+
+    <div class="content-backdrop fade"></div>
+
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/FileSaver/dist/FileSaver.min.js"></script>
+
+
+    <script>
+
+        let getQueryParameters = () => {
+            let fase = document.getElementById('FaseFilter').value;
+            let department = document.getElementById('DepartmentFilter').value;
+
+            return '?idFase=' + fase + '&idDepartment=' + department;
+        };
+
+        const gridOptions = {
+            columnDefs: [
+                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
+                { field: "name", headerName: "Usuario", minWidtha: 150, maxWidth: 150, hide: false, rowGroup: true },
+                { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 80, hide: false },
+                { field: "accion", headerName: "Accion", minWidth: 250, maxWidth: 300, },
+                { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "aspectName", headerName: "Aspecto", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "month", headerName: "Month", minWidth: 70, maxWidth: 150, hide: true, rowGroup: true },
+                { field: "start", headerName: "Fecha de Asignacion", minWidth: 60, maxWidth: 120, hide: false },
+                { field: "end", headerName: "Fecha de Cierre", minWidth: 60, maxWidth: 120, hide: false },
+                { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 150, hide: false },
+                {
+                    field: "isCompleted",
+                    headerName: "Revisado",
+                    minWidth: 50,
+                    maxWidth: 115,
+                    cellRenderer: (params) => {
+                        if (!params.data) return null;
+
+                        // Obtener el estado del checkbox
+                        const checked = params.data.isCompleted ? 'checked' : '';
+                        // Usar una clase CSS para aplicar el estilo de no interactuable
+                        const noInteract = 'no-interact';
+
+                        return `
+                            <div class="checkbox-container">
+                                <input type="checkbox" ${checked} class="${noInteract}" />
+                                <span class="custom-checkbox ${checked ? 'checked' : ''}"></span>
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    headerName: "Acciones",
+                    field: "actions",
+                    cellRenderer: function (params) {
+                        if (!params.data) return ''; // Evita error si params.data es undefined
+                        return `
+
+
+                                        </button>
+                                                        <button type="button" onclick="handleUpdate('${params.data.idTask}')" class="btn btn-icon btn-primary">
+                                          <span class="tf-icons bx bx-pen"></span>
+                                        </button>
+                                                                        <button type="button" onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary">
+                                          <span class="tf-icons bx bx-download"></span>
+                                        </button>
+
+                                    `;
+                    },
+                    minWidth: 150
+                }
+            ],
+            rowClassRules: {
+                'row-verde': (params) =>
+                    params.data && params.data.isCompleted && params.data.evidences, // Verde: checkbox marcado y evidencia presente
+
+                'row-amarilla': (params) =>
+                    params.data && !params.data.isCompleted && params.data.evidences, // Amarillo: sin checkbox pero con evidencia
+
+                'row-roja': (params) =>
+                    params.data && !params.data.isCompleted && !params.data.evidences // Rojo: sin checkbox y sin evidencia
+            },
+            onGridReady: (params) => {
+                gridApi = params.api; // Obtener la instancia de gridApi
+            },
+            groupDefaultExpanded: -1,
+            defaultColDef: {
+                filter: "agTextColumnFilter",
+                floatingFilter: true,
+                enableRowGroup: true
+
+            },
+            rowGroupPanelShow: 'always',
+            pagination: true,
+            paginationPageSize: 10,
+            paginationPageSizeSelector: [10, 25, 50],
+        };
+
+        //estilos de las rows
+        const style = document.createElement('style');
+        style.innerHTML = `
+             .checkbox-container input[type="checkbox"].no-interact {
+             pointer-events: none; /* Desactiva la interacción */
+             opacity: 0.6; /* Cambia la opacidad para parecer no interactuable */
+             }
+             /* Estilo adicional para el custom checkbox, si es necesario */
+             .custom-checkbox {
+                 /* Aquí puedes agregar más estilos para personalizar */
+             }
+            .row-verde {
+                background-color: rgba(0, 128, 0, 0.2); /* Verde claro */
+            }
+            .row-amarilla {
+                background-color: rgba(255, 255, 0, 0.2); /* Amarillo claro */
+            }
+            .row-roja {
+                background-color: rgba(255, 0, 0, 0.2); /* Rojo claro */
+            }
+        `;
+        document.head.appendChild(style);
+
+
+        function handleDelete(idTask) {
+            $.ajax({
+                url: '@Url.Action("DeleteTaskPopUp", "TaskAd")' + '?idTask=' + idTask,  // Llama a la acción de eliminación
+                type: 'POST',
+                success: function (data) {
+                    $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
+                    $('#ModalWindow').modal('show');  // Muestra el modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar el contenido del modal:", status, error);
+                    alert("Error al cargar el contenido del modal.");
+                }
+            });
+        }
+
+        function handleUpdate(idTask) {
+            $.ajax({
+                url: '@Url.Action("UpdateTaskPopUp", "TaskAd")' + '?idTask=' + idTask,  // Llama a la acción de eliminación
+                type: 'POST',
+                success: function (data) {
+                    $('#ModalWindow .modal-content').html(data);  // Carga el contenido del modal
+                    $('#ModalWindow').modal('show');  // Muestra el modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar el contenido del modal:", status, error);
+                    alert("Error al cargar el contenido del modal.");
+                }
+            });
+        }
+
+        function Download(evidences) {
+            window.location.href = '@Url.Action("DownloadFile", "TaskUs")' + '?fileName=' + encodeURIComponent(evidences);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var gridDiv = document.querySelector("#myGrid");
+            var gridApi = agGrid.createGrid(gridDiv, gridOptions);
+
+            // Cargar los datos iniciales
+            fetch('@Url.Action("TaskJson", "Progress")' + getQueryParameters())
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Datos recibidos:", data); // Imprime los datos en la consola
+                    gridApi.setGridOption("rowData", data); // Establece los datos en el grid
+                })
+                .catch((error) => {
+                    console.error("Ocurrió un error durante la solicitud:", error);
+                });
+
+            // Función para refrescar el grid
+            function refreshUserGrid() {
+                fetch('@Url.Action("TaskJson", "Progress")' + getQueryParameters())
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log("Datos actualizados recibidos:", data);
+                        gridApi.setGridOption("rowData", data); // Actualiza los datos en el grid
+                    })
+                    .catch((error) => {
+                        console.error("Ocurrió un error durante la solicitud de actualización:", error);
+                    });
+            }
+
+            // Conectar SignalR para escuchar el evento de refresco
+            const connection = new signalR.HubConnectionBuilder().withUrl(systemHubUrl()).build();
+
+            connection.on("RefreshTasksGrid", function () {
+                refreshUserGrid(); // Llamada a la función que refresca los datos del grid
+            });
+
+            connection.start().catch(function (err) {
+                return console.error(err.toString());
+            });
+        });
+
+        $(function () {
+            var formProvider = $('#form1');
+            formProvider.submit(function (e) {
+                e.preventDefault();
+                formProvider.validate();
+                if (formProvider.valid()) {
+                    var formData = new FormData(this);
+                    $.ajax({
+                        url: formProvider.attr('action'),
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (res) {
+                            if (res.status === 'success') {
+                                // Show success toast
+                                showToast('bg-success text-white', 'bx-check-circle', 'Success', res.message);
+                                // Hide modal window
+                                $('#ModalWindow').modal("hide");
+                            } else if (res.status === 'error') {
+                                // Show error toast
+                                showToast('bg-danger text-white', 'bx-x-circle', 'Error', res.message);
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Function to display toast by adding and removing "show" class
+            function showToast(type, icon, header, message) {
+                var toastElement = `
+                            <div class="bs-toast toast toast-placement-ex m-2 bg-success top-0 start-0 fade show ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="toast-header">
+                                    <i class="bx ${icon} me-2"></i>
+                                    <strong class="me-auto">${header}</strong>
+                                    <small class="text-white">Just now</small>
+                                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body">
+                                    ${message}
+                                </div>
+                            </div>`;
+
+                var toastContainer = $('#toastContainer');
+                if (!toastContainer.length) {
+                    toastContainer = $('<div id="toastContainer" style="position: fixed; top: 0; left: 0; z-index: 9999;"></div>');
+                    $('body').append(toastContainer);
+                }
+
+                var toast = $(toastElement);
+                toastContainer.append(toast);
+
+                // Show toast (by adding "show" class)
+                setTimeout(function () {
+                    toast.addClass('show');
+                }, 100); // Slight delay to allow CSS transition
+
+                // Hide the toast after 3 seconds (by removing "show" class)
+                setTimeout(function () {
+                    toast.removeClass('show');
+                    setTimeout(function () {
+                        toast.remove(); // Remove from DOM after transition ends
+                    }, 500); // Wait for the hide transition to complete
+                }, 3000);
+            }
+        });
+
+        //////////////////////////////////////////////////////////////////////////
+        createChartElement = (containerId, chartId) => {
+            let containerElement = document.getElementById(containerId);
+
+            let newDiv = document.createElement("div");
+            newDiv.className = "text-center";
+            newDiv.id = chartId;
+
+            containerElement.appendChild(newDiv);
+        };
+
+        async function loadChartData() {
+            try {
+                const response = await fetch('@Url.Action("ChartDataJson", "Progress")' + getQueryParameters());
+                const data = await response.json();
+                console.log("Datos del gráfico recibidos:", data);
+                renderCharts(data);  // Renderizamos los gráficos con los nuevos datos
+            } catch (error) {
+                console.error("Error al cargar los datos del gráfico:", error);
+            }
+        }
+
+        // Función que destruye y recrea los gráficos
+        function renderCharts(chartDataArray) {
+            const cardsContainer = document.getElementById("cardsContainer");
+            cardsContainer.innerHTML = '';  // Limpiamos el contenedor
+
+            chartDataArray.forEach((chartData, index) => {
+                const colDiv = document.createElement("div");
+                colDiv.className = "card h-110";
+
+                const cardDiv = document.createElement("div");
+                cardDiv.className = "card h-100";
+
+                const cardHeader = document.createElement("div");
+                cardHeader.className = "card-header d-flex align-items-center justify-content-between";
+
+                const titleHeader = document.createElement("h5");
+                titleHeader.className = "card-title m-0 me-2";
+                titleHeader.textContent = chartData.department;
+
+                const cardBody = document.createElement("div");
+                cardBody.className = "card-body";
+
+                const chartsRow = document.createElement("div");
+                const chartId = `chart${index}`;
+                chartsRow.id = chartId;
+
+                cardHeader.appendChild(titleHeader);
+                cardBody.appendChild(chartsRow);
+                cardDiv.appendChild(cardHeader);
+                cardDiv.appendChild(cardBody);
+                colDiv.appendChild(cardDiv);
+                cardsContainer.appendChild(colDiv);
+
+                const options = {
+                    chart: {
+                        type: "pie",
+                        height: 400
+                    },
+                    labels: ["Completado", "Pendiente"],
+                    series: [chartData.completed, chartData.notCompleted],
+                    colors: ["#00E396", "#FF4560"],
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function (val, opts) {
+                            return val.toFixed(0) + "%";
+                        }
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                };
+
+                const chart = new ApexCharts(document.getElementById(chartId), options);
+                chart.render();
+            });
+        }
+
+        // Función para refrescar los gráficos
+        function refreshCharts() {
+            loadChartData();  // Cargamos los datos y renderizamos nuevamente los gráficos
+        }
+
+        // Conectar SignalR para refrescar los gráficos cuando sea necesario
+        const connection = new signalR.HubConnectionBuilder().withUrl(systemHubUrl()).build();
+
+        connection.on("RefreshTasksGrid", function () {
+            refreshCharts();  // Llamamos la función de refresco de gráficos
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        // Carga inicial de los gráficos al abrir la página
+        loadChartData();
+
+        //////////////////////////////////////////////////////////////////////////
+
+
+        async function refreshTaskData() {
+            try {
+                const response = await fetch('@Url.Action("ChartDataJson", "Progress")' + getQueryParameters());
+                const data = await response.json();
+
+                const container = document.getElementById("taskDataContainer");
+                container.innerHTML = ''; // Limpiar el contenedor
+
+                data.forEach((dept) => {
+                    // Crear div para "Completado"
+                    const completedDiv = document.createElement("div");
+                    completedDiv.className = "mb-3";
+                    completedDiv.innerHTML = `
+                        <label class="form-label">Completado (${dept.department})</label>
+                        <input class="form-control" type="text" value="${dept.completed}" readonly />
+                    `;
+
+                    // Crear div para "No Completado"
+                    const notCompletedDiv = document.createElement("div");
+                    notCompletedDiv.className = "mb-5";
+                    notCompletedDiv.innerHTML = `
+                        <label class="form-label">No Completado (${dept.department})</label>
+                        <input class="form-control" type="text" value="${dept.notCompleted}" readonly />
+                    `;
+
+                    // Agregar ambos divs al contenedor
+                    container.appendChild(completedDiv);
+                    container.appendChild(notCompletedDiv);
+                });
+
+                console.log("Datos actualizados:", data); // Confirmación en consola
+            } catch (error) {
+                console.error("Error al refrescar los datos:", error);
+            }
+        }
+
+        // Escuchar el evento "RefreshTasksData"
+        connection.on("RefreshTasksGrid", function () {
+            refreshTaskData(); // Llamar al refresh cuando se recibe el evento
+        });
+
+        // Iniciar la conexión SignalR
+        connection.start().catch(function (err) {
+            console.error("Error al conectar con SignalR:", err.toString());
+        });
+
+        refreshTaskData();  // Cargar datos al abrir la página
+
+
+    </script>
+}

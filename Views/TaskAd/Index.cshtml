@@ -217,18 +217,19 @@
                 { field: "name", headerName: "Usuario", minWidtha: 150, maxWidth: 150, hide: false },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 80, hide: false },
-                { field: "accion", headerName: "Accion", minWidth: 250, maxWidth: 300, },
+                { field: "accion", headerName: "Accion", minWidth: 350, maxWidth: 400, },
                 { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "aspectName", headerName: "Aspecto", minWidth: 70, maxWidth: 150, hide: false },
                 { field: "month", headerName: "Month", minWidth: 70, maxWidth: 150, hide: true, rowGroup: true },
                 { field: "start", headerName: "Fecha de Asignacion", minWidth: 60, maxWidth: 120, hide: false },
                 { field: "end", headerName: "Fecha de Cierre", minWidth: 60, maxWidth: 120, hide: false },
-                { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 150, hide: true },
                 {
                     field: "isCompleted",
                     headerName: "Revisado",
                     minWidth: 70,
                     maxWidth: 90,
+                    hide: true,
                     cellRenderer: (params) => {
                         if (!params.data) return null;
                         const checked = params.value ? 'checked' : '';
@@ -247,15 +248,13 @@
                         if (!params.data) return ''; // Evita error si params.data es undefined
                         return `
 
-                                                <button type="button" onclick="handleDelete('${params.data.idTask}')" class="btn btn-icon btn-danger">
+                                <button type="button" onclick="handleDelete('${params.data.idTask}')" class="btn btn-icon btn-danger">
                                   <span class="tf-icons bx bx-trash"></span>
                                 </button>
                                                 <button type="button" onclick="handleUpdate('${params.data.idTask}')" class="btn btn-icon btn-primary">
                                   <span class="tf-icons bx bx-pen"></span>
                                 </button>
-                                                                <button type="button" onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary">
-                                  <span class="tf-icons bx bx-download"></span>
-                                </button>
+
 
                             `;
                     },
@@ -308,10 +307,6 @@
                     alert("Error al cargar el contenido del modal.");
                 }
             });
-        }
-
-        function Download(evidences) {
-            window.location.href = '@Url.Action("DownloadFile", "TaskUs")' + '?fileName=' + encodeURIComponent(evidences);
         }
 
 

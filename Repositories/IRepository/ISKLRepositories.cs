@@ -54,7 +54,10 @@ public interface ISKLRepositories
     Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedAsync();
     Task<TaskPerEval> GetSKLTask(int idTask);
     Task<IEnumerable<TaskPerEvi>> GetSKLTaskPerUserFase(int idFase, int idUser);
-    Task<(bool, string)> InsertSKLTaskAsync(Tasks tasks);
+    Task<IEnumerable<TaskPerEvi>> GetSKLTaskCompletedPerDept(int idFase, int idDepartment);
+    Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedPhaseAsync(int idFase);
+    //Task<(bool, string)> InsertSKLTaskAsync(Tasks tasks);
+    Task<(bool, string, int)> InsertSKLTaskAsync(Tasks tasks);
     Task<(bool, string)> UpdateSKLTaskAsync(Tasks tasks);
     Task<(bool, string)> DeleteSKLTaskAsync(int idTask);
     /*---------------------------------------------------------------------------*/
@@ -74,8 +77,9 @@ public interface ISKLRepositories
     Task<(bool, string)> InsertSKLEvidencesAsync(Evidence evidence);
     Task<(bool, string)> UpdateSKLEvidencesAsync(Evidence evidence);
     Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidences);
-
-
-
-
+    /*---------------------------------------------------------------------------*/
+    /*----------------------------------Notifications------------------------------------*/
+    Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser, int IdTask);
+    Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications);
+    Task<(bool, string)> UpdateSKLNotificationsAsync(Notifications notifications);
 }
