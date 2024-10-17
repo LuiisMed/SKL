@@ -1,4 +1,5 @@
 ﻿using SKL.Models;
+using SKL.Models.ViewModels;
 
 namespace SKL.Repositories.IRepository;
 
@@ -79,7 +80,7 @@ public interface ISKLRepositories
     Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidences);
     /*---------------------------------------------------------------------------*/
     /*----------------------------------Notifications------------------------------------*/
-    Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser);
+    Task<IEnumerable<NotificationsViewModel>> GetSKLNotificationsAsync(int IdUser);
     Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications);
     Task<(bool, string)> UpdateSKLNotificationsAsync(Notifications notifications);
 }

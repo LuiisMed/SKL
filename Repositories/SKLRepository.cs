@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic;
 using SKL.Data;
 using SKL.Models;
+using SKL.Models.ViewModels;
 using SKL.Repositories.IRepository;
 using System.Xml.Linq;
 
@@ -556,8 +557,8 @@ public class SKLRepository : ISKLRepositories
     }
     /*----------------------------------NOTIFICATIONS------------------------------------*/
 
-    public async Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser)
-    => await _context.ExecuteStoredProcedureQueryAsync<Notifications>(_storedProcedure, new
+    public async Task<IEnumerable<NotificationsViewModel>> GetSKLNotificationsAsync(int IdUser)
+    => await _context.ExecuteStoredProcedureQueryAsync<NotificationsViewModel>(_storedProcedure, new
     {
         Option = "GET_NOTIFICATION",
         Param1 = IdUser

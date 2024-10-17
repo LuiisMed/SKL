@@ -23,11 +23,10 @@ namespace SKL.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Notifications(int IdUser)
+        public async Task<IActionResult> NotificationsJson(int IdUser)
         {
-
-            return View();
+            var notifications = await _Sklservice.GetSKLNotificationsAsync(IdUser);
+            return Ok(notifications);
         }
-
     }
 }

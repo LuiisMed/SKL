@@ -341,7 +341,7 @@ public class SKLServices : ISKLServices
     /*---------------------------------------------------------------------------*/
     /*---------------------------------NOTIFICATIONS--------------------------------*/
 
-    public async Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser)
+    public async Task<IEnumerable<NotificationsViewModel>> GetSKLNotificationsAsync(int IdUser)
     => await _repository.GetSKLNotificationsAsync(IdUser);
 
     public async Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications)

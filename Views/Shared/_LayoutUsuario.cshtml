@@ -103,6 +103,31 @@
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
                             <!-- Place this tag where you want the button to render. -->
                             <!-- User -->
+                            @{
+                                var userId = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
+                                var fetchUrl = Url.Action("NotificationsJson", "Notifications"); // Reemplaza "ControllerName" con el nombre correcto
+                            }
+
+
+
+
+
+
+
+                            <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow position-relative"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bx bxs-bell"></i>
+                                <span class="notification-indicator position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none">
+                                    <span class="visually-hidden">New alerts</span>
+                                </span>
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
+                            </ul>
+
+
+
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                     <div class="avatar">
@@ -225,6 +250,68 @@
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userId = '@userId';
+            const url = '@fetchUrl';   
+
+            try {
+                const response = await fetch(`${url}?IdUser=${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const notifications = await response.json();
+                console.log(notifications)
+                renderNotifications(notifications); 
+                manageIndicator(notifications);     
+            } catch (error) {
+                console.error('Error al obtener las notificaciones:', error);
+            }
+        });
+
+     
+        function renderNotifications(notifications) {
+            const notificationDropdown = document.querySelector('.dropdown-menu'); 
+            notificationDropdown.innerHTML = ''; 
+
+          
+            const unreadNotifications = notifications.filter(notification => !notification.isReaded);
+
+            unreadNotifications.forEach(notification => {
+                const actionUrl = `/ControllerName/ActionName/${notification.idNotification}`; 
+
+                const notificationItem = `
+                    <li>
+                        <a class="dropdown-item" href="${actionUrl}">
+                            Tienes una nueva asignacion en la <b>${notification.faseName}</b> con la <b>Accion</b>: ${notification.message}
+                        </a>
+                    </li>
+                `;
+                notificationDropdown.insertAdjacentHTML('beforeend', notificationItem);
+            });
+        }
+
+        function manageIndicator(notifications) {
+            const hasUnread = notifications.some(notification => !notification.isReaded); 
+            const indicator = document.querySelector('.notification-indicator'); 
+
+            if (hasUnread) {
+                indicator.classList.remove('d-none'); 
+            } else {
+                indicator.classList.add('d-none'); 
+            }
+        }
+    </script>
+
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -81,7 +81,7 @@ public interface ISKLServices
     Task<(bool, string)> DeleteSKLEvidencesAsync(int idEvidences);
     /*---------------------------------------------------------------------------*/
     /*---------------------------------NOTIFICATIONS-----------------------------------*/
-    Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser);
+    Task<IEnumerable<NotificationsViewModel>> GetSKLNotificationsAsync(int IdUser);
     Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications);
     Task<(bool, string)> UpdateSKLNotificationsAsync(Notifications notifications);
     /*---------------------------------------------------------------------------*/

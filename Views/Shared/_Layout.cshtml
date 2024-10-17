@@ -1,7 +1,4 @@
-﻿@model SKL.Models.Notifications
-
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html 
     lang="en"
     data-theme="theme-default"
@@ -194,50 +191,19 @@
                         <!-- /Search -->
 
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
-                            <!-- Place this tag where you want the button to render. -->
-                            <!-- Botón con ícono de campana y círculo rojo para notificaciones -->
-                            <!--INICIO DEL FORMULARIO DE FILTRO-->
-                            <a asp-controller="TaskUs" asp-action="TaskJson" asp-route-idUser="@Model.UserFilter" asp-route-idFase="@Model.FaseFilter" hidden>
-                                Cargar Tareas
-                            </a>
-                            @if (Model.Evals != null && Model.Evals.Any(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter))
-                            {
-                                var eval = Model.Evals.First(e => e.IdUserE == Model.UserFilter && e.IdFaseE == Model.FaseFilter);
 
-                                <div class="mb-3">
-                                    <label asp-for="UserEval" class="form-label">Calificación</label>
-                                    <input type="text" asp-for="UserEval" class="form-control" value="@eval.UserEval" aria-describedby="defaultFormControlHelp" readonly>
-                                </div>
-                                <div>
-                                    <label asp-for="Comentario" class="form-label">Comentarios</label>
-                                    <textarea class="form-control" rows="3" readonly>@eval.Comentario</textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label asp-for="Results" class="form-label">Archivo de Resultado</label>
-                                    <input type="text" asp-for="Results" id="resultsInput" class="form-control" value="@eval.Results" aria-describedby="defaultFormControlHelp" readonly>
-                                </div>
 
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="DownloadEva(document.getElementById('resultsInput').value)">
-                                    Descargar
-                                </button>
+                            @{
+                                var userId = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
+                                var fetchUrl = Url.Action("NotificationsJson", "Notifications"); // Reemplaza "ControllerName" con el nombre correcto
                             }
 
 
-                            else
-                            {
-                                <div class="mb-3">
-                                    <label asp-for="UserEval" class="form-label">Calificacion</label>
-                                    <input type="text" asp-for="UserEval" class="form-control" aria-describedby="defaultFormControlHelp" readonly>
-                                </div>
-                                <div>
-                                    <label asp-for="Comentario" class="form-label">Comentarios</label>
-                                    <textarea class="form-control" asp-for="Comentario" rows="3" placeholder="Comentarios al Usuario de la calificacion obtenida" readonly></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label asp-for="Results" class="form-label">Archivo de Reultado</label>
-                                    <input type="text" asp-for="Results" class="form-control" aria-describedby="defaultFormControlHelp" readonly>
-                                </div>
-                            }
+                            
+
+
+
+
                             <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow position-relative"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bx bxs-bell"></i>
@@ -255,6 +221,8 @@
                                 <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
 
                             </ul>
+
+
                             <!-- User -->
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -379,6 +347,33 @@
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userId = '@userId';  // Inyectar el userId
+            const url = '@fetchUrl';   // Obtener la URL desde Razor
+
+            try {
+                const response = await fetch(`${url}?IdUser=${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const notifications = await response.json();
+                console.log(notifications); // Procesar los datos como se requiera
+            } catch (error) {
+                console.error('Error al obtener las notificaciones:', error);
+            }
+        });
+    </script>
+
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
