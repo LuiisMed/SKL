@@ -67,7 +67,7 @@ public abstract class SKLContext : ISKLContext
         return (error, result);
     }
 
-    public async Task<(bool, int, string)> ExecuteStoredProcedureDMLAsync2(string storedProcedure, object parameters)
+    public async Task<(bool Error, int NewTaskId, string Message)> ExecuteStoredProcedureDMLAsync2(string storedProcedure, object parameters)
     {
         var (error, generatedId, message) = (false, 0, "");
         try

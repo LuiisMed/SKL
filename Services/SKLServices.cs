@@ -188,25 +188,25 @@ public class SKLServices : ISKLServices
     public async Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedPhaseAsync(int idFase)
         => await _repository.GetSKLTasksCompletedPhaseAsync(idFase);
 
-    //public async Task<(bool, string)> InsertSKLTaskAsync(Tasks taskdata)
-    //{
-    //    _repository.DataChangeEventHandler += DataChangeEventHandler;
-    //    return await _repository.InsertSKLTaskAsync(taskdata);
-    //}
-
-    public async Task<(bool, string, int)> InsertSKLTaskAsync(Tasks taskData)
-    {
-        _repository.DataChangeEventHandler += DataChangeEventHandler;
-        return await _repository.InsertSKLTaskAsync(taskData);
-    }
-
-
 
     public async Task<(bool, string)> UpdateSKLTaskAsync(Tasks data)
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;
         return await _repository.UpdateSKLTaskAsync(data);
     }
+
+    //public async Task<(bool, string)> InsertSKLTaskAsync(Tasks tasks)
+    //{
+    //    _repository.DataChangeEventHandler += DataChangeEventHandler;
+    //    return await _repository.InsertSKLTaskAsync(tasks);
+    //}
+
+    public async Task<(bool, string, int)> InsertSKLTaskAsync(Tasks tasks)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.InsertSKLTaskAsync(tasks);
+    }
+
 
     public async Task<(bool, string)> DeleteSKLTaskAsync(int idTask)
     {
@@ -341,8 +341,8 @@ public class SKLServices : ISKLServices
     /*---------------------------------------------------------------------------*/
     /*---------------------------------NOTIFICATIONS--------------------------------*/
 
-    public async Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser, int IdTask)
-    => await _repository.GetSKLNotificationsAsync(IdUser, IdTask);
+    public async Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser)
+    => await _repository.GetSKLNotificationsAsync(IdUser);
 
     public async Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications)
     {

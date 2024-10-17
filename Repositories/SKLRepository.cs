@@ -372,31 +372,28 @@ public class SKLRepository : ISKLRepositories
     //        });
     //}
 
-
-    public async Task<(bool, string, int)> InsertSKLTaskAsync(Tasks taskData)
+    public async Task<(bool, string, int)> InsertSKLTaskAsync(Tasks tasks)
     {
-        var parameters = new
-        {
-            Option = "INS_TASK",
-            Param1 = taskData.IdUserT,
-            Param2 = taskData.IdFaseT,
-            Param3 = taskData.Accion,
-            Param4 = taskData.IdAspect,
-            Param5 = taskData.IsCompleted,
-            Param6 = taskData.Start,
-            Param7 = taskData.End
-        };
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        var result = await _context.ExecuteStoredProcedureDMLAsync2(_storedProcedure,
+            new
+            {
+                Option = "INS_TASK",
+                Param1 = tasks.IdTask,
+                Param2 = tasks.IdUserT,
+                Param3 = tasks.IdFaseT,
+                Param4 = tasks.Accion,
+                Param5 = tasks.IdAspect,
+                Param6 = tasks.IsCompleted,
+                Param7 = tasks.Start,
+                Param8 = tasks.End
+            });
 
-        var (error, generatedId) = await _context.ExecuteStoredProcedureDMLAsync2("[SKL].[SKL_FUNCTIONS]", parameters);
+        // Suponiendo que el result contiene el ID de la tarea recién creada
+        int newTaskId = result.NewTaskId; // Debes extraer esto del resultado de tu ejecución
 
-        if (error)
-        {
-            return (true, "Error en la inserción", 0);
-        }
-
-        return (false, "Inserción exitosa", generatedId);
+        return (result.Error, result.Message, newTaskId);
     }
-
 
 
 
@@ -559,12 +556,11 @@ public class SKLRepository : ISKLRepositories
     }
     /*----------------------------------NOTIFICATIONS------------------------------------*/
 
-    public async Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser, int IdTask)
+    public async Task<IEnumerable<Notifications>> GetSKLNotificationsAsync(int IdUser)
     => await _context.ExecuteStoredProcedureQueryAsync<Notifications>(_storedProcedure, new
     {
         Option = "GET_NOTIFICATION",
-        Param1 = IdUser,
-        Param2 = IdTask
+        Param1 = IdUser
     });
 
     public async Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications)

@@ -153,13 +153,49 @@ namespace SKL.Controllers
         //        : RedirectToAction("Error");
         //}
 
+        //public async Task<IActionResult> Insert(Tasks taskData)
+        //{
+        //    var (error, message, newTaskId) = await _Sklservice.InsertSKLTaskAsync(taskData);
+
+        //    if (!error && newTaskId > 0)
+        //    {
+        //        // Prepara los datos de notificación usando el ID generado
+        //        var notification = new Notifications
+        //        {
+        //            IdTask = newTaskId,
+        //            Message = taskData.Accion,
+        //            IsReaded = false,
+        //            IdUsr = taskData.IdUserT
+        //        };
+
+        //        // Realiza la inserción de la notificación
+        //        var secondInsertResult = await InsertRelatedDataAsync(notification);
+
+        //        if (!secondInsertResult)
+        //        {
+        //            error = true;
+        //            message = "Error en la inserción de los datos relacionados.";
+        //        }
+        //    }
+
+        //    var jsonResult = Json(new
+        //    {
+        //        Status = error ? "error" : "success",
+        //        Message = error ? message : "Acción agregada correctamente.",
+        //        Icon = error ? "error" : "info"
+        //    });
+
+        //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        //        ? jsonResult
+        //        : RedirectToAction("Error");
+        //}
+
         public async Task<IActionResult> Insert(Tasks taskData)
         {
             var (error, message, newTaskId) = await _Sklservice.InsertSKLTaskAsync(taskData);
 
             if (!error && newTaskId > 0)
             {
-                // Prepara los datos de notificación usando el ID generado
                 var notification = new Notifications
                 {
                     IdTask = newTaskId,
@@ -168,7 +204,6 @@ namespace SKL.Controllers
                     IdUsr = taskData.IdUserT
                 };
 
-                // Realiza la inserción de la notificación
                 var secondInsertResult = await InsertRelatedDataAsync(notification);
 
                 if (!secondInsertResult)
@@ -190,10 +225,12 @@ namespace SKL.Controllers
                 : RedirectToAction("Error");
         }
 
+
         private async Task<bool> InsertRelatedDataAsync(Notifications notifications)
         {
             try
             {
+                _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
                 await _Sklservice.InsertSKLNotificationsAsync(notifications);
                 return true;
             }
