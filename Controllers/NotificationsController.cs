@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SKL.Models;
 using SKL.Services.IServices;
 
 namespace SKL.Controllers
@@ -22,6 +23,28 @@ namespace SKL.Controllers
         {
             return View();
         }
+
+
+
+        public async Task<IActionResult> Update(Notifications notifications)
+        {
+            var (error, message) = (false, "");
+
+            if (ModelState.IsValid)
+            {
+                (error, message) = await _Sklservice.UpdateSKLNotificationsAsync(notifications);
+
+                return RedirectToAction("Index", "TaskUs", new
+                {
+                    fasefilter = notifications.IdFase,
+                    userfilter = notifications.IdUsr
+                });
+            }
+
+            ViewBag.ErrorMessage = message;
+            return View(notifications);
+        }
+
 
         public async Task<IActionResult> NotificationsJson(int IdUser)
         {

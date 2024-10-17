@@ -123,7 +123,6 @@
                             </button>
 
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
                             </ul>
 
 
@@ -254,7 +253,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const userId = '@userId';
-            const url = '@fetchUrl';   
+            const url = '@fetchUrl'; 
 
             try {
                 const response = await fetch(`${url}?IdUser=${userId}`, {
@@ -277,31 +276,29 @@
             }
         });
 
-     
         function renderNotifications(notifications) {
-            const notificationDropdown = document.querySelector('.dropdown-menu'); 
-            notificationDropdown.innerHTML = ''; 
+            const notificationDropdown = document.querySelector('.dropdown-menu');
+            notificationDropdown.innerHTML = '';
 
-          
             const unreadNotifications = notifications.filter(notification => !notification.isReaded);
 
             unreadNotifications.forEach(notification => {
-                const actionUrl = `/ControllerName/ActionName/${notification.idNotification}`; 
+                const actionUrl = `@Url.Action("Update", "Notifications")?IdNotification=${notification.idNotification}&IdUsr=${notification.idUsr}&IdFase=${notification.idFase}&IsReaded=${true}`;
 
                 const notificationItem = `
-                    <li>
-                        <a class="dropdown-item" href="${actionUrl}">
-                            Tienes una nueva asignacion en la <b>${notification.faseName}</b> con la <b>Accion</b>: ${notification.message}
-                        </a>
-                    </li>
-                `;
+                        <li>
+                            <a class="dropdown-item" href="${actionUrl}">
+                                Tienes una nueva asignación en la <b>${notification.faseName}</b> con la <b>Acción</b>: ${notification.message}
+                            </a>
+                        </li>
+                    `;
                 notificationDropdown.insertAdjacentHTML('beforeend', notificationItem);
             });
         }
 
         function manageIndicator(notifications) {
             const hasUnread = notifications.some(notification => !notification.isReaded); 
-            const indicator = document.querySelector('.notification-indicator'); 
+            const indicator = document.querySelector('.notification-indicator');
 
             if (hasUnread) {
                 indicator.classList.remove('d-none'); 
@@ -309,7 +306,9 @@
                 indicator.classList.add('d-none'); 
             }
         }
+
     </script>
+
 
 
 

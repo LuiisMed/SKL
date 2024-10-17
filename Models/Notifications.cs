@@ -8,6 +8,8 @@
         public int IdTask { get; set; }
         [Map("id_usr")]
         public int IdUsr { get; set; }
+        [Map("id_fase")]
+        public int IdFase { get; set; }
         [Map("isReaded")]
         public Boolean IsReaded { get; set; }
         [Map("message")]
