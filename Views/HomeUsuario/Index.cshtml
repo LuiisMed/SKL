@@ -39,6 +39,8 @@
 
         @{
             var userId = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
+            var fetchUrl = Url.Action("NotificationsJson", "Notifications"); // Reemplaza "ControllerName" con el nombre correcto
+
         }
 
         <div class="row">
@@ -63,6 +65,9 @@
             }
         </div>
     </div>
+    <div id="toastContainer"></div>
+
+
     <div class="content-backdrop fade"></div>
 </div>
 
@@ -83,6 +88,90 @@
                 window.location.href = '@Url.Action("Index", "TaskUs")' + '?fasefilter=' + idFase + '&userfilter=' + userId;
             });
         });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userId = '@userId';
+            const url = '@fetchUrl';
+
+            const FIVE_SECONDS_IN_MS = 6 * 60 * 60 * 1000;
+            const TWO_HOURS_IN_MS = 6 * 60 * 60 * 1000; 
+            const toastContainer = document.getElementById('toastContainer');
+            const TOAST_LAST_SHOWN_KEY = 'toastLastShown';
+
+            async function checkNotifications() {
+                console.log("Verificando notificaciones...");
+                try {
+                    const response = await fetch(`${url}?IdUser=${userId}`, {
+                        method: 'GET',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.statusText}`);
+                    }
+
+                    const notifications = await response.json();
+                    console.log('Notificaciones obtenidas:', notifications);
+
+                    const hasUnread = notifications.some(notification => !notification.isReaded);
+
+                    if (hasUnread && canShowToast()) {
+                        renderToast();
+                    }
+                } catch (error) {
+                    console.error('Error al obtener las notificaciones:', error);
+                }
+            }
+
+            function canShowToast() {
+                const lastShown = localStorage.getItem(TOAST_LAST_SHOWN_KEY);
+                const now = Date.now();
+                // Verifica si han pasado 2 horas desde la última vez que se mostró el toast
+                return !lastShown || now - lastShown >= TWO_HOURS_IN_MS;
+            }
+
+            function markToastAsShown() {
+                localStorage.setItem(TOAST_LAST_SHOWN_KEY, Date.now());
+            }
+
+            function renderToast() {
+                if (document.getElementById('notificationToast')) return;
+
+                const toastHTML = `
+                    <div id="notificationToast" class="bs-toast toast toast-placement-ex m-2 fade bg-warning top-0 start-0 show"
+                         role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            <i class="bx bx-bell me-2"></i>
+                            <strong class="me-auto fw-semibold">Recordatorio</strong>
+                            <small>Hace un momento</small>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            Tienes notificaciones pendientes por revisar.
+                        </div>
+                    </div>
+                `;
+                toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+                const toastElement = document.getElementById('notificationToast');
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+
+                markToastAsShown();  // Actualiza el localStorage al mostrar el toast
+            }
+
+            // Establece el intervalo de verificación de notificaciones cada 5 segundos
+            setInterval(checkNotifications, FIVE_SECONDS_IN_MS);
+            checkNotifications(); // Llama inmediatamente al cargar la página
+        });
+
+
+
+
+
+
+        // localStorage.removeItem('toastLastShown');
+        // console.log('Local Storage limpiado al cargar la página');
     </script>
 
 
