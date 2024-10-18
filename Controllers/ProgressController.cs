@@ -87,6 +87,11 @@ namespace SKL.Controllers
             return Ok(tasksCompleted);
         }
 
+        public async Task<IActionResult> ChartColumnDataJson(int idFase, int idDepartment)
+        {
+            var tasksCompleted = await _Sklservice.GetStackedColumnChartDataAsync(idFase, idDepartment);
+            return Ok(tasksCompleted);
+        }
 
     }
 }

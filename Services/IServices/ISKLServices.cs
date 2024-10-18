@@ -89,6 +89,7 @@ public interface ISKLServices
     Task<object> GetChartTasksCompletedAsync();
     Task<object> GetChartTasksCompletedPerDeptAsync(int idFase, int idDepartment);
     Task<List<PercentagePerDeptViewModel>> GetPercentageTasksPerDept(int fase);
+    Task<object> GetStackedColumnChartDataAsync(int idFase, int idDepartment);
 
 
 

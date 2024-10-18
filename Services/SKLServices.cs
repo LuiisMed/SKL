@@ -338,6 +338,40 @@ public class SKLServices : ISKLServices
 
         return chartList;
     }
+
+        public async Task<object> GetStackedColumnChartDataAsync(int idFase, int idDepartment)
+    {
+        var chartData = new List<object>();
+        var taskList = await GetSKLTaskCompletedPerDept(idFase, idDepartment);
+
+        var groupedTasks = taskList
+            .GroupBy(t => new { t.IdFaseT, t.FaseName, t.IdDepartment, t.DepartmentName, Month = t.Start.Month })
+            .Select(group => new
+            {
+                Phase = group.Key.FaseName,
+                Department = group.Key.DepartmentName,
+                Month = group.Key.Month,
+                Completed = group.Count(t => t.IsCompleted),
+                NotCompleted = group.Count(t => !t.IsCompleted),
+            });
+
+        foreach (var data in groupedTasks)
+        {
+            var formattedData = new
+            {
+                phase = data.Phase,
+                department = data.Department,
+                month = data.Month,
+                completed = data.Completed,
+                notCompleted = data.NotCompleted
+            };
+
+            chartData.Add(formattedData);
+        }
+
+        return chartData;
+    }
+    
     /*---------------------------------------------------------------------------*/
     /*---------------------------------NOTIFICATIONS--------------------------------*/
 
