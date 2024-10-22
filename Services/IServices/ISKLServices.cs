@@ -82,8 +82,10 @@ public interface ISKLServices
     /*---------------------------------------------------------------------------*/
     /*---------------------------------NOTIFICATIONS-----------------------------------*/
     Task<IEnumerable<NotificationsViewModel>> GetSKLNotificationsAsync(int IdUser);
+    Task<IEnumerable<NotificationsViewModel>> GetSKLAdminNotificationsAsync();
     Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications);
     Task<(bool, string)> UpdateSKLNotificationsAsync(Notifications notifications);
+    Task<(bool, string)> UpdateSKLAdminNotificationsAsync(Notifications notifications);
     /*---------------------------------------------------------------------------*/
     /*---------------------------------CHARTS-----------------------------------*/
     Task<object> GetChartTasksCompletedAsync();

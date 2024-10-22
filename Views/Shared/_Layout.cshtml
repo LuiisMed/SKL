@@ -192,35 +192,22 @@
 
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
 
-
                             @{
                                 var userId = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
-                                var fetchUrl = Url.Action("NotificationsJson", "Notifications"); // Reemplaza "ControllerName" con el nombre correcto
+                                var fetchUrl = Url.Action("AdminNotificationsJson", "Notifications"); // Reemplaza "ControllerName" con el nombre correcto
                             }
 
 
-                            
-
-
-
-
-@*                             <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow position-relative"
+                            <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow position-relative"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bx bxs-bell"></i>
-                                <span class="notification-indicator position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                <span class="notification-indicator position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none">
                                     <span class="visually-hidden">New alerts</span>
                                 </span>
                             </button>
 
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);">
-                                        <b>Fase 9</b> Llevar a cabo empleado del mes 
-                                    </a>
-                                </li>
-                                <li><a class="dropdown-item" href="javascript:void(0);">Another action</a></li>
-
-                            </ul> *@
+                            </ul>
 
 
                             <!-- User -->
@@ -233,7 +220,7 @@
 
                                             if (!string.IsNullOrEmpty(imagePath))
                                             {
-                                                <img src="@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
+                                                <img src="~/img/@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                             }
                                             else
                                             {
@@ -255,7 +242,7 @@
 
                                                             if (!string.IsNullOrEmpty(imagePath))
                                                             {
-                                                                <img src="@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
+                                                                <img src="~/img/@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                                             }
                                                             else
                                                             {
@@ -350,11 +337,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const userId = '@userId';  // Inyectar el userId
-            const url = '@fetchUrl';   // Obtener la URL desde Razor
+            const url = '@fetchUrl';
 
             try {
-                const response = await fetch(`${url}?IdUser=${userId}`, {
+                const response = await fetch(`${url}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -366,11 +352,45 @@
                 }
 
                 const notifications = await response.json();
-                console.log(notifications); // Procesar los datos como se requiera
+                console.log(notifications)
+                renderNotifications(notifications);
+                manageIndicator(notifications);
             } catch (error) {
                 console.error('Error al obtener las notificaciones:', error);
             }
         });
+
+        function renderNotifications(notifications) {
+            const notificationDropdown = document.querySelector('.dropdown-menu');
+            notificationDropdown.innerHTML = '';
+
+            const unreadNotifications = notifications.filter(notification => !notification.eviReaded);
+
+            unreadNotifications.forEach(notification => {
+                const actionUrl = `@Url.Action("UpdateAdmNotification", "Notifications")?IdNotification=${notification.idNotification}&IdDepartment=${notification.idDepartment}&IdFase=${notification.idFase}&eviReaded=${true}`;
+
+                const notificationItem = `
+                                <li>
+                                    <a class="dropdown-item" href="${actionUrl}">
+                                        <b>${notification.empNum}-${notification.nameUser} </b>subio una nueva evidencia en la <b>Acción</b>: ${notification.message}
+                                    </a>
+                                </li>
+                            `;
+                notificationDropdown.insertAdjacentHTML('beforeend', notificationItem);
+            });
+        }
+
+        function manageIndicator(notifications) {
+            const hasUnread = notifications.some(notification => !notification.eviReaded);
+            const indicator = document.querySelector('.notification-indicator');
+
+            if (hasUnread) {
+                indicator.classList.remove('d-none');
+            } else {
+                indicator.classList.add('d-none');
+            }
+        }
+
     </script>
 
 

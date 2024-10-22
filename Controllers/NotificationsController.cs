@@ -45,11 +45,37 @@ namespace SKL.Controllers
             return View(notifications);
         }
 
+        public async Task<IActionResult> UpdateAdmNotification(Notifications notifications)
+        {
+            var (error, message) = (false, "");
+
+            if (ModelState.IsValid)
+            {
+                (error, message) = await _Sklservice.UpdateSKLAdminNotificationsAsync(notifications);
+
+                return RedirectToAction("TasksEvaluated", "Progress", new
+                {
+                    idFase = notifications.IdFase,
+                    idDepartment = notifications.IdDepartment
+                });
+            }
+
+            ViewBag.ErrorMessage = message;
+            return View(notifications);
+        }
+
 
         public async Task<IActionResult> NotificationsJson(int IdUser)
         {
             var notifications = await _Sklservice.GetSKLNotificationsAsync(IdUser);
             return Ok(notifications);
         }
+
+        public async Task<IActionResult> AdminNotificationsJson()
+        {
+            var notifications = await _Sklservice.GetSKLAdminNotificationsAsync();
+            return Ok(notifications);
+        }
+
     }
 }

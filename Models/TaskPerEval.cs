@@ -72,6 +72,8 @@ namespace SKL.Models
         public int FaseFilter { get; set; }
         [Display(Name = "Departments")]
         public int DepartmentFilter { get; set; }
+        [Display(Name = "Tasks")]
+        public int TaskFocus { get; set; }
 
         //public IEnumerable<Fase> Fases { get; set; }
         //public IEnumerable<Usuario> Usuarios { get; set; }

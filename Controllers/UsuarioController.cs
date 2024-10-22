@@ -27,6 +27,7 @@ namespace SKL.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> NewUsuarioPopUp()
         {
@@ -46,7 +47,28 @@ namespace SKL.Controllers
             return PartialView("NewUsuarioPopUp", new Usuario());
         }
 
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> UpdateUsuarioPopUp(int idusr)
+        {
+            var departamentos = await _Sklservice.GetSKLDepartmentsAsync();
+            var usertypes = await _Sklservice.GetSKLUserTypesAsync();
+            var shifts = await _Sklservice.GetSKLShiftsAsync();
+            var positions = await _Sklservice.GetSKLPositionsAsync();
+            var model = await _service.GetSKLUsuarioAsync(idusr);
 
+
+
+            ViewBag.Departamentos = departamentos;
+            ViewBag.UserTypes = usertypes;
+            ViewBag.Shifts = shifts;
+            ViewBag.Positions = positions;
+
+            ViewData["Title"] = "Nuevo Usuario";
+            ViewBag.Action = "Insert";
+            return PartialView("UpdateUsuarioPopUp", model);
+        }
+
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Insert(Usuario data, IFormFile imageFile)
         {
@@ -57,7 +79,7 @@ namespace SKL.Controllers
                 {
                     // Generar un nombre único para la imagen
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH\User photos", uniqueFileName);
+                    var filePath = Path.Combine(@"wwwroot/img", uniqueFileName);
 
                     // Guardar la imagen en el servidor
                     using (var stream = System.IO.File.Create(filePath))
@@ -86,84 +108,7 @@ namespace SKL.Controllers
         }
 
 
-        //public async Task<IActionResult> Insert(Usuario data)
-        //{
-        //    var (error, message) = (false, "");
-        //    if (ModelState.IsValid)
-        //    {
-        //        _service.DataChangeEventHandler += RefreshUserGrid;
-        //        (error, message) = await _service.InsertSKLUsuariosAsync(data);
-        //    }
-
-        //    var jsonResult = Json(new
-        //    {
-        //        Status = error ? "error" : "success",
-        //        Message = error ? message : "Usuario creado exitosamente.",
-        //        Icon = error ? "error" : "success"
-        //    });
-
-        //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        //        ? jsonResult
-        //        : RedirectToAction("Error");
-        //}
-
-        //public async Task<IActionResult> Insert(Usuario data, IFormFile imageFile)
-        //{
-        //    var (error, message) = (false, "");
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (imageFile != null && imageFile.Length > 0)
-        //        {
-        //            // Guardar la imagen en el servidor
-        //            var fileName = Path.GetFileName(imageFile.FileName);
-        //            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", fileName);
-
-        //            using (var stream = new FileStream(filePath, FileMode.Create))
-        //            {
-        //                await imageFile.CopyToAsync(stream);
-        //            }
-
-        //            // Guardar la ruta de la imagen en el modelo
-        //            data.ImagePath = $"/img/{fileName}";
-        //        }
-
-        //        _service.DataChangeEventHandler += RefreshUserGrid;
-        //        (error, message) = await _service.InsertSKLUsuariosAsync(data);
-        //    }
-
-        //    var jsonResult = Json(new
-        //    {
-        //        Status = error ? "error" : "success",
-        //        Message = error ? message : "Usuario creado exitosamente.",
-        //        Icon = error ? "error" : "success"
-        //    });
-
-        //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        //        ? jsonResult
-        //        : RedirectToAction("Error");
-        //}
-
-
-        public async Task<IActionResult> UpdateUsuarioPopUp(int idusr)
-        {
-            var departamentos = await _Sklservice.GetSKLDepartmentsAsync();
-            var usertypes = await _Sklservice.GetSKLUserTypesAsync();
-            var shifts = await _Sklservice.GetSKLShiftsAsync();
-            var positions = await _Sklservice.GetSKLPositionsAsync();
-            var model = await _service.GetSKLUsuarioAsync(idusr);
-
-
-
-            ViewBag.Departamentos = departamentos;
-            ViewBag.UserTypes = usertypes;
-            ViewBag.Shifts = shifts;
-            ViewBag.Positions = positions;
-
-            ViewData["Title"] = "Nuevo Usuario";
-            ViewBag.Action = "Insert";
-            return PartialView("UpdateUsuarioPopUp", model);
-        }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Update(Usuario data, IFormFile imageFile)
         {
@@ -176,8 +121,8 @@ namespace SKL.Controllers
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
-                    var filePath = Path.Combine(@"\\10.131.40.121\Paperless\RH\User photos", uniqueFileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
+                    //var filePath = Path.Combine(@"wwwroot/img", uniqueFileName);
 
 
                     using (var stream = System.IO.File.Create(filePath))
@@ -185,12 +130,10 @@ namespace SKL.Controllers
                         await imageFile.CopyToAsync(stream);
                     }
 
-                    // Actualizar la ruta de la imagen en el modelo
                     data.ImagePath = $"{uniqueFileName}";
                 }
                 else
                 {
-                    // Mantener la ruta de imagen existente si no se proporciona una nueva
                     var existingUser = await _service.GetSKLUsuarioAsync(data.IdUser);
                     data.ImagePath = existingUser?.ImagePath;
                 }
@@ -211,7 +154,6 @@ namespace SKL.Controllers
                 ? jsonResult
                 : RedirectToAction("Error");
         }
-
 
 
 
@@ -236,13 +178,14 @@ namespace SKL.Controllers
         //        : RedirectToAction("Error");
         //}
 
-
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteUsuarioPopUp(int idusr)
         {
             var model = await _service.GetSKLUsuarioAsync(idusr);
             return PartialView(model);
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteSKLUsuarios(Usuario model)
         {
             var (error, message) = (false, "");
@@ -255,14 +198,13 @@ namespace SKL.Controllers
                 if (!string.IsNullOrWhiteSpace(existingUser.ImagePath))
                 {
                     // Eliminar la imagen del servidor si existe
-                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "User photos", existingUser.ImagePath.TrimStart('/'));
+                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "img", existingUser.ImagePath.TrimStart('/'));
                     if (System.IO.File.Exists(imagePath))
                     {
                         System.IO.File.Delete(imagePath);
                     }
                 }
 
-                // Eliminar el usuario
                 _service.DataChangeEventHandler += RefreshUserGrid;
                 (error, message) = await _service.DeleteSKLUsuariosAsync(model.IdUser);
             }
@@ -283,26 +225,6 @@ namespace SKL.Controllers
                 ? jsonResult
                 : RedirectToAction("Error");
         }
-
-
-
-
-        //public async Task<IActionResult> DeleteSKLUsuarios(Usuario model)
-        //{
-        //    _service.DataChangeEventHandler += RefreshUserGrid;
-        //    var (error, message) = await _service.DeleteSKLUsuariosAsync(model.IdUser);
-        //    //
-        //    var jsonResult = Json(
-        //         new
-        //         {
-        //             Status = error ? "error" : "success",
-        //             Message = error ? message : "User deleted successfully.",
-        //             Icon = error ? "error" : "success"
-        //         });
-        //    return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        //        ? jsonResult
-        //        : RedirectToAction("Error");
-        //}
 
         [HttpGet]
         public async Task<IActionResult> UsuariosJSON()

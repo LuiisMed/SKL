@@ -3,7 +3,7 @@
 <div class="content-wrapper">
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card mb-4">
                     <h5 class="card-header">Form Controls</h5>
                     <div class="card-body">
@@ -22,10 +22,36 @@
                     </div>
                 </div>
             </div>
-
-            <div id="cardsContainer" class="col-md-6"></div>
-
         </div>
+        <div class="row">
+            <div class="col-md-6" id="chartContainer">
+                <div class="card h-110">
+                    <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                        <div class="card-title mb-0">
+                            <h5 class="m-0 me-2" id="chartTitle">Order Statistics</h5>
+                        </div>
+                    </div>
+                    <div class="card-body" id="chartBody">
+                        <!-- Los gráficos se insertarán aquí dinámicamente -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" id="chartContainer2">
+                <div class="card h-110">
+                    <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                        <div class="card-title mb-0">
+                            <h5 class="m-0 me-2" id="chartTitle2">Order Statistics</h5>
+                        </div>
+                    </div>
+                    <div class="card-body" id="chartBody2">
+                        <!-- Los gráficos se insertarán aquí dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <br />
         <div id="myGrid" style="height: 1000px" class="ag-theme-quartz"></div>
 
     </div>
@@ -125,7 +151,8 @@
                     params.data && !params.data.isCompleted && !params.data.evidences // Rojo: sin checkbox y sin evidencia
             },
             onGridReady: (params) => {
-                gridApi = params.api; // Obtener la instancia de gridApi
+                gridApi = params.api;
+                
             },
             groupDefaultExpanded: -1,
             defaultColDef: {
@@ -331,62 +358,43 @@
                 const response = await fetch('@Url.Action("ChartDataJson", "Progress")' + getQueryParameters());
                 const data = await response.json();
                 console.log("Datos del gráfico recibidos:", data);
-                renderCharts(data);  // Renderizamos los gráficos con los nuevos datos
+
+                const responseChart = await fetch('@Url.Action("ChartColumnDataJson", "Progress")' + getQueryParameters());
+                const dataColumn = await responseChart.json();
+                console.log("Datos del gráfico de columnas recibidos:", dataColumn);
+
+                renderCharts(data);
+                renderColumnChart(dataColumn);
             } catch (error) {
                 console.error("Error al cargar los datos del gráfico:", error);
             }
         }
 
-        // Función que destruye y recrea los gráficos
         function renderCharts(chartDataArray) {
-            const cardsContainer = document.getElementById("cardsContainer");
-            cardsContainer.innerHTML = '';  // Limpiamos el contenedor
+            const chartContainer = document.getElementById("chartContainer");
+            const chartTitle = document.getElementById("chartTitle");
+            const chartBody = document.getElementById("chartBody");
+
+            chartBody.innerHTML = ''; 
 
             chartDataArray.forEach((chartData, index) => {
-                const colDiv = document.createElement("div");
-                colDiv.className = "card h-110";
+                chartTitle.textContent = chartData.department;
 
-                const cardDiv = document.createElement("div");
-                cardDiv.className = "card h-100";
-
-                const cardHeader = document.createElement("div");
-                cardHeader.className = "card-header d-flex align-items-center justify-content-between";
-
-                const titleHeader = document.createElement("h5");
-                titleHeader.className = "card-title m-0 me-2";
-                titleHeader.textContent = chartData.department;
-
-                const cardBody = document.createElement("div");
-                cardBody.className = "card-body";
-
+                const chartId = `pieChart${index}`;
                 const chartsRow = document.createElement("div");
-                const chartId = `chart${index}`;
                 chartsRow.id = chartId;
-
-                cardHeader.appendChild(titleHeader);
-                cardBody.appendChild(chartsRow);
-                cardDiv.appendChild(cardHeader);
-                cardDiv.appendChild(cardBody);
-                colDiv.appendChild(cardDiv);
-                cardsContainer.appendChild(colDiv);
+                chartBody.appendChild(chartsRow); 
 
                 const options = {
-                    chart: {
-                        type: "pie",
-                        height: 400
-                    },
-                    labels: ["Completado", "Pendiente"],
-                    series: [chartData.completed, chartData.notCompleted],
-                    colors: ["#00E396", "#FF4560"],
+                    chart: { type: "pie", height: 400 },
+                    labels: ["Completado", "Sin evidencia", "Pendiente por revisar"],
+                    series: [chartData.completed, chartData.notCompleted, chartData.pending],
+                    colors: ["#00E396", "#FF4560", "#e8e000"],
                     dataLabels: {
                         enabled: true,
-                        formatter: function (val, opts) {
-                            return val.toFixed(0) + "%";
-                        }
+                        formatter: (val) => `${val.toFixed(0)}%`,
                     },
-                    legend: {
-                        position: 'bottom'
-                    }
+                    legend: { position: 'bottom' },
                 };
 
                 const chart = new ApexCharts(document.getElementById(chartId), options);
@@ -394,9 +402,47 @@
             });
         }
 
+        function renderColumnChart(chartDataArray) {
+            const chartContainer2 = document.getElementById("chartContainer2");
+            const chartTitle2 = document.getElementById("chartTitle2");
+            const chartBody2 = document.getElementById("chartBody2");
+
+            chartBody2.innerHTML = ''; 
+
+            chartDataArray.forEach((chartData, index) => {
+                chartTitle2.textContent = chartData.department;
+
+                const chartId = `columnChart${index}`;
+                const chartsRow = document.createElement("div");
+                chartsRow.id = chartId;
+                chartBody2.appendChild(chartsRow); 
+
+                const options = {
+                    series: chartData.series, 
+                    chart: { type: "bar", height: 350, stacked: true, toolbar: { show: true } },
+                    plotOptions: { bar: { horizontal: false, borderRadius: 5 } },
+                    xaxis: {
+                        categories: chartData.categories.map(category =>
+                            category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()
+                        ),
+                    },
+                    yaxis: { title: { text: "Número de Tareas" } },
+                    legend: { position: "top" },
+                    fill: { opacity: 1 },
+                    colors: ["#00E396", "#FF4560", "#e8e000"],
+                    tooltip: { shared: true, intersect: false }
+                };
+
+                const chart = new ApexCharts(document.getElementById(chartId), options);
+                chart.render().catch(error => {
+                    console.error("Error al renderizar el gráfico:", error);
+                });
+            });
+        }
+
         // Función para refrescar los gráficos
         function refreshCharts() {
-            loadChartData();  // Cargamos los datos y renderizamos nuevamente los gráficos
+            loadChartData();  
         }
 
         // Conectar SignalR para refrescar los gráficos cuando sea necesario
@@ -462,7 +508,7 @@
             console.error("Error al conectar con SignalR:", err.toString());
         });
 
-        refreshTaskData();  // Cargar datos al abrir la página
+        refreshTaskData(); 
 
 
     </script>

@@ -321,7 +321,9 @@ public class SKLServices : ISKLServices
             {
                 Department = group.Key.DepartmentName,
                 Completed = group.Count(t => t.IsCompleted),
-                NotCompleted = group.Count(t => !t.IsCompleted),
+                NotCompleted = group.Count(t => !t.IsCompleted && t.Evidences == null),
+                Pending = group.Count(t => !t.IsCompleted && t.Evidences != null)
+
             });
 
         foreach (var phaseData in groupedTasks)
@@ -330,7 +332,8 @@ public class SKLServices : ISKLServices
             {
                 department = phaseData.Department,
                 completed = phaseData.Completed,
-                notCompleted = phaseData.NotCompleted
+                notCompleted = phaseData.NotCompleted,
+                pending = phaseData.Pending,
             };
 
             chartList.Add(chartData);
@@ -339,44 +342,56 @@ public class SKLServices : ISKLServices
         return chartList;
     }
 
-        public async Task<object> GetStackedColumnChartDataAsync(int idFase, int idDepartment)
+    public async Task<object> GetStackedColumnChartDataAsync(int idFase, int idDepartment)
     {
-        var chartData = new List<object>();
         var taskList = await GetSKLTaskCompletedPerDept(idFase, idDepartment);
 
+        // Agrupar tareas por departamento y mes
         var groupedTasks = taskList
-            .GroupBy(t => new { t.IdFaseT, t.FaseName, t.IdDepartment, t.DepartmentName, Month = t.Start.Month })
+            .GroupBy(t => new
+            {
+                t.DepartmentName,
+                Month = t.Start.ToString("MMMM", new System.Globalization.CultureInfo("es-ES"))
+            })
             .Select(group => new
             {
-                Phase = group.Key.FaseName,
-                Department = group.Key.DepartmentName,
+                DepartmentName = group.Key.DepartmentName,
                 Month = group.Key.Month,
                 Completed = group.Count(t => t.IsCompleted),
-                NotCompleted = group.Count(t => !t.IsCompleted),
-            });
+                NotCompleted = group.Count(t => !t.IsCompleted && t.Evidences == null),
+                Pending = group.Count(t => !t.IsCompleted && t.Evidences != null) 
+            })
+            .OrderBy(g => DateTime.ParseExact(g.Month, "MMMM", new System.Globalization.CultureInfo("es-ES")).Month) 
+            .ThenBy(g => g.DepartmentName); 
 
-        foreach (var data in groupedTasks)
-        {
-            var formattedData = new
+        // Formatear datos para ApexCharts
+        var chartData = groupedTasks
+            .GroupBy(g => g.DepartmentName)
+            .Select(departmentGroup => new
             {
-                phase = data.Phase,
-                department = data.Department,
-                month = data.Month,
-                completed = data.Completed,
-                notCompleted = data.NotCompleted
-            };
-
-            chartData.Add(formattedData);
-        }
+                department = departmentGroup.Key,
+                categories = departmentGroup.Select(g => g.Month).ToList(),
+                series = new List<object>
+                {
+                new { name = "Completadas", data = departmentGroup.Select(g => g.Completed).ToList() },
+                new { name = "Sin Evidencia", data = departmentGroup.Select(g => g.NotCompleted).ToList() },
+                new { name = "Pendientes por revisar", data = departmentGroup.Select(g => g.Pending).ToList() } // Añadir la serie de pendientes
+                }
+            }).ToList();
 
         return chartData;
     }
-    
+
+
+
     /*---------------------------------------------------------------------------*/
     /*---------------------------------NOTIFICATIONS--------------------------------*/
 
     public async Task<IEnumerable<NotificationsViewModel>> GetSKLNotificationsAsync(int IdUser)
     => await _repository.GetSKLNotificationsAsync(IdUser);
+
+    public async Task<IEnumerable<NotificationsViewModel>> GetSKLAdminNotificationsAsync()
+    => await _repository.GetSKLAdminNotificationsAsync();
 
     public async Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications)
     {
@@ -388,6 +403,12 @@ public class SKLServices : ISKLServices
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;
         return await _repository.UpdateSKLNotificationsAsync(notifications);
+    }
+
+    public async Task<(bool, string)> UpdateSKLAdminNotificationsAsync(Notifications notifications)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.UpdateSKLAdminNotificationsAsync(notifications);
     }
 
     /*---------------------------------------------------------------------------*/

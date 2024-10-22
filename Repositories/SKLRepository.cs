@@ -560,8 +560,14 @@ public class SKLRepository : ISKLRepositories
     public async Task<IEnumerable<NotificationsViewModel>> GetSKLNotificationsAsync(int IdUser)
     => await _context.ExecuteStoredProcedureQueryAsync<NotificationsViewModel>(_storedProcedure, new
     {
-        Option = "GET_NOTIFICATION",
+        Option = "GET_USER_NOTIFICATION",
         Param1 = IdUser
+    });
+
+    public async Task<IEnumerable<NotificationsViewModel>> GetSKLAdminNotificationsAsync()
+    => await _context.ExecuteStoredProcedureQueryAsync<NotificationsViewModel>(_storedProcedure, new
+    {
+        Option = "GET_ADMIN_NOTIFICATION"
     });
 
     public async Task<(bool, string)> InsertSKLNotificationsAsync(Notifications notifications)
@@ -574,7 +580,8 @@ public class SKLRepository : ISKLRepositories
                 Param1 = notifications.IdTask,
                 Param2 = notifications.IdUsr,
                 Param3 = notifications.IsReaded,
-                Param4 = notifications.Message
+                Param4 = notifications.Message,
+                Param5 = notifications.EviReaded
             });
     }
 
@@ -587,6 +594,18 @@ public class SKLRepository : ISKLRepositories
                 Option = "UPD_NOTIFICATION",
                 Param1 = notifications.IdNotification,
                 Param2 = notifications.IsReaded
+            });
+    }
+
+    public async Task<(bool, string)> UpdateSKLAdminNotificationsAsync(Notifications notifications)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_ADMIN_NOTIFICATION",
+                Param1 = notifications.IdNotification,
+                Param2 = notifications.EviReaded
             });
     }
 

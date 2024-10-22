@@ -108,7 +108,7 @@
 
         const gridOptions = {
             columnDefs: [
-                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
+                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: false },
                 { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
                 { field: "name", headerName: "Usuario", minWidtha: 150, hide: true },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
@@ -257,6 +257,8 @@
         const userFilter = @Model.UserFilter;
         const faseFilter = @Model.FaseFilter;
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const idTask = urlParams.get('idtask');
 
         // setup the grid after the page has finished loading
         document.addEventListener("DOMContentLoaded", function () {

@@ -123,7 +123,6 @@ namespace SKL.Controllers
 
                 await _Sklservice.InsertSKLEvalAsync(evalData);
 
-                // Redirigir a la acción Index después de insertar la evaluación
             }
             return RedirectToAction("Index", new { UserFilter = evalData.IdUserE, FaseFilter = evalData.IdFaseE });
 
@@ -141,6 +140,7 @@ namespace SKL.Controllers
                     IdTask = newTaskId,
                     Message = taskData.Accion,
                     IsReaded = false,
+                    EviReaded = false,
                     IdUsr = taskData.IdUserT
                 };
 
@@ -223,10 +223,6 @@ namespace SKL.Controllers
         private async void RefreshTasksGrid(object? sender, EventArgs e)
         => await _context.Clients.All.SendAsync("RefreshTasksGrid");
 
-        //public async Task<IActionResult> TaskJson(int idUser, int idFase)
-        //=> Ok(await _Sklservice.GetSKLTaskPerUserFase(idUser, idFase));
-
-
         [HttpGet]
         public async Task<IActionResult> TaskJson(int idUser, int idFase)
         {
@@ -250,7 +246,6 @@ namespace SKL.Controllers
                 Month = f.Start.ToString("MMMM")
         });
 
-            // Devolver el resultado como JSON
             return Json(fasesFormateadas);
         }
 
