@@ -29,6 +29,11 @@ namespace SKL.Models
         public DateTime End { get; set; }
         /*-----------Task-------------*/
 
+        /*-----------Email-------------*/
+        [Map("Email")]
+        public string? Email { get; set; }
+
+
 
         /*-----------Evals-------------*/
         public int IdEval { get; set; }

@@ -29,6 +29,13 @@ public class UserRepository : IUserRepository
         return list.FirstOrDefault() ?? new() { Name = "" };
     }
 
+    public async Task<IEnumerable<Usuario>> GetSKLUserEmailAsync(int idusr)
+    => await _context.ExecuteStoredProcedureQueryAsync<Usuario>(_storedProcedure, new
+    {
+        Option = "GET_USUARIO",
+        Param1 = idusr
+    });
+
     public async Task<IEnumerable<Login>> GetSKLCredentials()
     => await _context.ExecuteStoredProcedureQueryAsync<Login>(_storedProcedure,
     new { Option = "GET_CREDENTIALS" });

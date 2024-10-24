@@ -23,6 +23,9 @@ public class UserServices : IUserServices
     public async Task<Usuario> GetSKLUsuarioAsync(int idusr)
     => await _repository.GetSKLUsuarioAsync(idusr);
 
+    public async Task<IEnumerable<Usuario>> GetSKLUserEmailAsync(int idusr)
+    => await _repository.GetSKLUserEmailAsync(idusr);
+
     public async Task<IEnumerable<Login>> GetSKLCredentials()
     => await _repository.GetSKLCredentials();
 

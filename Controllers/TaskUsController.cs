@@ -148,7 +148,6 @@ namespace SKL.Controllers
                 Month = f.Start.ToString("MMMM")
         });
 
-            // Devolver el resultado como JSON
             return Json(fasesFormateadas);
         }
 
@@ -170,7 +169,7 @@ namespace SKL.Controllers
             }
             else
             {
-                return NotFound();
+                return Ok();
             }
         }
 
@@ -194,6 +193,7 @@ namespace SKL.Controllers
                 return NotFound();
             }
         }
+
 
     }
 }

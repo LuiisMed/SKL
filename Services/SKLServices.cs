@@ -152,6 +152,9 @@ public class SKLServices : ISKLServices
     public async Task<Fase> GetSKLFaseAsync(int idFase)
     => await _repository.GetSKLFaseAsync(idFase);
 
+    public async Task<IEnumerable<Fase>> GetSKLFaseName(int idFase)
+        => await _repository.GetSKLFaseName(idFase);
+
     public async Task<(bool, string)> InsertSKLFaseAsync(Fase data)
     {
         _repository.DataChangeEventHandler += DataChangeEventHandler;
@@ -175,6 +178,9 @@ public class SKLServices : ISKLServices
             => await _repository.GetSKLTasksAsync();
     public async Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedAsync()
         => await _repository.GetSKLTasksCompletedAsync();
+
+    public async Task<IEnumerable<SKLTasksOverdue>> GetSKLTasksOverDueAsync()
+    => await _repository.GetSKLTasksOverDueAsync();
 
     public async Task<TaskPerEval> GetSKLTask(int idTask)
     => await _repository.GetSKLTask(idTask);

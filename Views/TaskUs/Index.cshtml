@@ -170,10 +170,9 @@
             rowClassRules: {
                 'row-vencida': (params) => params.data && !params.data.evidences && hoy > new Date(params.data.end),
                 'row-verde': (params) =>
-                    params.data && params.data.isCompleted && params.data.evidences, // Verde: checkbox marcado y evidencia presente
-
+                    params.data && params.data.isCompleted && params.data.evidences,
                 'row-amarilla': (params) =>
-                    params.data && !params.data.isCompleted && params.data.evidences // Amarillo: sin checkbox pero con evidencia
+                    params.data && !params.data.isCompleted && params.data.evidences
 
             },
             onGridReady: (params) => {

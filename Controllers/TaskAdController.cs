@@ -4,6 +4,9 @@ using SKL.Models.ViewModels;
 using SKL.Services.IServices;
 using static Microsoft.CodeAnalysis.IOperation;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SKL.Controllers
 {
@@ -12,13 +15,16 @@ namespace SKL.Controllers
         private readonly IHubContext<SystemHub> _context;
         private readonly IUserServices _service;
         private readonly ISKLServices _Sklservice;
+        private readonly IEmailService _emailservice;
+        private readonly IWebHostEnvironment _env;
 
-
-        public TaskAdController(IHubContext<SystemHub> context, IUserServices service, ISKLServices sklservice)
+        public TaskAdController(IHubContext<SystemHub> context, IUserServices service, ISKLServices sklservice, IEmailService emailservice, IWebHostEnvironment env)
         {
             _context = context;
             _service = service;
             _Sklservice = sklservice;
+            this._emailservice = emailservice;
+            _env = env;
         }
 
         [Authorize(Roles = "Administrador")]
@@ -28,12 +34,20 @@ namespace SKL.Controllers
             var users = await _service.GetSKLUsuarios();
             var aspects = await _Sklservice.GetSKLAspectsAsync();
             var eval = await _Sklservice.GetSKLEvalsAsync();
+            var user = await _service.GetSKLUserEmailAsync(userfilter);
+            var fase = await _Sklservice.GetSKLFaseName(fasefilter);
+
+
+            var email = user.FirstOrDefault()?.Email ?? "Email no encontrado";
+            var fasename = fase.FirstOrDefault()?.Name ?? "Email no encontrado";
 
             TaskPerEval model = new()
             {
                 UserFilter = userfilter,
                 FaseFilter = fasefilter,
                 Usuarios = users,
+                Email = email,
+                FaseName = fasename,
                 Aspectos = aspects,
                 Evals = eval
             };
@@ -129,6 +143,7 @@ namespace SKL.Controllers
         }
 
 
+
         public async Task<IActionResult> Insert(Tasks taskData)
         {
             var (error, message, newTaskId) = await _Sklservice.InsertSKLTaskAsync(taskData);
@@ -151,6 +166,18 @@ namespace SKL.Controllers
                     error = true;
                     message = "Error en la inserción de los datos relacionados.";
                 }
+
+                var mailrequest = new Mailrequest
+                {
+                    ToEmail = taskData.Email,
+                    Subject = "Nueva Accion SkipLevel",
+                    Accion = taskData.Accion,
+                    Fase = taskData.FaseName,
+                    EndDate = taskData.End
+                };
+
+                var thirdInsertResult = await SendMail(mailrequest);
+
             }
 
             var jsonResult = Json(new
@@ -166,6 +193,56 @@ namespace SKL.Controllers
         }
 
 
+
+
+        [HttpPost("SendMail")]
+        public async Task<IActionResult> SendMail(Mailrequest mailrequest)
+        {
+            try
+            {
+                mailrequest.ToEmail = mailrequest.ToEmail;
+                mailrequest.Subject = mailrequest.Subject;
+                mailrequest.Body = GetHtmlContent(mailrequest);
+                await _emailservice.SendEmailAsync(mailrequest);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private string GetHtmlContent(Mailrequest mailrequest)
+        {
+            string path = Path.Combine(_env.WebRootPath, "assets", "Email", "AsignacionEmail.html");
+
+            if (!System.IO.File.Exists(path))
+            {
+                throw new FileNotFoundException($"No se encontró la plantilla HTML en la ruta: {path}");
+            }
+
+            // Leer el contenido del archivo
+            string htmlTemplate = System.IO.File.ReadAllText(path);
+
+            // Reemplazar los marcadores en la plantilla con los valores de Mailrequest
+            string emailBody = htmlTemplate
+                .Replace("{{Accion}}", mailrequest.Accion ?? string.Empty)
+                .Replace("{{Fase}}", mailrequest.Fase ?? string.Empty)
+                .Replace("{{FechaVencimiento}}", mailrequest.EndDate.ToString("dd/MM/yyyy"));
+
+            return emailBody;
+        }
+
+
+
+
+        //private string GetHtmlContent(Mailrequest mailrequest)
+        //{
+        //    string response = $"<h1>Que onda soy la accion {mailrequest.Accion}</h1> ";
+
+        //    return response;
+        //}
+
         private async Task<bool> InsertRelatedDataAsync(Notifications notifications)
         {
             try
@@ -179,7 +256,6 @@ namespace SKL.Controllers
                 return false;
             }
         }
-
 
         public async Task<IActionResult> Update(Tasks data)
         {
@@ -244,7 +320,7 @@ namespace SKL.Controllers
                 Start = f.Start.ToString("yyyy-MM-dd"),
                 End = f.End.ToString("yyyy-MM-dd"),
                 Month = f.Start.ToString("MMMM")
-        });
+            });
 
             return Json(fasesFormateadas);
         }

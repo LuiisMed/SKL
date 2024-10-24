@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <None Include="efpt.config.json.user" />
+    <None Include="wwwroot\assets\Email\AsignacionEmail.html" />
     <None Include="wwwroot\lib\apexcharts\apexcharts.js" />
     <None Include="wwwroot\lib\bootstrap-datepicker\.editorconfig" />
     <None Include="wwwroot\lib\bootstrap-datepicker\.github\ISSUE_TEMPLATE.md" />
@@ -391,7 +392,9 @@
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.3.1" />
+    <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
+    <PackageReference Include="MimeKit" Version="4.8.0" />
     <PackageReference Include="RepoDb" Version="1.13.1" />
     <PackageReference Include="RepoDb.SqlServer" Version="1.13.1" />
     <PackageReference Include="RepoDb.SqlServer.BulkOperations" Version="1.13.1" />

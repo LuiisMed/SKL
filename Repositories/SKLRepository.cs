@@ -273,6 +273,13 @@ public class SKLRepository : ISKLRepositories
         return list.FirstOrDefault() ?? new() { Name = "" };
     }
 
+    public async Task<IEnumerable<Fase>> GetSKLFaseName(int idFase)
+    => await _context.ExecuteStoredProcedureQueryAsync<Fase>(_storedProcedure, new
+    {
+        Option = "GET_FASE",
+        Param1 = idFase
+    });
+
     public async Task<(bool, string)> InsertSKLFaseAsync(Fase fase)
     {
         _context.DataChangeEventHandler += DataChangeEventHandler;
@@ -323,6 +330,10 @@ public class SKLRepository : ISKLRepositories
     public async Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedAsync()
     => await _context.ExecuteStoredProcedureQueryAsync<TaskPerEvi>(_storedProcedure,
     new { Option = "GET_TASKS_COMPLETED" });
+
+    public async Task<IEnumerable<SKLTasksOverdue>> GetSKLTasksOverDueAsync()
+    => await _context.ExecuteStoredProcedureQueryAsync<SKLTasksOverdue>(_storedProcedure,
+    new { Option = "GET_TASK_OVERDUE" });
 
     public async Task<TaskPerEval> GetSKLTask(int idTask)
     {

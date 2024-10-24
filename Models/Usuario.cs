@@ -34,6 +34,8 @@ public partial class Usuario
     public int EmpNo { get; set; }
     [Map("usr_img")]
     public string ImagePath { get; set; }
+    [Map("Email")]
+    public string Email { get; set; }
 
 
 

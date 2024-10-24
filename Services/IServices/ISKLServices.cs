@@ -46,6 +46,7 @@ public interface ISKLServices
     /*------------------------------------FASE--------------------------------------*/
     Task<IEnumerable<Fase>> GetSKLFasesAsync();
     Task<Fase> GetSKLFaseAsync(int idFase);
+    Task<IEnumerable<Fase>> GetSKLFaseName(int idFase);
     Task<(bool, string)> InsertSKLFaseAsync(Fase data);
     Task<(bool, string)> UpdateSKLFaseAsync(Fase data);
     Task<(bool, string)> DeleteSKLFaseAsync(int idFase);
@@ -53,6 +54,7 @@ public interface ISKLServices
     /*------------------------------------TASKS--------------------------------------*/
     Task<IEnumerable<Tasks>> GetSKLTasksAsync();
     Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedAsync();
+    Task<IEnumerable<SKLTasksOverdue>> GetSKLTasksOverDueAsync();
     Task<TaskPerEval> GetSKLTask(int idTask);
     Task<IEnumerable<TaskPerEvi>> GetSKLTaskPerUserFase(int idFase, int idUser);
     Task<IEnumerable<TaskPerEvi>> GetSKLTasksCompletedPhaseAsync(int idFase);

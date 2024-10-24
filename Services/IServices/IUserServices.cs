@@ -9,6 +9,7 @@ public interface IUserServices
 
     Task<IEnumerable<Usuario>> GetSKLUsuarios();
     Task<Usuario> GetSKLUsuarioAsync(int idusr);
+    Task<IEnumerable<Usuario>> GetSKLUserEmailAsync(int idusr);
     Task<IEnumerable<Login>> GetSKLCredentials();
     Task<(bool, string)> InsertSKLUsuariosAsync(Usuario data);
     Task<(bool, string)> UpdateSKLUsuariosAsync(Usuario data);

@@ -13,6 +13,8 @@ public partial class Tasks
     public int IdUserT { get; set; }
     [Map("name")]
     public string Name { get; set; }
+    [Map("Email")]
+    public string? Email { get; set; }
     [Map("id_fase")]
     public int IdFaseT { get; set; }
     [Map("fase_name")]
