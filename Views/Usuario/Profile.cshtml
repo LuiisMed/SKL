@@ -1,0 +1,193 @@
+﻿@model SKL.Models.Usuario
+
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <h5 class="card-header">Profile Details</h5>
+                    <!-- Account -->
+
+                    <div class="card-body">
+                        <form id="form1" asp-controller="Usuario" asp-action="Update" role="form" method="post" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                        @if (User.Identity!.IsAuthenticated)
+                                        {
+                                            var imagePath = User.Claims.Where(c => c.Type == "imageFile").Select(c => c.Value).SingleOrDefault();
+
+                                            if (!string.IsNullOrEmpty(imagePath))
+                                            {
+                                                <img src="@($"http://10.131.40.17/skiplevel/usrimg/{imagePath}")" alt="User Image" alt="user-avatar"
+                                                     class="d-block rounded"
+                                                     height="100"
+                                                     width="100"
+                                                     id="uploadedAvatar" />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/assets/img/avatars/Unknkow.png" alt="User Image" alt="user-avatar"
+                                                     class="d-block rounded"
+                                                     height="100"
+                                                     width="100"
+                                                     id="uploadedAvatar" />
+                                            }
+                                        }
+                                        <div class="button-wrapper">
+                                            <label asp-for="ImagePath" class="btn btn-primary me-2 mb-4" tabindex="0">
+                                                <span   class="d-none d-sm-block">Upload new photo</span>
+                                                <input asp-for="ImagePath" type="file" name="imageFile" class="account-file-input" hidden accept="image/png, image/jpeg" />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" asp-for="IdUser" />
+                                <div class="mb-3 col-md-6">
+                                    <label asp-for="Name" class="form-label">Name</label>
+                                    <input asp-for="Name" class="form-control" type="text" autofocus />
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label asp-for="UserName" class="form-label">UserName</label>
+                                    <input asp-for="UserName" class="form-control" type="text"/>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label asp-for="Email" class="form-label">E-mail</label>
+                                    <input asp-for="Email" class="form-control" type="text" />
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label asp-for="EmpNo" class="form-label">Numero Empleado</label>
+                                    <input asp-for="EmpNo" class="form-control" type="text" readonly />
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label asp-for="UserPassword" class="form-label">Password</label>
+                                    <input asp-for="UserPassword" class="form-control" type="text" />
+                                </div>
+                                <input type="hidden" asp-for="IdRole" />
+                                <div class="mb-3 col-md-6">
+                                    <label asp-for="IdDepartment" class="form-label">Departamento</label>
+                                    <select asp-for="IdDepartment" class="form-control">
+                                        @foreach (var dep in ViewBag.Departamentos)
+                                        {
+                                            <option value="@dep.Id">@dep.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label asp-for="IdShift" class="form-label">Turno</label>
+                                    <select asp-for="IdShift" class="form-control">
+                                        @foreach (var shi in ViewBag.Shifts)
+                                        {
+                                            <option value="@shi.Id">@shi.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label asp-for="IdPosition" class="form-label">Posicion</label>
+                                    <select asp-for="IdPosition" class="form-control">
+                                        @foreach (var pos in ViewBag.Positions)
+                                        {
+                                            <option value="@pos.Id">@pos.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                                <button type="reset" class="btn btn-primary me-2" hidden>Save changes</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /Account -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-backdrop fade"></div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @*     <script src="~/lib/paramquery-pro/jsZip-2.5.0/jszip.min.js"></script>
+    <script src="~/lib/paramquery-pro/jszip-utils-0.0.2/jszip-utils.min.js"></script>
+    <script src="~/lib/paramquery-pro/pqgrid.min.js"></script>
+    <script src="~/lib/paramquery-pro/localize/pq-localize-en.js"></script> *@
+    <script src="~/lib/FileSaver/dist/FileSaver.min.js"></script>
+
+
+    <script>
+
+        $(function () {
+            var formProvider = $('#form1');
+            formProvider.submit(function (e) {
+                e.preventDefault();
+                formProvider.validate();
+                if (formProvider.valid()) {
+                    var formData = new FormData(this);
+                    $.ajax({
+                        url: formProvider.attr('action'),
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (res) {
+                            if (res.status === 'success') {
+                                // Show success toast
+                                showToast('bg-success text-white', 'bx-check-circle', 'Success', res.message);
+                                // Hide modal window
+                                $('#ModalWindow').modal("hide");
+                            } else if (res.status === 'error') {
+                                // Show error toast
+                                showToast('bg-danger text-white', 'bx-x-circle', 'Error', res.message);
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Function to display toast by adding and removing "show" class
+            function showToast(type, icon, header, message) {
+                var toastElement = `
+                            <div class="bs-toast toast toast-placement-ex m-2 bg-success top-0 start-0 fade show ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="toast-header">
+                                    <i class="bx ${icon} me-2"></i>
+                                    <strong class="me-auto">${header}</strong>
+                                    <small class="text-white">Just now</small>
+                                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body">
+                                    ${message}
+                                </div>
+                            </div>`;
+
+                var toastContainer = $('#toastContainer');
+                if (!toastContainer.length) {
+                    toastContainer = $('<div id="toastContainer" style="position: fixed; top: 0; left: 0; z-index: 9999;"></div>');
+                    $('body').append(toastContainer);
+                }
+
+                var toast = $(toastElement);
+                toastContainer.append(toast);
+
+                // Show toast (by adding "show" class)
+                setTimeout(function () {
+                    toast.addClass('show');
+                }, 100); // Slight delay to allow CSS transition
+
+                // Hide the toast after 3 seconds (by removing "show" class)
+                setTimeout(function () {
+                    toast.removeClass('show');
+                    setTimeout(function () {
+                        toast.remove(); // Remove from DOM after transition ends
+                    }, 500); // Wait for the hide transition to complete
+                }, 3000);
+            }
+        });
+
+    </script>
+}

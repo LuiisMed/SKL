@@ -20,6 +20,7 @@ public class UserServices : IUserServices
     public async Task<IEnumerable<Usuario>> GetSKLUsuarios()
             => await _repository.GetSKLUsuarios();
 
+
     public async Task<Usuario> GetSKLUsuarioAsync(int idusr)
     => await _repository.GetSKLUsuarioAsync(idusr);
 

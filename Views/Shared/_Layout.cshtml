@@ -194,7 +194,9 @@
 
                             @{
                                 var userId = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
-                                var fetchUrl = Url.Action("AdminNotificationsJson", "Notifications"); // Reemplaza "ControllerName" con el nombre correcto
+                                var role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).SingleOrDefault();
+                                var fetchUrl = Url.Action("AdminNotificationsJson", "Notifications");
+                                var profileUrl = Url.Action("Profile", "Usuario");
                             }
 
 
@@ -220,14 +222,15 @@
 
                                             if (!string.IsNullOrEmpty(imagePath))
                                             {
-                                                <img src="~/img/@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
+                                                <img src="@($"http://10.131.40.17/skiplevel/usrimg/{imagePath}")"
+                                                     alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                             }
                                             else
                                             {
-                                                <img src="~/assets/img/avatars/Unknkow.png" alt="User Image" class="w-px-40 h-auto rounded-circle" />
+                                                <img src="~/assets/img/avatars/Unknkow.png"
+                                                     alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                             }
                                         }
-
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -242,11 +245,13 @@
 
                                                             if (!string.IsNullOrEmpty(imagePath))
                                                             {
-                                                                <img src="~/img/@imagePath" alt="User Image" class="w-px-40 h-auto rounded-circle" />
+                                                                <img src="@($"http://10.131.40.17/skiplevel/usrimg/{imagePath}")"
+                                                                     alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                                             }
                                                             else
                                                             {
-                                                                <img src="~/assets/img/avatars/Unknkow.png" alt="User Image" class="w-px-40 h-auto rounded-circle" />
+                                                                <img src="~/assets/img/avatars/Unknkow.png"
+                                                                     alt="User Image" class="w-px-40 h-auto rounded-circle" />
                                                             }
                                                         }
                                                     </div>
@@ -265,7 +270,7 @@
                                         <div class="dropdown-divider"></div>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" href="@($"{profileUrl}?idusr={userId}&role={role}")">
                                             <i class="bx bx-user me-2"></i>
                                             <span class="align-middle">My Profile</span>
                                         </a>
@@ -326,7 +331,8 @@
 
 
 
-    
+
+    <script src="../assets/js/pages-account-settings-account.js"></script>
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -372,7 +378,7 @@
                 const notificationItem = `
                                 <li>
                                     <a class="dropdown-item" href="${actionUrl}">
-                                        <b>${notification.empNum}-${notification.nameUser} </b>subio una nueva evidencia en la <b>Acción</b>: ${notification.message}
+                                        <b>${notification.empNum}-${notification.nameUser} </b>subio una nueva evidencia en la <b>Acción</b>: ${notification.accion}
                                     </a>
                                 </li>
                             `;

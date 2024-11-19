@@ -37,6 +37,7 @@
             </div>
         </div>
 
+
         @{
             var userId = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault();
             var fetchUrl = Url.Action("NotificationsJson", "Notifications"); // Reemplaza "ControllerName" con el nombre correcto
@@ -63,6 +64,21 @@
                     </div>
                 }
             }
+        </div>
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card text-center">
+                    <div class="card-header"><h5>Tutorial de Uso</h5></div>
+                    <div class="card-body">
+                        <div>
+                            <video width="1280" height="720" controls>
+                                <source src="http://10.131.40.17/skiplevel/videos/AccionesSupervisores.mp4" type="video/mp4">
+                                Tu navegador no soporta la reproducción de videos.
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div id="toastContainer"></div>

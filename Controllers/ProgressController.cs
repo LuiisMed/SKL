@@ -18,6 +18,7 @@ namespace SKL.Controllers
             _Sklservice = sklservice;
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index(int fasefilter)
         {
             var fases = await _Sklservice.GetSKLFasesAsync();
@@ -33,6 +34,7 @@ namespace SKL.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> TasksEvaluated(int idFase, int idDepartment)
         {
 
@@ -56,7 +58,6 @@ namespace SKL.Controllers
         {
             var tasks = await _Sklservice.GetSKLTaskCompletedPerDept(idFase, idDepartment);
 
-            // Proyectar a un objeto anónimo con las fechas formateadas
             var fasesFormateadas = tasks.Select(f => new
             {
                 f.IdTask,
@@ -74,7 +75,6 @@ namespace SKL.Controllers
                 Month = f.Start.ToString("MMMM")
             });
 
-            // Devolver el resultado como JSON
             return Json(fasesFormateadas);
         }
 

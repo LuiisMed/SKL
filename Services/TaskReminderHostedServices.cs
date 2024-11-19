@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+#nullable disable
+
 namespace SKL.Services
 {
     public class TaskReminderHostedService : BackgroundService
@@ -17,14 +19,59 @@ namespace SKL.Services
         private readonly IEmailService _emailService;
         private readonly IWebHostEnvironment _env;
 
-
-        public event EventHandler? DataChangeEventHandler;
-
-        public TaskReminderHostedService(IServiceScopeFactory serviceScopeFactory, IEmailService emailService, IWebHostEnvironment env)
+        public TaskReminderHostedService(IServiceScopeFactory serviceScopeFactory,
+                                         IEmailService emailService,
+                                         IWebHostEnvironment env)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _emailService = emailService;
             _env = env;
+        }
+
+        public async Task EjecutarTareaDiaria()
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var repository = scope.ServiceProvider.GetRequiredService<ISKLRepositories>();
+            var tasks = await GetOverdueTasksAsync(repository);
+
+            foreach (var task in tasks)
+            {
+                string path = task.DiasRestantes switch
+                {
+                    0 => "ExpiracionUrgente.html",
+                    1 or 2 or 3 => "ExpiracionMedia.html",
+                    _ => null
+                };
+
+                if (path != null)
+                {
+                    var mailRequest = new Mailrequest
+                    {
+                        ToEmail = task.Email,
+                        Accion = task.Accion,
+                        Fase = task.FaseName,
+                        EndDate = task.End
+                    };
+
+                    await SendMail(mailRequest, path);
+
+                }
+                else
+                {
+                    Console.WriteLine($"Días restantes no manejados: {task.DiasRestantes}");
+                }
+
+                var notification = new Notifications
+                {
+                    IdTask = task.IdTask,
+                    Message = $"La Acción (<b>{task.Accion}</b>) de la <b>{task.FaseName}</b> se vence el dia <b>{task.End.ToString("MMMM dd")}</b>",
+                    IsReaded = false,
+                    EviReaded = false,
+                    IdUsr = task.IdUser
+                };
+
+                await InsertNotificationDataAsync(repository, notification);
+            }
         }
 
         private async Task<List<SKLTasksOverdue>> GetOverdueTasksAsync(ISKLRepositories repository)
@@ -37,70 +84,30 @@ namespace SKL.Services
                 FaseName = task.FaseName,
                 End = task.End,
                 Email = task.Email,
-                IdUser = task.IdUser
+                IdUser = task.IdUser,
+                DiasRestantes = task.DiasRestantes
             }).ToList();
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                try
-                {
-                    using var scope = _serviceScopeFactory.CreateScope();
-                    var repository = scope.ServiceProvider.GetRequiredService<ISKLRepositories>();
-
-                    var tasks = await GetOverdueTasksAsync(repository);
-
-                    foreach (var task in tasks)
-                    {
-                        var mailRequest = new Mailrequest
-                        {
-                            ToEmail = task.Email,
-                            Accion = task.Accion,
-                            Fase = task.FaseName,
-                            EndDate = task.End
-                        };
-
-                        // Ejecuta el método correspondiente según los días restantes
-                        switch (task.DiasRestantes)
-                        {
-                            case 3:
-                                await SendMail3DaysLeftAsync(mailRequest);
-                                break;
-                            //case 2:
-                            //    await SendMail2DaysLeftAsync(mailRequest);
-                            //    break;
-                            //case 1:
-                            //    await SendMail1DaysLeftAsync(mailRequest);
-                            //    break;
-                            //case 0:
-                            //    await SendMail0DaysLeftAsync(mailRequest);
-                            //    break;
-                            default:
-                                Console.WriteLine($"Días restantes no manejados: {task.DiasRestantes}");
-                                break;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
-
-                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
-            }
-        }
-
-
-
-        private async Task SendMail3DaysLeftAsync(Mailrequest mailRequest)
+        private async Task<bool> InsertNotificationDataAsync(ISKLRepositories repository, Notifications notifications)
         {
             try
             {
-                mailRequest.ToEmail = mailRequest.ToEmail;
-                mailRequest.Subject = "La Accion Vence en 3 dias";
-                mailRequest.Body = GetHtml3daysleftContent(mailRequest);
+                await repository.InsertSKLNotificationsAsync(notifications);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private async Task SendMail(Mailrequest mailRequest, string path)
+        {
+            try
+            {
+                mailRequest.Subject = "La Acción SkipLevel ya casi se cierra";
+                mailRequest.Body = GetHtmlContent(mailRequest, path);
                 await _emailService.SendEmailAsync(mailRequest);
                 Console.WriteLine("Correo enviado correctamente.");
             }
@@ -110,69 +117,23 @@ namespace SKL.Services
             }
         }
 
-        //private async Task SendMail3DaysLeftAsync(Mailrequest mailRequest)
-        //{
-        //    try
-        //    {
-        //        mailRequest.Subject = "La Accion Vence en 3 dias";
-        //        mailRequest.Body = GetHtml3daysleftContent(mailRequest);
-        //        await _emailService.SendEmailAsync(mailRequest);
-        //        Console.WriteLine("Correo enviado correctamente.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error enviando correo: {ex.Message}");
-        //    }
-        //}
-        //private async Task SendMail3DaysLeftAsync(Mailrequest mailRequest)
-        //{
-        //    try
-        //    {
-        //        mailRequest.Subject = "La Accion Vence en 3 dias";
-        //        mailRequest.Body = GetHtml3daysleftContent(mailRequest);
-        //        await _emailService.SendEmailAsync(mailRequest);
-        //        Console.WriteLine("Correo enviado correctamente.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error enviando correo: {ex.Message}");
-        //    }
-        //}
-        //private async Task SendMail3DaysLeftAsync(Mailrequest mailRequest)
-        //{
-        //    try
-        //    {
-        //        mailRequest.Subject = "La Accion Vence en 3 dias";
-        //        mailRequest.Body = GetHtml3daysleftContent(mailRequest);
-        //        await _emailService.SendEmailAsync(mailRequest);
-        //        Console.WriteLine("Correo enviado correctamente.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error enviando correo: {ex.Message}");
-        //    }
-        //}
-
-
-        private string GetHtml3daysleftContent(Mailrequest mailRequest)
+        private string GetHtmlContent(Mailrequest mailRequest, string path)
         {
-            string path = Path.Combine(_env.WebRootPath, "assets", "Email", "AsignacionEmail.html");
+            string pathTemplate = Path.Combine(_env.WebRootPath, "assets", "Email", path);
 
-            if (!System.IO.File.Exists(path))
+            if (!System.IO.File.Exists(pathTemplate))
             {
-                throw new FileNotFoundException($"No se encontró la plantilla HTML en la ruta: {path}");
+                throw new FileNotFoundException($"No se encontró la plantilla HTML en la ruta: {pathTemplate}");
             }
 
-            // Leer el contenido del archivo
-            string htmlTemplate = System.IO.File.ReadAllText(path);
-
-            // Reemplazar los marcadores en la plantilla con los valores de Mailrequest
-            string emailBody = htmlTemplate
+            string htmlTemplate = System.IO.File.ReadAllText(pathTemplate);
+            return htmlTemplate
                 .Replace("{{Accion}}", mailRequest.Accion ?? string.Empty)
                 .Replace("{{Fase}}", mailRequest.Fase ?? string.Empty)
                 .Replace("{{FechaVencimiento}}", mailRequest.EndDate.ToString("dd/MM/yyyy"));
-
-            return emailBody;
         }
+
+        protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask; // No se necesita en esta opción.
     }
+
 }

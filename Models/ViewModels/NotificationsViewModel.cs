@@ -21,6 +21,8 @@
         public Boolean EviReaded { get; set; }
         [Map("message")]
         public string? Message { get; set; }
+        [Map("accion")]
+        public string? Accion { get; set; }
         [Map("id_fase")]
         public int IdFase { get; set; }
         [Map("fase_name")]

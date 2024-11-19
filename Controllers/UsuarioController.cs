@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
+using Org.BouncyCastle.Crypto;
 using SKL.Models;
 using SKL.Services;
 using SKL.Services.IServices;
@@ -68,6 +69,32 @@ namespace SKL.Controllers
             return PartialView("UpdateUsuarioPopUp", model);
         }
 
+
+        public async Task<IActionResult> Profile(int idusr, string role)
+        {
+            var departamentos = await _Sklservice.GetSKLDepartmentsAsync();
+            var usertypes = await _Sklservice.GetSKLUserTypesAsync();
+            var shifts = await _Sklservice.GetSKLShiftsAsync();
+            var positions = await _Sklservice.GetSKLPositionsAsync();
+            var model = await _service.GetSKLUsuarioAsync(idusr);
+
+            ViewBag.Departamentos = departamentos;
+            ViewBag.UserTypes = usertypes;
+            ViewBag.Shifts = shifts;
+            ViewBag.Positions = positions;
+
+
+            if (role == "Administrador")
+            {
+                return View("Profile", model);
+            }
+            else
+            {
+                return View("ProfileUser",model);
+            }
+
+        }
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Insert(Usuario data, IFormFile imageFile)
@@ -79,7 +106,7 @@ namespace SKL.Controllers
                 {
                     // Generar un nombre único para la imagen
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    var filePath = Path.Combine(@"wwwroot/img", uniqueFileName);
+                    var filePath = Path.Combine(@"wwwroot/usrimg", uniqueFileName);
 
                     // Guardar la imagen en el servidor
                     using (var stream = System.IO.File.Create(filePath))
@@ -108,7 +135,6 @@ namespace SKL.Controllers
         }
 
 
-        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Update(Usuario data, IFormFile imageFile)
         {
@@ -121,7 +147,7 @@ namespace SKL.Controllers
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", uniqueFileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/usrimg", uniqueFileName);
                     //var filePath = Path.Combine(@"wwwroot/img", uniqueFileName);
 
 
@@ -198,7 +224,7 @@ namespace SKL.Controllers
                 if (!string.IsNullOrWhiteSpace(existingUser.ImagePath))
                 {
                     // Eliminar la imagen del servidor si existe
-                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "img", existingUser.ImagePath.TrimStart('/'));
+                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "usrimg", existingUser.ImagePath.TrimStart('/'));
                     if (System.IO.File.Exists(imagePath))
                     {
                         System.IO.File.Delete(imagePath);

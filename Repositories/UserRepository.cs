@@ -19,7 +19,7 @@ public class UserRepository : IUserRepository
     }
 
     public async Task<IEnumerable<Usuario>> GetSKLUsuarios()
-=> await _context.ExecuteStoredProcedureQueryAsync<Usuario>(_storedProcedure,
+    => await _context.ExecuteStoredProcedureQueryAsync<Usuario>(_storedProcedure,
     new { Option = "GET_USUARIOS" });
 
     public async Task<Usuario> GetSKLUsuarioAsync(int idusr)
@@ -55,7 +55,8 @@ public class UserRepository : IUserRepository
                 Param6 = usuario.IdShift,
                 Param7 = usuario.IdDepartment,
                 Param8 = usuario.EmpNo,
-                Param9 = usuario.ImagePath
+                Param9 = usuario.ImagePath,
+                Param10 = usuario.Email
 
             });
     }
@@ -76,7 +77,8 @@ public class UserRepository : IUserRepository
                 Param7 = usuario.IdShift,
                 Param8 = usuario.IdDepartment,
                 Param9 = usuario.EmpNo,
-                Param10 = usuario.ImagePath
+                Param10 = usuario.ImagePath,
+                Param11 = usuario.Email
             });
     }
 

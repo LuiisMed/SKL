@@ -26,6 +26,7 @@
         public int IdEvidences { get; set; }
         [Map("evidences")]
         public string? Evidences { get; set; }
+        [Map("DiasRestantes")]
         public int DiasRestantes { get; set; }
     }
 }

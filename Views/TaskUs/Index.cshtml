@@ -57,10 +57,6 @@
                             </div>
                         }
 
-
-
-
-
                         <div class="divider">
                             <div class="divider-text">Acciones a Realizar</div>
                         </div>
@@ -147,33 +143,49 @@
                     field: "actions",
                     minWidth: 150,
                     cellRenderer: (params) => {
-                        if (!params.data) return ''; // Evita error si params.data es undefined
+                        // Verificamos si params.data es nulo o undefined
+                        if (!params.data) return '';
 
                         const endDate = new Date(params.data.end);
-                        const disabled = hoy > endDate && !params.data.evidences ? 'disabled' : ''; // Desactivar si no hay evidencia y está vencida
+                        const hoy = new Date();
+                        hoy.setHours(0, 0, 0, 0); // Ignoramos la hora para comparar solo fechas
+
+                        // Sumamos 1 día a la fecha de cierre
+                        const endDatePlusOneDay = new Date(endDate);
+                        endDatePlusOneDay.setDate(endDate.getDate() + 1);
+
+                        // Definimos si los botones deben estar deshabilitados
+                        const disabled = hoy > endDatePlusOneDay && !params.data.evidences ? 'disabled' : '';
 
                         return `
-                            <button type="button" ${disabled} onclick="InsertEvidence('${params.data.idTask}')" class="btn btn-icon btn-primary">
-                                <span class="tf-icons bx bx-upload"></span>
-                            </button>
-                            <button type="button" ${disabled} onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary">
-                                <span class="tf-icons bx bx-download"></span>
-                            </button>
-                            <button type="button" ${disabled} onclick="handleDelete('${params.data.idEvidences}')" class="btn btn-icon btn-danger">
-                                <span class="tf-icons bx bx-trash"></span>
-                            </button>
-                        `;
+                    <button type="button" ${disabled} onclick="InsertEvidence('${params.data.idTask}')" class="btn btn-icon btn-primary">
+                        <span class="tf-icons bx bx-upload"></span>
+                    </button>
+                    <button type="button" ${disabled} onclick="Download('${params.data.evidences}')" class="btn btn-icon btn-secondary">
+                        <span class="tf-icons bx bx-download"></span>
+                    </button>
+                    <button type="button" ${disabled} onclick="handleDelete('${params.data.idEvidences}')" class="btn btn-icon btn-danger">
+                        <span class="tf-icons bx bx-trash"></span>
+                    </button>
+                `;
                     },
-                    minWidth: 150,
                 }
+
             ],
             rowClassRules: {
-                'row-vencida': (params) => params.data && !params.data.evidences && hoy > new Date(params.data.end),
+                'row-vencida': (params) => {
+                    if (!params.data) return false;
+
+                    const endDate = new Date(params.data.end);
+                    const endDatePlusOneDay = new Date(endDate);
+                    endDatePlusOneDay.setDate(endDate.getDate() + 1);
+
+                    return !params.data.evidences && hoy > endDatePlusOneDay;
+                },
                 'row-verde': (params) =>
                     params.data && params.data.isCompleted && params.data.evidences,
                 'row-amarilla': (params) =>
                     params.data && !params.data.isCompleted && params.data.evidences
-
             },
             onGridReady: (params) => {
                 gridApi = params.api; // Obtener la instancia de gridApi

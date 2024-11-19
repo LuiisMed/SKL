@@ -76,6 +76,20 @@ namespace SKL.Controllers
             return PartialView("UpdateTaskPopUp", model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CheckTaskPopUp(int idTask)
+        {
+            var model = await _Sklservice.GetSKLTask(idTask);
+
+            var aspects = await _Sklservice.GetSKLAspectsAsync();
+
+            ViewData["Title"] = "Actualizar Accion";
+
+            ViewBag.Aspectos = aspects;
+            ViewBag.Action = "Insert";
+            return PartialView("CheckTaskPopUp", model);
+        }
+
 
         //Los ID Del Modelo Principal y del ViewModel Tienen que ser los mismos
         //RECUERDA RESULTS NO PUEDE SER NULL
@@ -153,13 +167,13 @@ namespace SKL.Controllers
                 var notification = new Notifications
                 {
                     IdTask = newTaskId,
-                    Message = taskData.Accion,
+                    Message = $"Tienes una nueva asignacion en la <b>{taskData.FaseName}</b> con la <b>Acción</b>: {taskData.Accion}",
                     IsReaded = false,
                     EviReaded = false,
                     IdUsr = taskData.IdUserT
                 };
 
-                var secondInsertResult = await InsertRelatedDataAsync(notification);
+                var secondInsertResult = await InsertNotificationDataAsync(notification);
 
                 if (!secondInsertResult)
                 {
@@ -243,7 +257,7 @@ namespace SKL.Controllers
         //    return response;
         //}
 
-        private async Task<bool> InsertRelatedDataAsync(Notifications notifications)
+        private async Task<bool> InsertNotificationDataAsync(Notifications notifications)
         {
             try
             {

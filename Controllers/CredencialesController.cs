@@ -52,7 +52,6 @@ public class CredencialesController : Controller
             new Claim(ClaimTypes.Name, usuario_encontrado.Name),
             new Claim(ClaimTypes.Role, usuario_encontrado.RolName),
             new Claim(ClaimTypes.NameIdentifier, usuario_encontrado.IdUser.ToString())
-            
         };
 
         if (!string.IsNullOrEmpty(usuario_encontrado.ImagePath))

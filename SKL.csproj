@@ -392,6 +392,8 @@
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.3.1" />
+    <PackageReference Include="Hangfire" Version="1.8.15" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.15" />
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
     <PackageReference Include="MimeKit" Version="4.8.0" />
@@ -420,6 +422,7 @@
     <Folder Include="wwwroot\lib\jquery\" />
     <Folder Include="wwwroot\lib\jquery\dist\" />
     <Folder Include="wwwroot\img\" />
+    <Folder Include="wwwroot\usrimg\" />
   </ItemGroup>
 
 </Project>

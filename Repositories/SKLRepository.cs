@@ -397,7 +397,6 @@ public class SKLRepository : ISKLRepositories
                 Param4 = tasks.Accion,
                 Param5 = tasks.IdAspect,
                 Param6 = tasks.IsCompleted,
-                Param7 = tasks.Start,
                 Param8 = tasks.End
             });
 
@@ -420,7 +419,6 @@ public class SKLRepository : ISKLRepositories
                 Param2 = tasks.Accion,
                 Param3 = tasks.IdAspect,
                 Param4 = tasks.IsCompleted,
-                Param5 = tasks.Start,
                 Param6 = tasks.End
 
             });

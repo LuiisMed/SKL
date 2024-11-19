@@ -20,15 +20,15 @@ function showWindowPopUp(url) {
 }
 
 // Hub URL
- //function systemHubUrl() {
- //    const virtualApp = window.location.host == 'localhost' ? '' : window.location.pathname.split('/')[1]
- //    return '/' + virtualApp + '/systemHub';
- //}
+ function systemHubUrl() {
+     const virtualApp = window.location.host == 'localhost' ? '' : window.location.pathname.split('/')[1]
+     return '/' + virtualApp + '/systemHub';
+ }
 
 // Hub URL
-function systemHubUrl() {
-   return '/systemHub';
-}
+//function systemHubUrl() {
+//   return '/systemHub';
+//}
 
 function waitTime(refresh) {
     setTimeout(function () {
