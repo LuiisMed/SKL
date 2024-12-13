@@ -147,8 +147,8 @@ namespace SKL.Controllers
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/usrimg", uniqueFileName);
-                    //var filePath = Path.Combine(@"wwwroot/img", uniqueFileName);
+                    //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/usrimg", uniqueFileName);
+                    var filePath = Path.Combine(@"wwwroot/img", uniqueFileName);
 
 
                     using (var stream = System.IO.File.Create(filePath))

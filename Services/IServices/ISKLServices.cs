@@ -62,6 +62,7 @@ public interface ISKLServices
     //Task<(bool, string)> InsertSKLTaskAsync(Tasks tasks);
     Task<(bool, string, int)> InsertSKLTaskAsync(Tasks tasks);
     Task<(bool, string)> UpdateSKLTaskAsync(Tasks data);
+    Task<(bool, string)> UpdateSKLTaskCompletedAsync(Tasks data);
     Task<(bool, string)> DeleteSKLTaskAsync(int idTask);
     /*---------------------------------------------------------------------------*/
     /*------------------------------------EVAL--------------------------------------*/

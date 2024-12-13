@@ -424,6 +424,22 @@ public class SKLRepository : ISKLRepositories
             });
     }
 
+    public async Task<(bool, string)> UpdateSKLTaskCompletedAsync(Tasks tasks)
+    {
+        _context.DataChangeEventHandler += DataChangeEventHandler;
+        return await _context.ExecuteStoredProcedureDMLAsync(_storedProcedure,
+            new
+            {
+                Option = "UPD_TASK_COMPLETED",
+                Param1 = tasks.IdTask,
+                Param2 = tasks.Accion,
+                Param3 = tasks.IdAspect,
+                Param4 = tasks.IsCompleted,
+                Param5 = tasks.Start,
+                Param6 = tasks.End
+            });
+    }
+
     public async Task<(bool, string)> DeleteSKLTaskAsync(int idTask)
     {
         _context.DataChangeEventHandler += DataChangeEventHandler;

@@ -201,6 +201,12 @@ public class SKLServices : ISKLServices
         return await _repository.UpdateSKLTaskAsync(data);
     }
 
+    public async Task<(bool, string)> UpdateSKLTaskCompletedAsync(Tasks data)
+    {
+        _repository.DataChangeEventHandler += DataChangeEventHandler;
+        return await _repository.UpdateSKLTaskCompletedAsync(data);
+    }
+
     //public async Task<(bool, string)> InsertSKLTaskAsync(Tasks tasks)
     //{
     //    _repository.DataChangeEventHandler += DataChangeEventHandler;

@@ -104,18 +104,18 @@
 
         const gridOptions = {
             columnDefs: [
-                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: false },
+                { field: "idTask", headerName: "ID", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "idUserT", headerName: "ID Usuario", minWidtha: 150, hide: true },
                 { field: "name", headerName: "Usuario", minWidtha: 150, hide: true },
                 { field: "idFaseT", headerName: "ID Fase", minWidth: 70, maxWidth: 150, hide: true },
-                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 80, hide: false },
-                { field: "accion", headerName: "Accion", minWidth: 250, maxWidth: 300, },
+                { field: "faseName", headerName: "Fase", minWidth: 70, maxWidth: 120, hide: false },
+                { field: "accion", headerName: "Accion", minWidth: 330, maxWidth: 600, },
                 { field: "idAspect", headerName: "ID Aspecto", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "aspectName", headerName: "Aspecto", minWidth: 70, maxWidth: 150, hide: false },
                 { field: "idEvidences", headerName: "ID Evidence", minWidth: 70, maxWidth: 150, hide: true },
                 { field: "evidences", headerName: "Evidencia", minWidth: 70, maxWidth: 150, hide: false },
                 { field: "month", headerName: "Month", minWidth: 70, maxWidth: 150, hide: true, rowGroup: true }, // Agrupación por mes
-                { field: "start", headerName: "Inicio", minWidth: 60, maxWidth: 120, hide: false },
+                { field: "start", headerName: "Inicio", minWidth: 60, maxWidth: 120, hide: true },
                 { field: "end", headerName: "Cierre", minWidth: 60, maxWidth: 120, hide: false },
                 {
                     field: "isCompleted",

@@ -72,7 +72,7 @@ namespace SKL.Controllers
                 f.Evidences,
                 Start = f.Start.ToString("yyyy-MM-dd"),
                 End = f.End.ToString("yyyy-MM-dd"),
-                Month = f.Start.ToString("MMMM")
+                Month = f.End.ToString("MMMM")
             });
 
             return Json(fasesFormateadas);

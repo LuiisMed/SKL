@@ -292,6 +292,27 @@ namespace SKL.Controllers
                 : RedirectToAction("Error");
         }
 
+        public async Task<IActionResult> UpdateTaskCompleted(Tasks data)
+        {
+            var (error, message) = (false, "");
+            if (ModelState.IsValid)
+            {
+                _Sklservice.DataChangeEventHandler += RefreshTasksGrid;
+                (error, message) = await _Sklservice.UpdateSKLTaskCompletedAsync(data);
+            }
+
+            var jsonResult = Json(new
+            {
+                Status = error ? "error" : "success",
+                Message = error ? message : "Accion actualizada exitosamente.",
+                Icon = error ? "error" : "success"
+            });
+
+            return (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                ? jsonResult
+                : RedirectToAction("Error");
+        }
+
 
         public async Task<IActionResult> Delete(Tasks model)
         {
@@ -333,7 +354,7 @@ namespace SKL.Controllers
                 f.Evidences,
                 Start = f.Start.ToString("yyyy-MM-dd"),
                 End = f.End.ToString("yyyy-MM-dd"),
-                Month = f.Start.ToString("MMMM")
+                Month = f.End.ToString("MMMM")
             });
 
             return Json(fasesFormateadas);
