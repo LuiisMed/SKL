@@ -37,17 +37,46 @@
                 {
                     @foreach (var dept in Model.PercentagePerDept)
                     {
+
                         <div class="card accordion-item">
                             <h2 class="accordion-header" id="headingTwo">
                                 <button type="button"
                                         class="accordion-button collapsed btnNew"
                                         data-id="@dept.DepartmentId">
-                                    @dept.Department - @dept.PercentageCompleted
+                                    <b>@dept.Department</b>
                                 </button>
                             </h2>
+                            <div class="progress mb-3" style="margin-left: 16px;margin-right: 16px;">
+                                <div class="progress-bar bg-primary shadow-none"
+                                     role="progressbar"
+                                     style="width: @dept.PercentageCompleted%"
+                                     aria-valuenow="0"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+                                <div class="progress-bar bg-warning shadow-none"
+                                     role="progressbar"
+                                     style="width: @dept.Pending%"
+                                     aria-valuenow="0"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+                                <div class="progress-bar bg-danger shadow-none"
+                                     role="progressbar"
+                                     style="width: @dept.PercentageNotCompleted%"
+                                     aria-valuenow="0"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
                         </div>
+
+                        //ff4560 y e8e000
+
                     }
                 }
+
+
             </div>
         </div>
 

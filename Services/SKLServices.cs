@@ -436,13 +436,19 @@ public class SKLServices : ISKLServices
                 DepartmentId = group.Key.IdDepartment,  // Asignamos el ID del departamento
                 Department = group.Key.DepartmentName,
                 PercentageCompleted = group.Count() > 0
-                    ? $"{Math.Round((group.Count(t => t.IsCompleted) / (double)group.Count()) * 100, 2)}% Completado"
-                    : "0% Completado"
+                    ? Math.Round((group.Count(t => t.IsCompleted) / (double)group.Count()) * 100, 2)
+                    : 0.0,
+                PercentageNotCompleted = group.Count() > 0
+                ? Math.Round((group.Count(t => !t.IsCompleted) / (double)group.Count()) * 100, 2)
+                : 0.0,
+                Pending = group.Count(t => !t.IsCompleted && t.Evidences != null)
+
             })
             .ToList();
 
         return groupedTasks;
     }
+
 
 
 

@@ -18,7 +18,6 @@ function showWindowPopUp(url) {
         window.location.reload(false)
     });
 }
-
 // Hub URL
  function systemHubUrl() {
      const virtualApp = window.location.host == 'localhost' ? '' : window.location.pathname.split('/')[1]
