@@ -31,7 +31,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 // Hosted Service (opcional)
-builder.Services.AddHostedService<TaskReminderHostedService>();
+//builder.Services.AddHostedService<TaskReminderHostedService>();
 
 // Configurar autenticación
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

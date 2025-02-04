@@ -28,51 +28,51 @@ namespace SKL.Services
             _env = env;
         }
 
-        public async Task EjecutarTareaDiaria()
-        {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<ISKLRepositories>();
-            var tasks = await GetOverdueTasksAsync(repository);
+        //public async Task EjecutarTareaDiaria()
+        //{
+        //    using var scope = _serviceScopeFactory.CreateScope();
+        //    var repository = scope.ServiceProvider.GetRequiredService<ISKLRepositories>();
+        //    var tasks = await GetOverdueTasksAsync(repository);
 
-            foreach (var task in tasks)
-            {
-                string path = task.DiasRestantes switch
-                {
-                    0 => "ExpiracionUrgente.html",
-                    1 or 2 or 3 => "ExpiracionMedia.html",
-                    _ => null
-                };
+        //    foreach (var task in tasks)
+        //    {
+        //        string path = task.DiasRestantes switch
+        //        {
+        //            0 => "ExpiracionUrgente.html",
+        //            1 or 2 or 3 => "ExpiracionMedia.html",
+        //            _ => null
+        //        };
 
-                if (path != null)
-                {
-                    var mailRequest = new Mailrequest
-                    {
-                        ToEmail = task.Email,
-                        Accion = task.Accion,
-                        Fase = task.FaseName,
-                        EndDate = task.End
-                    };
+        //        if (path != null)
+        //        {
+        //            var mailRequest = new Mailrequest
+        //            {
+        //                ToEmail = task.Email,
+        //                Accion = task.Accion,
+        //                Fase = task.FaseName,
+        //                EndDate = task.End
+        //            };
 
-                    await SendMail(mailRequest, path);
+        //            await SendMail(mailRequest, path);
 
-                }
-                else
-                {
-                    Console.WriteLine($"Días restantes no manejados: {task.DiasRestantes}");
-                }
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine($"Días restantes no manejados: {task.DiasRestantes}");
+        //        }
 
-                var notification = new Notifications
-                {
-                    IdTask = task.IdTask,
-                    Message = $"La Acción (<b>{task.Accion}</b>) de la <b>{task.FaseName}</b> se vence el dia <b>{task.End.ToString("MMMM dd")}</b>",
-                    IsReaded = false,
-                    EviReaded = false,
-                    IdUsr = task.IdUser
-                };
+        //        var notification = new Notifications
+        //        {
+        //            IdTask = task.IdTask,
+        //            Message = $"La Acción (<b>{task.Accion}</b>) de la <b>{task.FaseName}</b> se vence el dia <b>{task.End.ToString("MMMM dd")}</b>",
+        //            IsReaded = false,
+        //            EviReaded = false,
+        //            IdUsr = task.IdUser
+        //        };
 
-                await InsertNotificationDataAsync(repository, notification);
-            }
-        }
+        //        await InsertNotificationDataAsync(repository, notification);
+        //    }
+        //}
 
         private async Task<List<SKLTasksOverdue>> GetOverdueTasksAsync(ISKLRepositories repository)
         {
