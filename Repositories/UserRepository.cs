@@ -37,8 +37,12 @@ public class UserRepository : IUserRepository
     });
 
     public async Task<IEnumerable<Login>> GetSKLCredentials()
-    => await _context.ExecuteStoredProcedureQueryAsync<Login>(_storedProcedure,
-    new { Option = "GET_CREDENTIALS" });
+    {
+        var data = await _context.ExecuteStoredProcedureQueryAsync<Login>(_storedProcedure,
+        new { Option = "GET_CREDENTIALS" });
+
+        return data;
+    }
 
     public async Task<(bool, string)> InsertSKLUsuariosAsync(Usuario usuario)
     {

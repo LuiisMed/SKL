@@ -12,7 +12,12 @@ using RepoDb;
 var builder = WebApplication.CreateBuilder(args);
 
 // Inicializar el bootstrapper de RepoDB para Microsoft.Data.SqlClient
-SqlServerBootstrap.Initialize();
+//SqlServerBootstrap.Initialize();
+
+GlobalConfiguration
+    .Setup()
+    .UseSqlServer();
+
 
 // Configurar conexión a la base de datos
 var connectionString = builder.Configuration.GetConnectionString("SKLConectionString")

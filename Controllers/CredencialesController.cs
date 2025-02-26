@@ -39,7 +39,8 @@ public class CredencialesController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(Login modelo)
     {
-        Login? usuario_encontrado = (await _service.GetSKLCredentials()).Where(u => u.Usuario == modelo.Usuario && u.Clave == modelo.Clave).FirstOrDefault();
+        var data = await _service.GetSKLCredentials();
+        Login? usuario_encontrado = data.Where(u => u.Usuario == modelo.Usuario && u.Clave == modelo.Clave).FirstOrDefault();
 
         if(usuario_encontrado == null)
         {

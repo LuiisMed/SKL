@@ -43,6 +43,7 @@ public abstract class SKLContext : ISKLContext
             using var connection = new SqlConnection(_connectionString);
             results = await connection.ExecuteQueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
         }
+
         catch (Exception ex)
         {
             results = new List<T>();
